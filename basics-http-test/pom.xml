@@ -25,8 +25,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>basics</artifactId>
     <groupId>ai.shape.basics</groupId>
+    <artifactId>basics</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
 
@@ -34,31 +34,37 @@
   <artifactId>basics-http-test</artifactId>
 
   <dependencies>
+
     <dependency>
-      <groupId>ai.shape.magicless</groupId>
-      <artifactId>util</artifactId>
+      <groupId>ai.shape.basics</groupId>
+      <artifactId>basics-util</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
+
     <dependency>
-      <groupId>ai.shape.magicless</groupId>
-      <artifactId>http-client</artifactId>
+      <groupId>ai.shape.basics</groupId>
+      <artifactId>basics-http-client</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
+
     <dependency>
-      <groupId>ai.shape.magicless</groupId>
-      <artifactId>router-servlet</artifactId>
+      <groupId>ai.shape.basics</groupId>
+      <artifactId>basics-servlet</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
+
     <dependency>
-      <groupId>ai.shape.magicless</groupId>
-      <artifactId>jetty-server</artifactId>
+      <groupId>ai.shape.basics</groupId>
+      <artifactId>basics-jetty</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
     </dependency>
+
   </dependencies>
 
 </project>
