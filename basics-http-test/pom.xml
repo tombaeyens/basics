@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -17,58 +18,47 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
-  <name>Basics parent</name>
-  <groupId>ai.shape.basics</groupId>
-  <artifactId>basics</artifactId>
-  <packaging>pom</packaging>
-  <version>1.0.0-SNAPSHOT</version>
+  <parent>
+    <artifactId>basics</artifactId>
+    <groupId>ai.shape.basics</groupId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <shape.version>1.0.0-SNAPSHOT</shape.version>
-  </properties>
-
-  <modules>
-    <module>basics-util</module>
-    <module>basics-db</module>
-    <module>basics-gson</module>
-    <module>basics-servlet</module>
-    <module>basics-jetty</module>
-    <module>basics-http-client</module>
-    <module>basics-http-test</module>
-  </modules>
+  <name>Basics http test</name>
+  <artifactId>basics-http-test</artifactId>
 
   <dependencies>
-
-    <!-- COMPILE DEPENDENCIES-->
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.25</version>
+      <groupId>ai.shape.magicless</groupId>
+      <artifactId>util</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
-
-    <!-- TEST DEPENDENCIES-->
+    <dependency>
+      <groupId>ai.shape.magicless</groupId>
+      <artifactId>http-client</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.shape.magicless</groupId>
+      <artifactId>router-servlet</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.shape.magicless</groupId>
+      <artifactId>jetty-server</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
-      <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>1.7.25</version>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 
 </project>
