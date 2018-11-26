@@ -165,10 +165,11 @@ public class SchemaManager {
   }
   protected boolean schemaHistoryExists() {
     return db.tx(tx->{
+      String tableNameLowerCase = SchemaHistoryTable.TABLE.getName().toLowerCase();
       boolean schemaHistoryExists = tx.getTableNames().stream()
         .map(tableName->tableName.toLowerCase())
         .collect(Collectors.toList())
-        .contains(SchemaHistoryTable.TABLE.getName());
+        .contains(tableNameLowerCase);
       tx.setResult(schemaHistoryExists);
     });
   }

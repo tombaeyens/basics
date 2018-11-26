@@ -27,4 +27,8 @@ public class Strings {
     Arrays.fill(chars, 0, multiplier, c);
     return new String(chars);
   }
+
+  public static boolean isNonEmpty(String string) {
+    return string!=null && string.length()>0;
+  }
 }
