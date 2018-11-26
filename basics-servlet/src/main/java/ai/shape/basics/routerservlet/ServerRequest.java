@@ -21,13 +21,12 @@ package ai.shape.basics.routerservlet;
 import ai.shape.magicless.app.util.Http;
 import org.slf4j.Logger;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class ServerRequest {
 
@@ -197,5 +196,26 @@ public class ServerRequest {
 
   public String getProtocol() {
     return request.getProtocol();
+  }
+
+  public List<Cookie> getCookies(String name) {
+    List<Cookie> cookiesForName = new ArrayList<>();
+    Cookie[] requestCookies = request.getCookies();
+    if (requestCookies!=null) {
+      for (Cookie cookie: requestCookies) {
+        if (name==null || name.equals(cookie.getName())) {
+          cookiesForName.add(cookie);
+        }
+      }
+    }
+    return cookiesForName;
+  }
+
+  public String getCookieFirstValue(String name) {
+    return getCookies(name)
+      .stream()
+      .findFirst()
+      .map(cookie->cookie.getValue())
+      .orElse(null);
   }
 }
