@@ -195,19 +195,7 @@ public class ServerRequest {
     return requestObjects!=null ? (T) requestObjects.get(key) : null;
   }
 
-  public String getServerName() {
-    return request.getServerName();
-  }
-
-  public int getServerPort() {
-    return request.getServerPort();
-  }
-
   public String getProtocol() {
     return request.getProtocol();
-  }
-
-  public String getScheme() {
-    return request.getScheme();
   }
 }

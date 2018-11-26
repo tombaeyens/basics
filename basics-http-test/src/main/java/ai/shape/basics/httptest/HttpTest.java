@@ -37,8 +37,7 @@ import org.junit.Before;
  * The cool feature is that server side exceptions are captured and added
  * as the cause to the client side exceptions when asserting the http
  * response status with {@link ClientResponse#assertStatusOk()} etc.
- *
- * Usage see example/src/test/java/be/tombaeyens/magicless/ExampleTest.java */
+ */
 public abstract class HttpTest {
 
   protected static HttpClient httpClient = null;
