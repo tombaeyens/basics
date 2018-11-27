@@ -22,7 +22,7 @@ import ai.shape.basics.db.Db;
 import ai.shape.basics.db.DbConfiguration;
 import ai.shape.basics.db.schema.SchemaManager;
 import ai.shape.basics.tables.User;
-import ai.shape.basics.tables.Users;
+import ai.shape.basics.tables.UsersDao;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,25 +38,24 @@ public class DbTest {
     Db db = new Db(new DbConfiguration()
       .url("jdbc:h2:mem:test"));
 
-    SchemaManager schemaManager = new SchemaManager()
+    // creates the schema history
+    log.debug("Schema manager 1: creating the schema history table");
+    new SchemaManager()
       .db(db)
-      .updates(new CreateUserTable());
+      .ensureCurrentSchema();
 
-    schemaManager.ensureCurrentSchema();
+    // creates the users table V1
+    log.debug("Schema manager 2: creating the users table");
+    new SchemaManager()
+      .db(db)
+      .tables(UsersDao.TABLE_V1)
+      .ensureCurrentSchema();
 
-    db.tx(tx-> {
-      Users.insertUser(tx, new User()
-        .id(UUID.randomUUID().toString())
-        .firstName("Tom")
-        .email("tom@shape.ai")
-      );
-    });
-
-    db.tx(tx-> {
-      log.debug("Deleting all "+Users.findAllUsers(tx).count()+" users");
-      tx.newDelete(Users.TABLE).execute();
-    });
-
-    // Add drop db to schema manager (which delegates to the dialect)
+    // adds columns to the users table
+    log.debug("Schema manager 3: adding columns to the users table");
+    new SchemaManager()
+      .db(db)
+      .tables(UsersDao.TABLE_V2)
+      .ensureCurrentSchema();
   }
 }

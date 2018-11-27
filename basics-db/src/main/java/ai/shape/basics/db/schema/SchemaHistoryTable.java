@@ -22,17 +22,8 @@ import ai.shape.basics.db.Table;
 import ai.shape.basics.db.Column;
 
 /**
- * NOTE TO SELF: this documentation reflects the direction that I want change towards.  Impl doesn't yet match.
- *
- * Supports schema evolutions in a cluster without the need for bringing the cluster down
- * if the developers setParameters the following db upgrade procedure:
- *
- * 1) Create new table/columns
- * 2) Any process can start doing double writing to the old as well as to the new table/columns
- * 3) Ensure that all processes are on the right getWriter version
- * 4) Duplicate the old data (recent updates may already have been done in the new table/columns)
- * 5) Remove the writes to the old table/columns
- * 6) Remove the old table/columns
+ * Contains the schema lock record and one record per {@link SchemaUpdate}
+ * that was performed on a database.
  */
 public class SchemaHistoryTable extends Table {
 

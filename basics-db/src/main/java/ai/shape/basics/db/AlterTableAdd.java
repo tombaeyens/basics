@@ -16,22 +16,43 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ai.shape.basics;
+package ai.shape.basics.db;
 
-import ai.shape.basics.db.Tx;
-import ai.shape.basics.db.schema.SchemaUpdate;
-import ai.shape.basics.tables.UsersDao;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CreateUserTable implements SchemaUpdate {
+public class AlterTableAdd extends Statement {
 
-  @Override
-  public String getId() {
-    return "create-users-table";
+  Table table;
+  List<Column> columns = new ArrayList<>();
+
+  public AlterTableAdd(Tx tx, Table table) {
+    super(tx);
+    this.table = table;
+  }
+
+  public AlterTableAdd add(Column column) {
+    columns.add(column);
+    return this;
+  }
+
+  public int execute() {
+    return executeUpdate();
   }
 
   @Override
-  public void update(Tx tx) {
-    // tx.newCreateTable(UsersDao.TABLE).execute();
-    // TODO
+  protected void buildSql(SqlBuilder sqlBuilder) {
+    getDialect().buildAlterTableAddSql(sqlBuilder, this);
+  }
+
+  protected void logUpdateCount(int updateCount) {
+  }
+
+  public Table getTable() {
+    return table;
+  }
+
+  public List<Column> getColumns() {
+    return columns;
   }
 }

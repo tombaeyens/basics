@@ -20,10 +20,7 @@ package ai.shape.basics.db;
 
 import ai.shape.magicless.app.util.Io;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,16 +125,27 @@ public class Tx {
     }
   }
 
-  public List<String> getTableNames() {
-    List<String> tableNames = new ArrayList<>();
+  public List<Table> getMetaDataTables() {
+    List<Table> tables = new ArrayList<>();
     try {
-      ResultSet tables = connection.getMetaData().getTables(null, null, "%", new String[]{"TABLE"});
-      while (tables.next()) {
-        String tableName = tables.getString(3);
-        logSQL(" <- "+tableName);
-        tableNames.add(tableName);
+      ResultSet tablesResultSet = connection.getMetaData().getTables(null, null, "%", new String[]{"TABLE"});
+      while (tablesResultSet.next()) {
+        Table table = new Table();
+        table.name(tablesResultSet.getString(3));
+
+        ResultSetMetaData resultSetMetaData = connection
+          .createStatement()
+          .executeQuery("select * from " + table.getName())
+          .getMetaData();
+        for (int i=1; i<=resultSetMetaData.getColumnCount(); i++) {
+          Column column = new Column();
+          column.name(resultSetMetaData.getColumnLabel(i));
+          table.column(column);
+        }
+
+        tables.add(table);
       }
-      return tableNames;
+      return tables;
     } catch (SQLException e) {
       throw exceptionWithCause("get table names", e);
     }
@@ -145,6 +153,14 @@ public class Tx {
 
   public CreateTable newCreateTable(Table table) {
     return new CreateTable(this, table);
+  }
+
+  public DropTable newDropTable(Table table) {
+    return new DropTable(this, table);
+  }
+
+  public AlterTableAdd newAlterTableAdd(Table table) {
+    return new AlterTableAdd(this, table);
   }
 
   public Select newSelect() {
@@ -181,10 +197,6 @@ public class Tx {
     return new Delete(this, table, alias);
   }
 
-  public DropTable newDropTable(Table table) {
-    return new DropTable(this, table);
-  }
-
   public PreparedStatement createPreparedStatement(String sql) {
     PreparedStatement statement = null;
     try {
@@ -195,5 +207,4 @@ public class Tx {
     }
     return statement;
   }
-
 }

@@ -25,56 +25,54 @@ import ai.shape.basics.db.Tx;
 
 import java.util.stream.Stream;
 
-public class Users extends Table {
+public class UsersDao extends Table {
 
-  public static final Column ID = new Column()
-    .name("id")
-    .typeVarchar(1024)
-    .primaryKey();
+  public static final Table TABLE_V1 = new Table()
+    .name("users")
+    .column(Columns.ID)
+    .column(Columns.EMAIL);
 
-  public static final Column FIRST_NAME = new Column()
-    .name("firstName")
-    .typeVarchar(1024);
+  public static final Table TABLE_V2 = new Table()
+    .name("users")
+    .columns(Columns.class);
 
-  public static final Column LAST_NAME = new Column()
-    .name("lastName")
-    .typeVarchar(1024);
-
-  public static final Column EMAIL = new Column()
-    .name("email")
-    .typeVarchar(1024);
-
-  public static final Users TABLE = new Users();
-
-  private Users() {
-    name("users");
-    column(ID);
-    column(FIRST_NAME);
-    column(LAST_NAME);
-    column(EMAIL);
+  interface Columns {
+    Column ID = new Column()
+      .name("id")
+      .typeVarchar(1024)
+      .primaryKey();
+    Column FIRST_NAME = new Column()
+        .name("firstName")
+        .typeVarchar(1024);
+    Column LAST_NAME = new Column()
+          .name("lastName")
+          .typeVarchar(1024);
+    Column EMAIL = new Column()
+            .name("email")
+            .typeVarchar(1024);
   }
 
   public static Stream<User> findAllUsers(Tx tx) {
-    return tx.newSelect(TABLE)
+    return tx.newSelect(TABLE_V2)
       .execute()
       .stream()
-      .map(Users::createUser);
+      .map(UsersDao::createUser);
   }
 
   private static User createUser(SelectResults selectResults) {
     return new User()
-      .id(selectResults.get(ID))
-      .firstName(selectResults.get(FIRST_NAME))
-      .lastName(selectResults.get(LAST_NAME))
-      .email(selectResults.get(EMAIL));
+      .id(selectResults.get(Columns.ID))
+      .firstName(selectResults.get(Columns.FIRST_NAME))
+      .lastName(selectResults.get(Columns.LAST_NAME))
+      .email(selectResults.get(Columns.EMAIL));
   }
 
   public static void insertUser(Tx tx, User user) {
-    tx.newInsert(TABLE)
-      .set(ID, user.getId())
-      .set(FIRST_NAME, user.getFirstName())
-      .set(LAST_NAME, user.getLastName())
-      .set(EMAIL, user.getEmail())
+    tx.newInsert(TABLE_V2)
+      .set(Columns.ID, user.getId())
+      .set(Columns.FIRST_NAME, user.getFirstName())
+      .set(Columns.LAST_NAME, user.getLastName())
+      .set(Columns.EMAIL, user.getEmail())
       .execute();
   }
 }

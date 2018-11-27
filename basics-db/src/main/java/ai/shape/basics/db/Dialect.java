@@ -18,7 +18,9 @@
  */
 package ai.shape.basics.db;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static ai.shape.magicless.app.util.Exceptions.assertNotEmptyCollection;
@@ -42,10 +44,23 @@ public class Dialect {
   public void buildCreateTableSql(SqlBuilder sql, CreateTable createTable) {
     sql.appendText("CREATE TABLE "+createTable.getTable().getName()+" (");
 
-    createTable.getTable().getColumns().values().stream()
-      .forEach(column-> appendCreateTableColumnSql(sql, column));
+    Collection<Column> columns = createTable.getTable().getColumns().values();
+    appendCreateTableColumnsSql(sql, columns);
 
     sql.appendText("\n);");
+  }
+
+  protected void appendCreateTableColumnsSql(SqlBuilder sql, Collection<Column> columns) {
+    boolean first = true;
+    for (Column column: columns) {
+      if (first) {
+        first = false;
+      } else {
+        sql.appendText(",");
+      }
+      sql.appendText("\n  ");
+      appendCreateTableColumnSql(sql, column);
+    }
   }
 
   protected void appendCreateTableColumnSql(SqlBuilder sql, Column column) {
@@ -53,7 +68,6 @@ public class Dialect {
     DataType type = column.getType();
     assertNotNull(type, "Column %d has type null", column.getIndex());
 
-    sql.appendText(column.getIndex()==0 ? "\n  " : ",\n  ");
     sql.appendText(column.getName() + " " + type.getSql());
 
     List<Constraint> constraints = column.getConstraints();
@@ -77,6 +91,14 @@ public class Dialect {
     if (dropTable.cascade) {
       sql.appendText(" CASCADE;");
     }
+  }
+
+  // ALTER TABLE //////////////////////////////////////////////////////////////////////////////////////////
+
+  public void buildAlterTableAddSql(SqlBuilder sql, AlterTableAdd alterTableAdd) {
+    sql.appendText("ALTER TABLE "+ alterTableAdd.getTable().getName()+" ADD (");
+    appendCreateTableColumnsSql(sql, alterTableAdd.getColumns());
+    sql.appendText("\n);");
   }
 
   // SELECT //////////////////////////////////////////////////////////////////////////////////////////
