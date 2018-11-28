@@ -20,18 +20,17 @@ package ai.shape.basics.db.schema;
 
 import ai.shape.basics.db.AlterTableAdd;
 import ai.shape.basics.db.Column;
+import ai.shape.basics.db.Db;
 import ai.shape.basics.db.Table;
 import ai.shape.magicless.app.container.Initialize;
 import ai.shape.magicless.app.container.Inject;
 import ai.shape.magicless.app.util.Time;
-import ai.shape.basics.db.Db;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ai.shape.basics.db.Condition.*;

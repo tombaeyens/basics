@@ -19,16 +19,13 @@
 package ai.shape.basics.db;
 
 import ai.shape.magicless.app.util.Exceptions;
-import ai.shape.magicless.app.util.Mutable;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static ai.shape.magicless.app.util.Exceptions.assertNotNull;
 import static ai.shape.magicless.app.util.Exceptions.exceptionWithCause;

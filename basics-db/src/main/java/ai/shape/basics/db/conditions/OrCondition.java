@@ -18,8 +18,8 @@
  */
 package ai.shape.basics.db.conditions;
 
-import ai.shape.basics.db.SqlBuilder;
 import ai.shape.basics.db.Condition;
+import ai.shape.basics.db.SqlBuilder;
 import ai.shape.basics.db.Statement;
 
 import java.util.ArrayList;

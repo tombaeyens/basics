@@ -19,7 +19,6 @@
 
 package ai.shape.magicless.app.util;
 
-import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.Map;
 

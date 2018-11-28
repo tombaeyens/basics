@@ -18,10 +18,10 @@
  */
 package ai.shape.basics.db;
 
-import ai.shape.magicless.app.util.Configuration;
 import ai.shape.basics.db.dialects.H2Dialect;
 import ai.shape.basics.db.dialects.MySQLDialect;
 import ai.shape.basics.db.dialects.PostgreSQLDialect;
+import ai.shape.magicless.app.util.Configuration;
 
 public class DbConfiguration {
 

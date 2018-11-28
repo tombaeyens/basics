@@ -20,7 +20,6 @@ package ai.shape.basics;
 
 import ai.shape.basics.db.Tx;
 import ai.shape.basics.db.schema.SchemaUpdate;
-import ai.shape.basics.tables.UsersDao;
 
 public class CreateUserTable implements SchemaUpdate {
 

@@ -18,8 +18,8 @@
  */
 package ai.shape.basics.db.schema;
 
-import ai.shape.basics.db.Table;
 import ai.shape.basics.db.Column;
+import ai.shape.basics.db.Table;
 
 /**
  * Contains the schema lock record and one record per {@link SchemaUpdate}

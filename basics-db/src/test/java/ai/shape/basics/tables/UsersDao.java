@@ -19,11 +19,7 @@
 package ai.shape.basics.tables;
 
 import ai.shape.basics.db.Column;
-import ai.shape.basics.db.SelectResults;
 import ai.shape.basics.db.Table;
-import ai.shape.basics.db.Tx;
-
-import java.util.stream.Stream;
 
 public class UsersDao extends Table {
 

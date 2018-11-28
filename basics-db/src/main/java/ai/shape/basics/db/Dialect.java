@@ -20,7 +20,6 @@ package ai.shape.basics.db;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static ai.shape.magicless.app.util.Exceptions.assertNotEmptyCollection;

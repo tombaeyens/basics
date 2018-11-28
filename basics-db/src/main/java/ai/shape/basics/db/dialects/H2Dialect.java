@@ -18,11 +18,11 @@
  */
 package ai.shape.basics.db.dialects;
 
-import ai.shape.magicless.app.util.Io;
 import ai.shape.basics.db.Column;
 import ai.shape.basics.db.DataType;
 import ai.shape.basics.db.Dialect;
 import ai.shape.basics.db.types.JsonType;
+import ai.shape.magicless.app.util.Io;
 
 import java.io.Reader;
 import java.io.StringReader;

@@ -24,9 +24,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ai.shape.basics.db.Db.DB_LOGGER;
 import static ai.shape.magicless.app.util.Exceptions.exceptionWithCause;
 import static ai.shape.magicless.app.util.Log.logLines;
-import static ai.shape.basics.db.Db.DB_LOGGER;
 
 public class Tx {
 
