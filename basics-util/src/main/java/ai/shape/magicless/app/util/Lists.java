@@ -26,6 +26,7 @@ import java.util.List;
 
 public class Lists {
 
+  @SuppressWarnings("varargs")
   @SafeVarargs
   public static <T> List<T> of(T... elements) {
     return arrayList(elements);

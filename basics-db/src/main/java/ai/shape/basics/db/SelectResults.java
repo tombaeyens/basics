@@ -23,10 +23,7 @@ import ai.shape.magicless.app.util.Mutable;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -34,6 +31,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static ai.shape.magicless.app.util.Exceptions.assertNotNull;
+import static ai.shape.magicless.app.util.Exceptions.exceptionWithCause;
 
 public class SelectResults {
 
@@ -50,34 +48,33 @@ public class SelectResults {
   }
 
   public <T> List<T> getAll(Function<SelectResults, T> mapper) {
-    return stream()
-      .map(mapper)
-      .collect(Collectors.toList());
+    List<T> rowObjects = new ArrayList<>();
+    while (resultSetNext()) {
+      T rowObject = mapper.apply(this);
+      rowObjects.add(rowObject);
+    }
+    this.selectLogger.logRows();
+    return rowObjects;
   }
 
   public <T> Optional<T> getFirst(Function<SelectResults, T> mapper) {
-    return stream()
-      .map(mapper)
-      .findFirst();
-  }
-
-  public boolean next() {
-    try {
-      boolean hasNext = resultSet.next();
-      selectLogger.nextRow(hasNext);
-      return hasNext;
-    } catch (SQLException e) {
-      throw Exceptions.exceptionWithCause("get next() on JDBC result set for select \n"+sql.getDebugInfo(), e);
+    this.selectLogger.logRowByRow();
+    T rowObject = null;
+    if (resultSetNext()) {
+      rowObject = mapper.apply(this);
     }
+    this.selectLogger.logRows();
+    return Optional.ofNullable(rowObject);
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T get(SelectField selectField) {
     if (selectField instanceof Column) {
       Column column = (Column) selectField;
       Integer index = select.getSelectorJdbcIndex(column);
       assertNotNull(index, "Could find index position of results "+column+" in select \n"+sql.getDebugInfo());
       DataType type = column.getType();
-      T value = type.getResultSetValue(index, resultSet);
+      T value = (T)type.getResultSetValue(index, resultSet);
       selectLogger.setValue(index-1, type.getLogText(value));
       return value;
     } else {
@@ -86,49 +83,45 @@ public class SelectResults {
     }
   }
 
-//  /** normally this is triggered automatically by the last .next() called on
-//   * which returns false.  But in case .next() is not called in a
-//   * while loop and never returns false, you can call this manually. */
-//  public void logResults() {
-//    selectLogger.logSelectResults();
-//  }
-
   /** loops over all the results and logs the results in a table structure.
    * @return the number of rows that were logged */
-  public long log() {
-    final Mutable<Long> count = new Mutable<Long>(0l);
-    stream().forEach(selectResults -> {
+  public long logAllRows() {
+    List<Object> nulls = getAll(selectResults -> {
       for (SelectField field: select.getFields()) {
         get(field);
-        count.set(count.get()+1);
       }
+      return null;
     });
-    return count.get();
+    return nulls.size();
   }
 
-  private class SelectResultsSpliterator extends Spliterators.AbstractSpliterator<SelectResults> {
-    public SelectResultsSpliterator() {
-      super(Long.MAX_VALUE,Spliterator.ORDERED);
+//  public Stream<SelectResults> stream() {
+//    return StreamSupport.stream(new SelectResultsSpliterator(), false);
+//  }
+//
+//  private class SelectResultsSpliterator extends Spliterators.AbstractSpliterator<SelectResults> {
+//    public SelectResultsSpliterator() {
+//      super(Long.MAX_VALUE,Spliterator.ORDERED);
+//    }
+//    @Override
+//    public boolean tryAdvance(Consumer<? super SelectResults> action) {
+//      boolean hasNext = resultSetNext();
+//      selectLogger.nextRow(hasNext);
+//      if (hasNext) {
+//        action.accept(SelectResults.this);
+//        return true;
+//      } else {
+//        return false;
+//      }
+//    }
+//  }
+  private boolean resultSetNext() {
+    try {
+      boolean hasNext = resultSet.next();
+      selectLogger.nextRow(hasNext);
+      return hasNext;
+    } catch (SQLException e) {
+      throw exceptionWithCause("get next() on JDBC result set for select \n"+sql.getDebugInfo(), e);
     }
-    @Override
-    public boolean tryAdvance(Consumer<? super SelectResults> action) {
-      if (next()) {
-        action.accept(SelectResults.this);
-        return true;
-      } else {
-        return false;
-      }
-    }
-    private boolean next() {
-      try {
-        return SelectResults.this.next();
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
-
-  public Stream<SelectResults> stream() {
-    return StreamSupport.stream(new SelectResultsSpliterator(),false);
   }
 }

@@ -38,21 +38,30 @@ public class Maps {
       this.key = key;
       this.value = value;
     }
+    public K getKey() {
+      return key;
+    }
+    public V getValue() {
+      return value;
+    }
   }
 
+  @SuppressWarnings("varargs")
   @SafeVarargs
   public static <K,V> HashMap<K,V> hashMap(Entry<K,V>... entries) {
-    return buildMap(new HashMap<K,V>(), entries);
+    return buildMap(new HashMap<>(), entries);
   }
 
+  @SuppressWarnings("varargs")
   @SafeVarargs
   public static <K,V> LinkedHashMap<K,V> linkedHashMap(Entry<K,V>... entries) {
-    return buildMap(new LinkedHashMap<K,V>(), entries);
+    return buildMap(new LinkedHashMap<>(), entries);
   }
 
+  @SuppressWarnings("varargs")
   @SafeVarargs
   public static <K,V> TreeMap<K,V> treeMap(Entry<K,V>... entries) {
-    return buildMap(new TreeMap<K,V>(), entries);
+    return buildMap(new TreeMap<>(), entries);
   }
 
   @SafeVarargs

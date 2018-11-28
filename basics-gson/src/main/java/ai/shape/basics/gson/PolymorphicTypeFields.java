@@ -43,8 +43,8 @@ public class PolymorphicTypeFields {
     // loops over all types in the inheritance chain to collects all fields
     // for the given type in a single list.  This is the list of fields that
     // will be used later when serializing and deserializing objects of the given type.
-    List<TypeToken> inheritanceTypes = getInheritanceTypes(type, typeResolver);
-    for (TypeToken inheritanceType: inheritanceTypes) {
+    List<TypeToken<?>> inheritanceTypes = getInheritanceTypes(type, typeResolver);
+    for (TypeToken<?> inheritanceType: inheritanceTypes) {
       Map<String,Type> actualTypeArguments = getActualTypeArguments(inheritanceType);
       scanFields(inheritanceType, actualTypeArguments, gson);
     }
@@ -70,7 +70,7 @@ public class PolymorphicTypeFields {
   }
 
   /** adds all declared fields in the given inheritanceType to the polymorphicFields member field */
-  private void scanFields(TypeToken inheritanceType, Map<String, Type> actualTypeArguments, Gson gson) {
+  private void scanFields(TypeToken<?> inheritanceType, Map<String, Type> actualTypeArguments, Gson gson) {
     Class<?> rawClass = inheritanceType.getRawType();
     for (Field field: rawClass.getDeclaredFields()) {
       int modifiers = field.getModifiers();
@@ -89,7 +89,7 @@ public class PolymorphicTypeFields {
   /** resolves generic type arguments in field types */
   private Type concretize(Type fieldType, Map<String, Type> actualTypeArguments) {
     if (fieldType instanceof TypeVariable) {
-      TypeVariable fieldTypeVariable = (TypeVariable) fieldType;
+      TypeVariable<?> fieldTypeVariable = (TypeVariable) fieldType;
       String genericTypeVariableName = fieldTypeVariable.getName();
       Type resolvedType = actualTypeArguments.get(genericTypeVariableName);
       if (resolvedType==null) {
@@ -118,8 +118,8 @@ public class PolymorphicTypeFields {
   /** list of types in the full inheritance chain of the given type, ordered from root base
    * type first, to most specific subtype (the given type) last.
    * This is used in the ordering of fields in the serialized json. */
-  private List<TypeToken> getInheritanceTypes(TypeToken<?> type, PolymorphicTypeResolver typeResolver) {
-    List<TypeToken> inheritenceTypes = new ArrayList<>();
+  private List<TypeToken<?>> getInheritanceTypes(TypeToken<?> type, PolymorphicTypeResolver typeResolver) {
+    List<TypeToken<?>> inheritenceTypes = new ArrayList<>();
     while (type!=null) {
       inheritenceTypes.add(0, type);
       Type superType = type.getRawType().getGenericSuperclass();

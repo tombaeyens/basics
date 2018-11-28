@@ -37,6 +37,8 @@ import java.util.Map;
  * and {@link #defaultResponseHeader(String, String)}. */
 public class RouterServlet extends HttpServlet {
 
+  private static final long serialVersionUID = 5826674732887125068L;
+
   static Logger log = LoggerFactory.getLogger(RouterServlet.class.getName()+".HTTP");
 
   /** maps methods to list of request paths */

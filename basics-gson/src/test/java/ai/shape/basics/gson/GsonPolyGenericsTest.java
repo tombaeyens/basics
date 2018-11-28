@@ -59,6 +59,7 @@ public class GsonPolyGenericsTest {
     R radius;
   }
 
+  @SuppressWarnings("rawtypes")
   @Ignore // TODO Fix testPolymorphicGenericReadCircle
   @Test
   public void testPolymorphicGenericReadCircle() {
@@ -79,12 +80,13 @@ public class GsonPolyGenericsTest {
 
     assertNotNull(circle);
     assertEquals(1, (int)circle.color);
-    assertEquals("2 meters", (String)circle.radius);
+    assertEquals("2 meters", circle.radius);
 
     String reserializedJson = gson.toJson(circle);
     assertEquals(originalJson, reserializedJson);
   }
 
+  @SuppressWarnings("rawtypes")
   @Test
   public void testPolymorphicGenericShape() {
     testShape(new TypeToken<GenericShape<Integer>>() {}.getType());

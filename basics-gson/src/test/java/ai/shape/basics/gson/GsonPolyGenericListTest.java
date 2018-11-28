@@ -75,7 +75,7 @@ public class GsonPolyGenericListTest {
     assertNotNull(circle);
     assertEquals(1, (int) circle.color.get(0));
     assertEquals(2, (int) circle.color.get(1));
-    assertEquals("2 meters", (String)circle.radius);
+    assertEquals("2 meters", circle.radius);
 
     String reserializedJson = gson.toJson(circle);
     assertEquals(originalJson, reserializedJson);

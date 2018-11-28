@@ -77,9 +77,9 @@ public class GsonPolyWildcardListTest {
     Shape shape = gson.fromJson(originalJson, type);
 
     assertNotNull(shape);
-    assertEquals(1, (int) ((RgBColor)shape.colors.get(0)).r);
-    assertEquals(2, (int) ((RgBColor)shape.colors.get(0)).g);
-    assertEquals(3, (int) ((RgBColor)shape.colors.get(0)).b);
+    assertEquals(1, ((RgBColor)shape.colors.get(0)).r);
+    assertEquals(2, ((RgBColor)shape.colors.get(0)).g);
+    assertEquals(3, ((RgBColor)shape.colors.get(0)).b);
 
     String reserializedJson = gson.toJson(shape);
     assertEquals(originalJson, reserializedJson);

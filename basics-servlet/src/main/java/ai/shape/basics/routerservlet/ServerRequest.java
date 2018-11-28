@@ -190,6 +190,7 @@ public class ServerRequest {
     this.requestObjects.put(key, value);
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T getContextObject(String key) {
     return requestObjects!=null ? (T) requestObjects.get(key) : null;
   }

@@ -387,7 +387,7 @@ public class Container {
     }
     Class<?> arrayType = classFilter != null ? classFilter : Object.class;
     T[] array = (T[]) Array.newInstance(arrayType, filteredComponents.size());
-    return (T[]) filteredComponents.toArray(array);
+    return filteredComponents.toArray(array);
   }
 
   public Object[] getAll() {

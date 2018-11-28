@@ -51,28 +51,4 @@ public class UsersDao extends Table {
             .name("email")
             .typeVarchar(1024);
   }
-
-  public static Stream<User> findAllUsers(Tx tx) {
-    return tx.newSelect(TABLE_V2)
-      .execute()
-      .stream()
-      .map(UsersDao::createUser);
-  }
-
-  private static User createUser(SelectResults selectResults) {
-    return new User()
-      .id(selectResults.get(Columns.ID))
-      .firstName(selectResults.get(Columns.FIRST_NAME))
-      .lastName(selectResults.get(Columns.LAST_NAME))
-      .email(selectResults.get(Columns.EMAIL));
-  }
-
-  public static void insertUser(Tx tx, User user) {
-    tx.newInsert(TABLE_V2)
-      .set(Columns.ID, user.getId())
-      .set(Columns.FIRST_NAME, user.getFirstName())
-      .set(Columns.LAST_NAME, user.getLastName())
-      .set(Columns.EMAIL, user.getEmail())
-      .execute();
-  }
 }

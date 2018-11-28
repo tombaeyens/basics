@@ -64,10 +64,10 @@ public class VarcharType implements DataType {
       }
 
       if (string!=null) {
-        // log.debug("Setting param "+i+" to string value "+string);
+        // logAllRows.debug("Setting param "+i+" to string value "+string);
         statement.setString(i, string);
       } else {
-        // log.debug("Setting param "+i+" to null");
+        // logAllRows.debug("Setting param "+i+" to null");
         statement.setNull(i, getSqlType());
       }
 

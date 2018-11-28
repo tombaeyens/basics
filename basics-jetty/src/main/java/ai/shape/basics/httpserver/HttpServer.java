@@ -74,6 +74,7 @@ public class HttpServer {
     return this;
   }
 
+  @SuppressWarnings("unchecked")
   public <T extends HttpServlet> T getServlet(Class<T> servletClass) {
     Optional<ServletHolder> servletHolder = Arrays.stream(servletHandler.getServlets())
       .filter(sh -> servletClass.isAssignableFrom(sh.getServletInstance().getClass()))

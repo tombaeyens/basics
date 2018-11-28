@@ -254,7 +254,7 @@ public class SchemaManager {
       }
     });
 
-    Set<String> dbSchemaUpdates = getDbSchemaUpdates();
+    List<String> dbSchemaUpdates = getDbSchemaUpdates();
     for (SchemaUpdate update: updates) {
       if (!dbSchemaUpdates.contains(update.getId())) {
         db.tx(tx->{
@@ -276,15 +276,13 @@ public class SchemaManager {
   }
 
   /** The SchemaUpdate IDs that already have been applied on the DB schema */
-  protected Set<String> getDbSchemaUpdates() {
+  protected List<String> getDbSchemaUpdates() {
     return db.tx(tx->{
       tx.setResult(
         tx.newSelect(Columns.ID)
           .where(equal(Columns.TYPE, TYPE_UPDATE))
           .execute()
-          .stream()
-          .map(selectResults->selectResults.get(Columns.ID))
-          .collect(Collectors.toSet()));
+          .getAll(selectResults->selectResults.get(Columns.ID)));
     });
   }
 

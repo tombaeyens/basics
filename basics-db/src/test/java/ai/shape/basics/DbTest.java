@@ -21,13 +21,10 @@ package ai.shape.basics;
 import ai.shape.basics.db.Db;
 import ai.shape.basics.db.DbConfiguration;
 import ai.shape.basics.db.schema.SchemaManager;
-import ai.shape.basics.tables.User;
 import ai.shape.basics.tables.UsersDao;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.UUID;
 
 public class DbTest {
 

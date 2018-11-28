@@ -31,14 +31,14 @@ public class Exceptions {
   /** throws a RuntimeException with message String.format(message,messageArgs) if the condition is false. */
   public static void assertTrue(boolean condition, String message, Object... messageArgs) {
     if (!condition) {
-      throw new RuntimeException(String.format(message, (Object[]) messageArgs));
+      throw new RuntimeException(String.format(message, messageArgs));
     }
   }
 
   /** throws a RuntimeException with message String.format(message,messageArgs) if o is null. */
   public static void assertNotNull(Object o, String message, Object... messageArgs) {
     if (o==null) {
-      throw new RuntimeException(String.format(message, (Object[]) messageArgs));
+      throw new RuntimeException(String.format(message, messageArgs));
     }
   }
 

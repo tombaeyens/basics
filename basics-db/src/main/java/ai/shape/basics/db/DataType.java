@@ -28,7 +28,7 @@ public interface DataType {
 
   void setParameter(PreparedStatement statement, int i, Object value);
 
-  <T> T getResultSetValue(int index, ResultSet resultSet);
+  Object getResultSetValue(int index, ResultSet resultSet);
 
   default String getLogText(Object value) {
     return value!=null ? value.toString() : "null";

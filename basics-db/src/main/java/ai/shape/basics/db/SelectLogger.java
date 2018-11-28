@@ -18,11 +18,30 @@
  */
 package ai.shape.basics.db;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
+
+import static ai.shape.basics.db.SelectLogger.LogMode.ALL_ROWS_AT_THE_END;
+import static ai.shape.basics.db.SelectLogger.LogMode.ROW_BY_ROW;
 
 public class SelectLogger {
+
+  enum LogMode {
+    /** ALL_ROWS_AT_THE_END is the default and used
+     * with {@link SelectResults#getAll(Function)}.
+     * It first collects all the values to calculate the column widths,
+     * Logging will be triggered when {@link ResultSet#next()}
+     * returns false. */
+    ALL_ROWS_AT_THE_END,
+
+    /** When getting a single result with {@link SelectResults#getFirst(Function)}
+     * We log each line individually.  Each time a line is logged, also the
+     * header is printed.  Normally there will only be 1 line logged.*/
+    ROW_BY_ROW
+  }
 
   static int MAX_COLUMN_LENGTH = 20;
 
@@ -30,30 +49,27 @@ public class SelectLogger {
   SelectResults selectResults;
   Select select;
   List<SelectField> fields;
-  List<String> fieldNames = new ArrayList<>();
-  List<Integer> maxColumnLengths = new ArrayList<>();
+  List<String> fieldNames = null;
+  List<Integer> maxColumnLengths = null;
   List<List<String>> rowValues = new ArrayList<>();
   String[] nextRow = null;
+  LogMode logMode = ALL_ROWS_AT_THE_END;
 
   public SelectLogger(SelectResults selectResults) {
     this.selectResults = selectResults;
     this.select = selectResults.select;
     this.tx = select.getTx();
     this.fields = select.getFields();
-    for (int i = 0; i<fields.size(); i++) {
-      SelectField field = fields.get(i);
-      String fieldName = field.getName();
-      maxColumnLengths.add(Math.min(fieldName.length(), MAX_COLUMN_LENGTH));
-      fieldNames.add(fieldName);
-    }
+  }
+
+  public void logRowByRow() {
+    logMode = ROW_BY_ROW;
   }
 
   public void nextRow(boolean hasNext) {
     if (hasNext) {
       flushNextRow();
-      nextRow = new String[fieldNames.size()];
-    } else {
-      logSelectResults();
+      nextRow = new String[select.getFields().size()];
     }
   }
 
@@ -64,20 +80,52 @@ public class SelectLogger {
       // and a null value has to be displayed
       for (int i=0; i<nextRow.length; i++) {
         if (nextRow[i]==null) {
-          selectResults.selectLogger.setValue(i, "?");
+          setValue(i, "?");
         }
       }
       rowValues.add(Arrays.asList(nextRow));
     }
   }
 
-  void logSelectResults() {
+  void logRows() {
+    // flushNextRow ensures proper max length calculation in case some values in a resultSet are not fetched
     flushNextRow();
 
-    // initialize the format and separatorLine
+    // Calculate colun widths and initialize the row format to something like this:
+    // |%-2s|%-5s|%-4s|%-8s|%4s|%4s|%-11s|%-12s|%-10s|%15s|%15s|
+    String rowFormat = getRowFormat();
+
+    // Build the appendText as plain appendText with newlines
+    StringBuilder tableText = new StringBuilder();
+
+    // Append header
+    String headersFormat = rowFormat.replace('|', '+');
+    String header = createRowLine(headersFormat, fieldNames).replace(' ','-');
+    tableText.append(header);
+
+    // Append rows
+    for (List<String> rowValues: rowValues) {
+      tableText.append("\n");
+      tableText.append(createRowLine(rowFormat, rowValues));
+    }
+
+    // Clean up the stuff we don't need any more
+    rowValues.clear(); // Normally not, but in theory it could be that more rows will be fetched and logged later
+    this.maxColumnLengths = null;
+    this.fieldNames = null;
+
+    // logAllRows the SQL results table with the tx prefix
+    tx.logSQL(tableText.toString());
+  }
+
+  /** creates a string format like eg
+   * |%-2s|%-5s|%-4s|%-8s|%4s|%4s|%-11s|%-12s|%-10s|%15s|%15s|
+   * based on the max width over all values in a column */
+  private String getRowFormat() {
     int rowLength = 1; // the starting |
     StringBuilder formatBuilder = new StringBuilder();
     formatBuilder.append("|");
+    ensureFieldNamesAndMaxColumnLengthsInitialized();
     for (int i=0; i<maxColumnLengths.size(); i++) {
       Integer columnLength = maxColumnLengths.get(i);
       rowLength += columnLength+1; // +1 for the | separator
@@ -88,19 +136,7 @@ public class SelectLogger {
       formatBuilder.append(columnLength);
       formatBuilder.append("s|");
     }
-    String format = formatBuilder.toString();
-
-    // Build the appendText as plain appendText with newlines
-    StringBuilder tableText = new StringBuilder();
-    String headersFormat = format.replace('|', '+');
-    String header = createRowLine(headersFormat, fieldNames).replace(' ','-');
-    tableText.append(header);
-    for (List<String> rowValues: rowValues) {
-      tableText.append("\n");
-      tableText.append(createRowLine(format, rowValues));
-    }
-    // log the SQL results table with the tx prefix
-    tx.logSQL(tableText.toString());
+    return formatBuilder.toString();
   }
 
   private String createRowLine(String format, List<String> rowValues) {
@@ -117,10 +153,26 @@ public class SelectLogger {
 
   /** arrayIndex starts from 0 (not from 1 like in JDBC) */
   public void setValue(Integer arrayIndex, String valueText) {
+    ensureFieldNamesAndMaxColumnLengthsInitialized();
     nextRow[arrayIndex] = valueText;
     Integer length = maxColumnLengths.get(arrayIndex);
     if (length < valueText.length()) {
       maxColumnLengths.set(arrayIndex, Math.min(valueText.length(), MAX_COLUMN_LENGTH));
     }
   }
+
+  private void ensureFieldNamesAndMaxColumnLengthsInitialized() {
+    if (fieldNames==null) {
+      this.maxColumnLengths = new ArrayList<>();
+      this.fieldNames = new ArrayList<>();
+      for (int i = 0; i<fields.size(); i++) {
+        SelectField field = fields.get(i);
+        String fieldName = field.getName();
+        maxColumnLengths.add(Math.min(fieldName.length(), MAX_COLUMN_LENGTH));
+        fieldNames.add(fieldName);
+      }
+    }
+  }
+
+
 }

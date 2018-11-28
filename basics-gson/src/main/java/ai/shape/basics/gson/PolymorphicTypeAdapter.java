@@ -57,14 +57,14 @@ public class PolymorphicTypeAdapter<T> extends TypeAdapter<T> {
   }
 
   /** creates a map that maps generic type argument names to type tokens */
-  private static Map<String, TypeToken> getActualTypeArguments(TypeToken<?> typeToken) {
+  private static Map<String, TypeToken<?>> getActualTypeArguments(TypeToken<?> typeToken) {
     Class<?> rawClass = typeToken.getRawType();
     Type type = typeToken.getType();
     TypeVariable<? extends Class<?>>[] typeParameters = rawClass.getTypeParameters();
     if (typeParameters==null || !(type instanceof ParameterizedType)) {
       return null;
     }
-    Map<String, TypeToken> genericTypes = new HashMap<>();
+    Map<String, TypeToken<?>> genericTypes = new HashMap<>();
     ParameterizedType parameterizedType = (ParameterizedType) type;
     Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
     for (int i=0; i<typeParameters.length; i++) {

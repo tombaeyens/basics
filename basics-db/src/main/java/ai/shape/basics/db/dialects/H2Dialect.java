@@ -59,6 +59,7 @@ public class H2Dialect extends Dialect {
       }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public String getResultSetValue(int index, ResultSet resultSet) {
       try {
