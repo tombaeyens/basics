@@ -18,6 +18,8 @@
  */
 package ai.shape.magicless.app.event;
 
+import ai.shape.magicless.app.util.Lists;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -33,7 +35,14 @@ public class EventDispatcher {
    * implements EventListener<MyEventClass> will
    * automatically filter on MyEventClass */
   public EventDispatcher add(EventListener<?> eventListener) {
-    eventListeners.add(new EventFilter(eventListener));
+    // We make a copy because we don't want to change the
+    // exising eventListeners list.  It's possible that this occurs
+    // inside a dispatch if some event handler adds a listener.
+    // And without the copy, we'ld get a ConcurrentModificationException.
+    // For performance reasons, we make the copy here instead of in the
+    // dispatch method itself.
+    this.eventListeners = new ArrayList<>(eventListeners);
+    this.eventListeners.add(new EventFilter(eventListener));
     return this;
   }
 
