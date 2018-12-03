@@ -78,7 +78,11 @@ public class PolymorphicTypeAdapter<T> extends TypeAdapter<T> {
   @Override
   public void write(JsonWriter out, T value) throws IOException {
     if (value!=null) {
-      PolymorphicTypeFields polymorphicTypeFields = polymorphicTypesByRawClass.get(value.getClass());
+      Class<?> valueClass = value.getClass();
+      PolymorphicTypeFields polymorphicTypeFields = polymorphicTypesByRawClass.get(valueClass);
+      if (polymorphicTypeFields==null) {
+        throw new RuntimeException("Type "+valueClass+" is not mapped");
+      }
       String typeName = polymorphicTypeFields.typeName;
       try {
         typeNameStrategy.write(out, typeName, this, value);
