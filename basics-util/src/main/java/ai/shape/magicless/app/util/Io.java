@@ -231,15 +231,27 @@ public class Io {
     }
   }
 
-  public static Writer createFileWriter(String fileName) {
+  public static FileWriter createFileWriter(String fileName) {
     return createFileWriter(new File(fileName));
   }
 
-  public static Writer createFileWriter(File file) {
+  public static FileWriter createFileWriter(File file) {
     try {
       return new FileWriter(file);
     } catch (IOException e) {
       throw Exceptions.exceptionWithCause("create file writer for "+file, e);
+    }
+  }
+
+  public static FileReader createFileReader(String fileName) {
+    return createFileReader(new File(fileName));
+  }
+
+  public static FileReader createFileReader(File file) {
+    try {
+      return new FileReader(file);
+    } catch (IOException e) {
+      throw Exceptions.exceptionWithCause("create file reader for "+file, e);
     }
   }
 
@@ -263,17 +275,17 @@ public class Io {
     void apply(T t) throws Exception;
   }
 
-  public static class WriterCloser {
+  public static class WriteBlock {
     String description;
     Writer writer;
-    public WriterCloser(Writer writer) {
+    public WriteBlock(Writer writer) {
       this.writer = writer;
     }
-    public WriterCloser description(String description) {
+    public WriteBlock description(String description) {
       this.description = description;
       return this;
     }
-    public void execute(CheckedFunction<Writer> function) {
+    public void write(CheckedFunction<Writer> function) {
       Exception exception = null;
       try {
         function.apply(writer);
@@ -294,8 +306,46 @@ public class Io {
     }
   }
 
-  public static WriterCloser flushAndClose(Writer writer) {
-    return new WriterCloser(writer);
+  public static WriteBlock to(Writer writer) {
+    return new WriteBlock(writer);
+  }
+
+  public interface CheckedFunctionWithResult<T,R> {
+    R apply(T t) throws Exception;
+  }
+
+  public static class ReadBlock {
+    String description;
+    Reader reader;
+    public ReadBlock(Reader reader) {
+      this.reader = reader;
+    }
+    public ReadBlock description(String description) {
+      this.description = description;
+      return this;
+    }
+    public <T> T read(CheckedFunctionWithResult<Reader,T> function) {
+      Exception exception = null;
+      try {
+        return function.apply(reader);
+      } catch (Exception e) {
+        throw Exceptions.exceptionWithCause(description, e);
+      } finally {
+        try {
+          reader.close();
+        } catch (IOException e) {
+          if (exception!=null) {
+            throw Exceptions.exceptionWithCause(description, exception);
+          } else {
+            throw Exceptions.exceptionWithCause(description, e);
+          }
+        }
+      }
+    }
+  }
+
+  public static ReadBlock from(Reader reader) {
+    return new ReadBlock(reader);
   }
 
   /** Be careful! */

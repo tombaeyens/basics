@@ -20,5 +20,5 @@ package ai.shape.magicless.app.container;
 
 public interface Factory {
 
-  Object create();
+  Object create(Container container);
 }

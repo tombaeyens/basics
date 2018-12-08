@@ -93,7 +93,7 @@ public class Container {
     }
     private Object getCreated() {
       if (componentState==ComponentState.NOT_CREATED) {
-        object = factory.create();
+        object = factory.create(Container.this);
       }
       componentState = ComponentState.CREATED;
       return object;
@@ -103,7 +103,7 @@ public class Container {
     }
     public boolean isInstanceOf(Class<?> classFilter) {
       return (object!=null && classFilter.isAssignableFrom(object.getClass()))
-             || (factoryObjectClass!=null && factoryObjectClass.isAssignableFrom(object.getClass()));
+             || (factoryObjectClass!=null && classFilter.isAssignableFrom(factoryObjectClass));
     }
     public String toString() {
       return object!=null ? object.getClass().getSimpleName() : factory!=null ? factory.getClass().getSimpleName() : "?";
@@ -365,7 +365,7 @@ public class Container {
           if (cause instanceof RuntimeException) {
             throw (RuntimeException) cause;
           }
-          throw Exceptions.exceptionWithCause(" execute initialize method " + method, cause);
+          throw Exceptions.exceptionWithCause(" write initialize method " + method, cause);
         }
       }
     }
