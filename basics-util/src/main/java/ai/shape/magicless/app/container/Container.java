@@ -114,33 +114,42 @@ public class Container {
     }
   }
 
-  public void add(Object object) {
+  public Container add(Object object) {
     if (object!=null) {
       Component component = new Component(object);
       addByClass(object.getClass(), component);
     }
+    return this;
   }
 
-  public void add(String name, Object object) {
+  public Container add(String name, Object object) {
     if (name!=null) {
       add(name, new Component(object));
     }
+    return this;
+  }
+
+  public Container addModule(Module module) {
+    module.add(this);
+    return this;
   }
 
   /**
    * add a factory to create an object of a given clazz when it is retrieved from
    * the container
    */
-  public void addFactory(Class<?> clazz, Factory factory) {
+  public Container addFactory(Class<?> clazz, Factory factory) {
     if (clazz!=null && factory!=null) {
       addByClass(clazz, new Component(clazz, factory));
     }
+    return this;
   }
 
-  public void addFactory(String name, Factory factory) {
+  public Container addFactory(String name, Factory factory) {
     if (name!=null && factory!=null) {
       add(name, new Component(null, factory));
     }
+    return this;
   }
 
   private void addByClass(Class<?> clazz, Component component) {
@@ -235,6 +244,12 @@ public class Container {
 
 
     return (T) object;
+  }
+
+  /** performs injections & calls @Initialize methods on the given object.
+   * The object is not added to the container. @Start methods are not invoked. */
+  public void initialize(Object object) {
+    initializeComponent(new Component(object));
   }
 
   /** returns true if the initialization path was initialized */

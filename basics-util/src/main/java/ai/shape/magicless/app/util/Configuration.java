@@ -27,19 +27,23 @@ public class Configuration {
   /** Loads configuration properties from resource file.
    * Overwrites existing configuration properties. */
   public void loadConfigurationFromResource(String resource) {
-    Io.loadPropertiesFromResource(properties, resource);
+    Io.loadPropertiesFromResource(this.properties, resource);
   }
 
   /** Loads configuration properties from file.
    * Overwrites existing configuration properties. */
   public void loadConfigurationFromFile(String fileName) {
-    Io.loadPropertiesFromFile(properties, fileName);
+    Io.loadPropertiesFromFile(this.properties, fileName);
   }
 
   /** Loads the System.getProperties().
    * Overwrites existing configuration properties */
   public void loadConfigurationFromSystemProperties() {
-    properties.putAll(System.getProperties());
+    this.properties.putAll(System.getProperties());
+  }
+
+  public void loadConfigurationFromProperties(Properties properties) {
+    this.properties.putAll(properties);
   }
 
   public String getString(String name) {
