@@ -99,7 +99,7 @@ public class Http {
     int PERMANENT_REDIRECT_308 = 308;
 
     int BAD_REQUEST_400 = 400;
-    int UNQUTHORIZED_401 = 401;
+    int UNAUTHORIZED_401 = 401;
     int PAYMENT_REQUIRED_402 = 402;
     int FORBIDDEN_403 = 403;
     int NOT_FOUND_404 = 404;

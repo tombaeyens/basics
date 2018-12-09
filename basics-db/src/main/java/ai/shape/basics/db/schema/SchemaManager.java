@@ -101,7 +101,9 @@ public class SchemaManager {
   public void dropSchema() {
     db.tx(tx->{
       for (int i=tables.size()-1; i>=0; i--) {
-        tx.newDropTable(tables.get(i)).execute();
+        tx.newDropTable(tables.get(i))
+          .ifExists()
+          .execute();
       }
     });
   }

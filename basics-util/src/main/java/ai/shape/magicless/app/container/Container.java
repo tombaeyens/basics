@@ -438,20 +438,29 @@ public class Container {
 
   public void stop() {
     if (containerState == ContainerState.STARTED) {
-      List<Object> stoppables = new ArrayList<>();
+      List<Component> stoppables = new ArrayList<>();
       for (Component component: components) {
         if (component.hasAnnotation(Stop.class)) {
-          boolean initializationPathCreated = initializationPathAdd(component);
-          try {
-            invoke(Stop.class, component.object);
-            component.componentState = ComponentState.INITIALIZED;
-
-          } finally {
-            initializationPathRemove(initializationPathCreated);
-          }
+          getOpt(component, "stoppable("+component+")");
+          stoppables.add(component);
         }
+      }
+      for (Component stoppable: stoppables) {
+        stop(stoppable);
       }
       containerState = ContainerState.NOT_STARTED;
     }
   }
+
+  private void stop(Component stoppable) {
+    boolean initializationPathCreated = initializationPathAdd(stoppable);
+    try {
+      invoke(Stop.class, stoppable.object);
+      stoppable.componentState = ComponentState.INITIALIZED;
+
+    } finally {
+      initializationPathRemove(initializationPathCreated);
+    }
+  }
+
 }
