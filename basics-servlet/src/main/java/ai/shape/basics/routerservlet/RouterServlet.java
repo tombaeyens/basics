@@ -64,7 +64,6 @@ public class RouterServlet extends HttpServlet {
         if (exceptionListener!=null) {
           exceptionListener.exception(request, response, e);
         }
-        if (log.isDebugEnabled()) log.debug(response.toString());
       } catch (Throwable e) {
         log.debug("Problem by "+requestHandler.getClass().getSimpleName()+" for request "+request.getPathInfo(), e);
         response.statusInternalServerError();

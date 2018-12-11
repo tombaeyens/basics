@@ -42,6 +42,7 @@ public class ServerResponse {
     this.response = response;
   }
 
+
   public ServerResponse statusOk() {
     return status(200);
   }
