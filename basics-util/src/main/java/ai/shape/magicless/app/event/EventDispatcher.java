@@ -19,6 +19,7 @@
 package ai.shape.magicless.app.event;
 
 import ai.shape.magicless.app.util.Lists;
+import org.slf4j.Logger;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -26,8 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ai.shape.magicless.app.util.Exceptions.assertTrue;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class EventDispatcher {
+
+  private static final Logger log = getLogger(EventDispatcher.class.getName());
 
   List<EventListener<Event>> eventListeners = new ArrayList<>();
 
@@ -48,7 +52,11 @@ public class EventDispatcher {
 
   public void dispatch(Event event) {
     for (EventListener<Event> eventListener: eventListeners) {
-      eventListener.event(event);
+      try {
+        eventListener.event(event);
+      } catch (Exception e) {
+        log.error("Event threw exception: "+e.toString(), e);
+      }
     }
   }
 

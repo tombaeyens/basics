@@ -30,10 +30,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.message.BasicHeaderValueParser;
 import org.apache.http.message.HeaderValueParser;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -139,7 +136,7 @@ public class ClientResponse {
       text.append("< ");
       text.append(status);
     }
-    if (body != null) {
+    if (body!=null) {
       text.append(NEWLINE);
       text.append(prefix);
       text.append("  ");
@@ -209,12 +206,33 @@ public class ClientResponse {
     return body;
   }
 
+  public void writeBodyTo(Writer writer) {
+    HttpEntity entity = apacheResponse.getEntity();
+    if (entity != null) {
+      try {
+        String charset = getContentTypeCharset("UTF-8");
+        InputStream content = entity.getContent();
+        Io.readFrom(new InputStreamReader(content, getContentTypeCharset("UTF-8")))
+          .description("read from response body")
+          .read(reader->{
+            Io.transfer(reader, writer);
+          });
+      } catch (Exception e) {
+        throw new RuntimeException("Couldn't ready body/entity from http request " + toString(), e);
+      }
+    }
+  }
+
   @SuppressWarnings("unchecked")
   public <T> T getBodyAs(Type type, Type... genericTypeArgs) {
     Type combinedType = genericTypeArgs!=null && genericTypeArgs.length>0
       ? new ParameterType(type, genericTypeArgs)
       : type;
-    return (T) request.getHttpClient().getSerializer().deserialize(body, combinedType);
+
+    return (T) request
+      .getHttpClient()
+      .getSerializer()
+      .deserialize(getBody(), combinedType);
   }
 
   @SuppressWarnings("unchecked")
@@ -281,9 +299,4 @@ public class ClientResponse {
     }
     return defaultCharset;
   }
-
-  public void setBody(String body) {
-    this.body = body;
-  }
-
 }

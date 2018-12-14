@@ -64,7 +64,7 @@ public class Io {
         stringBuilder.append(charBuffer, 0, numCharsRead);
       }
     } catch (IOException e) {
-      throw new RuntimeException("Couldn't read reader to string: "+e.toString(), e);
+      throw new RuntimeException("Couldn't read from reader: "+e.toString(), e);
     } finally {
       try {
         reader.close();
@@ -129,6 +129,7 @@ public class Io {
     }
   }
 
+  /** performs flush and close on the input stream */
   public static byte[] getBytes(InputStream inputStream) {
     if (inputStream==null) {
       return null;
@@ -144,7 +145,7 @@ public class Io {
       buffer.flush();
       return buffer.toByteArray();
     } catch (IOException e) {
-      exception = new RuntimeException("Couldn't read bytes from stream: "+e.getMessage(), e);
+      exception = new RuntimeException("Couldn't read chars from stream: "+e.getMessage(), e);
       throw exception;
     } finally {
       try {
@@ -156,6 +157,32 @@ public class Io {
           throw Exceptions.exceptionWithCause("close buffer", e);
         }
       }
+    }
+  }
+
+  /** does not perform flush and close on the input stream */
+  public static void transfer(Reader reader, Writer writer) {
+    transfer(reader, writer, 16384);
+  }
+
+  /** does not perform flush and close on the input stream */
+  public static void transfer(Reader reader, Writer writer, int bufferSize) {
+    if (reader==null) {
+      return;
+    }
+    if (writer==null) {
+      throw new RuntimeException("Writer is null and reader is not");
+    }
+    RuntimeException exception = null;
+    try {
+      int nRead;
+      char[] data = new char[bufferSize];
+      while ((nRead = reader.read(data, 0, data.length)) != -1) {
+        writer.write(data, 0, nRead);
+      }
+    } catch (IOException e) {
+      exception = new RuntimeException("Couldn't transfer chars from reader to writer: "+e.getMessage(), e);
+      throw exception;
     }
   }
 
@@ -306,7 +333,7 @@ public class Io {
     }
   }
 
-  public static WriteBlock to(Writer writer) {
+  public static WriteBlock writeTo(Writer writer) {
     return new WriteBlock(writer);
   }
 
@@ -324,7 +351,7 @@ public class Io {
       this.description = description;
       return this;
     }
-    public <T> T read(CheckedFunctionWithResult<Reader,T> function) {
+    public <T> T readWithResult(CheckedFunctionWithResult<Reader,T> function) {
       Exception exception = null;
       try {
         return function.apply(reader);
@@ -342,9 +369,27 @@ public class Io {
         }
       }
     }
+    public void read(CheckedFunction<Reader> function) {
+      Exception exception = null;
+      try {
+        function.apply(reader);
+      } catch (Exception e) {
+        throw Exceptions.exceptionWithCause(description, e);
+      } finally {
+        try {
+          reader.close();
+        } catch (IOException e) {
+          if (exception!=null) {
+            throw Exceptions.exceptionWithCause(description, exception);
+          } else {
+            throw Exceptions.exceptionWithCause(description, e);
+          }
+        }
+      }
+    }
   }
 
-  public static ReadBlock from(Reader reader) {
+  public static ReadBlock readFrom(Reader reader) {
     return new ReadBlock(reader);
   }
 
