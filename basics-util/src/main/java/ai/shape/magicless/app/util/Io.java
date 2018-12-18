@@ -298,6 +298,10 @@ public class Io {
     }
   }
 
+  public static boolean isDirectory(String fileName) {
+    return new File(fileName).isDirectory();
+  }
+
   public interface CheckedFunction<T> {
     void apply(T t) throws Exception;
   }

@@ -78,6 +78,7 @@ public class Http {
     String APPLICATION_LD_JSON = "application/ld+json";
     String TEXT_PLAIN = "text/plain";
     String TEXT_HTML = "text/html";
+    String FORM_URLENCODED = "application/x-www-form-urlencoded";
   }
 
   public interface ResponseCodes {

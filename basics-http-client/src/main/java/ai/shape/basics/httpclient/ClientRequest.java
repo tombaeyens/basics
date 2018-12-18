@@ -254,6 +254,12 @@ public class ClientRequest {
     return this;
   }
 
+
+  public ClientRequest headerContentTypeFormUrlEncoded() {
+    headerContentType(Http.ContentTypes.FORM_URLENCODED);
+    return this;
+  }
+
   public String getBody() {
     return body;
   }
