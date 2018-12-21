@@ -46,7 +46,9 @@ public class DbConfiguration {
   }
 
   public DbConfiguration driver(String driver) {
-    this.driver = driver;
+    if (driver!=null) {
+      this.driver = driver;
+    }
     return this;
   }
 
@@ -54,16 +56,14 @@ public class DbConfiguration {
     this.url = url;
     String dbType = getDbTypeTextFromUrl(url);
     if ("h2".equals(dbType)) {
-      if (dialect==null) dialect = H2Dialect.INSTANCE;
+      this.dialect = H2Dialect.INSTANCE;
+      if (driver==null) driver = "org.h2.Driver";
     } else if ("postgresql".equals(dbType)) {
       this.dialect = PostgreSQLDialect.INSTANCE;
       if (driver==null) driver = "org.postgresql.Driver";
     } else if ("mysql".equals(dbType)) {
       this.dialect = MySQLDialect.INSTANCE;
       if (driver==null) driver = "com.mysql.cj.jdbc.Driver";
-    }
-
-    if (dialect==null) {
     }
     return this;
   }

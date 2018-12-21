@@ -46,6 +46,11 @@ public class Db {
 
     try {
       ComboPooledDataSource dataSource = new ComboPooledDataSource();
+
+      DB_LOGGER.debug("driver  : "+dbConfiguration.getDriver());
+      DB_LOGGER.debug("url     : "+dbConfiguration.getUrl());
+      DB_LOGGER.debug("username: "+dbConfiguration.getUsername());
+
       this.dataSource = dataSource;
       dataSource.setDriverClass(dbConfiguration.getDriver()); //loads the jdbc driver
       dataSource.setJdbcUrl(dbConfiguration.getUrl());
