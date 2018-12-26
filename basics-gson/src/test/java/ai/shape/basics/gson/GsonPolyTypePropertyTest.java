@@ -42,13 +42,14 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class GsonPolyTypePropertyTest {
 
   // @formatter:off
   static Gson gson = new GsonBuilder().registerTypeAdapterFactory(new PolymorphicTypeAdapterFactory()
     .typePropertyName("type")
-    .typeName(new TypeToken<Shape>() {}, "shape")
+    .typeName(new TypeToken<Shape>() {}, null)
     .typeName(new TypeToken<Square>() {}, "square")
     .typeName(new TypeToken<Circle>() {}, "circle"))
   .create();
@@ -64,6 +65,17 @@ public class GsonPolyTypePropertyTest {
   }
 
   public static class Circle extends Shape {
+  }
+
+  @Test
+  public void testNullTypeName() {
+    String originalJson = JsonQuotes.quote(
+      "{}");
+    Shape shape = gson.fromJson(originalJson, Shape.class);
+    assertNotNull(shape);
+    assertNull(null, shape.color);
+    String reserializedJson = gson.toJson(shape);
+    assertEquals(originalJson, reserializedJson);
   }
 
   @Test

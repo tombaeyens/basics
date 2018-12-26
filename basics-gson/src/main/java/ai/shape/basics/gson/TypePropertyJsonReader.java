@@ -42,7 +42,7 @@ public class TypePropertyJsonReader extends JsonReader {
   String typePropertyName;
   List<TokenValue> cachedTokenValues;
   Integer cacheIndex = null;
-  String typeName;
+  String typeName = null;
 
   /** because the super class is not designed for reuse and its
    * constructor requires a non-null reader */
@@ -60,7 +60,8 @@ public class TypePropertyJsonReader extends JsonReader {
 
   public String readTypeName() {
     try {
-      while (nextPropertyNameIsNotType()) {
+      while (in.peek()!=JsonToken.END_OBJECT
+        && nextPropertyNameIsNotType()) {
         cacheValueTokens();
       }
       return typeName;
@@ -70,12 +71,14 @@ public class TypePropertyJsonReader extends JsonReader {
   }
 
   private boolean nextPropertyNameIsNotType() throws IOException {
-    String propertyName = in.nextName();
-    if (typePropertyName.equals(propertyName)) {
-      typeName = in.nextString();
-      return false;
-    } else {
-      addTokenToCache(new TokenValue(NAME, propertyName));
+    if (in.peek()==JsonToken.NAME) {
+      String propertyName = in.nextName();
+      if (typePropertyName.equals(propertyName)) {
+        typeName = in.nextString();
+        return false;
+      } else {
+        addTokenToCache(new TokenValue(NAME, propertyName));
+      }
     }
     return true;
   }
