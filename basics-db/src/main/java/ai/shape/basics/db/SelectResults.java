@@ -92,26 +92,6 @@ public class SelectResults {
     return nulls.size();
   }
 
-//  public Stream<SelectResults> stream() {
-//    return StreamSupport.stream(new SelectResultsSpliterator(), false);
-//  }
-//
-//  private class SelectResultsSpliterator extends Spliterators.AbstractSpliterator<SelectResults> {
-//    public SelectResultsSpliterator() {
-//      super(Long.MAX_VALUE,Spliterator.ORDERED);
-//    }
-//    @Override
-//    public boolean tryAdvance(Consumer<? super SelectResults> action) {
-//      boolean hasNext = resultSetNext();
-//      selectLogger.nextRow(hasNext);
-//      if (hasNext) {
-//        action.accept(SelectResults.this);
-//        return true;
-//      } else {
-//        return false;
-//      }
-//    }
-//  }
   private boolean resultSetNext() {
     try {
       boolean hasNext = resultSet.next();

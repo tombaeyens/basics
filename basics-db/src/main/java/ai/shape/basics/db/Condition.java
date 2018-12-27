@@ -44,6 +44,10 @@ public interface Condition {
     return new LikeCondition(column, pattern);
   }
 
+  public static Condition gte(Column column, Object value) {
+    return new GreaterThanOrEqualCondition(column, value);
+  }
+
   public static Condition in(Column column, List<?> values) {
     return new InCondition(column, values);
   }

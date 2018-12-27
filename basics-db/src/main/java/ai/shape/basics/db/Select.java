@@ -30,9 +30,10 @@ import static ai.shape.magicless.app.util.Exceptions.assertNotNullParameter;
 
 public class Select extends Statement {
 
-  List<SelectField> fields = new ArrayList<>();
-  List<Table> froms = new ArrayList<>();
-  OrderBy orderBy;
+  protected List<SelectField> fields = new ArrayList<>();
+  protected List<Table> froms = new ArrayList<>();
+  protected Integer limit;
+  protected OrderBy orderBy;
 
   public Select(Tx tx) {
     super(tx);
@@ -205,5 +206,14 @@ public class Select extends Statement {
       }
     }
     return null;
+  }
+
+  public Integer getLimit() {
+    return this.limit;
+  }
+
+  public Select limit(Integer limit) {
+    this.limit = limit;
+    return this;
   }
 }
