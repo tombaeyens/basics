@@ -75,6 +75,15 @@ public class Io {
     return stringBuilder.toString();
   }
 
+
+  public static Reader getResourceAsReader(String resource) {
+    return getResourceAsReader(resource, UTF8);
+  }
+
+  public static Reader getResourceAsReader(String resource, Charset charset) {
+    return new InputStreamReader(getResourceAsStream(resource), charset);
+  }
+
   public static String getResourceAsString(String resource) {
     return getResourceAsString(resource, UTF8);
   }
@@ -90,24 +99,6 @@ public class Io {
     } finally {
       closeResourceStream(resourceStream, exception);
     }
-  }
-
-  private static void closeResourceStream(InputStream resourceStream, Exception cause) {
-    try {
-      if (resourceStream!=null) {
-        resourceStream.close();
-      }
-    } catch (Exception e) {
-      if (cause != null) {
-        throw Exceptions.exceptionWithCause("close resource stream", cause);
-      } else {
-        throw Exceptions.exceptionWithCause("close resource stream", e);
-      }
-    }
-  }
-
-  public static boolean hasResource(String resource) {
-    return Io.class.getClassLoader().getResource(resource)!=null;
   }
 
   public static byte[] getResourceAsBytes(String resource) {
@@ -128,6 +119,30 @@ public class Io {
       closeResourceStream(resourceStream, exception);
     }
   }
+
+  public static InputStream getResourceAsStream(String resource) {
+    return Io.class.getClassLoader().getResourceAsStream(resource);
+  }
+
+  private static void closeResourceStream(InputStream resourceStream, Exception cause) {
+    try {
+      if (resourceStream!=null) {
+        resourceStream.close();
+      }
+    } catch (Exception e) {
+      if (cause != null) {
+        throw Exceptions.exceptionWithCause("close resource stream", cause);
+      } else {
+        throw Exceptions.exceptionWithCause("close resource stream", e);
+      }
+    }
+  }
+
+  public static boolean hasResource(String resource) {
+    return Io.class.getClassLoader().getResource(resource)!=null;
+  }
+
+
 
   /** performs flush and close on the input stream */
   public static byte[] getBytes(InputStream inputStream) {
@@ -184,10 +199,6 @@ public class Io {
       exception = new RuntimeException("Couldn't transfer chars from reader to writer: "+e.getMessage(), e);
       throw exception;
     }
-  }
-
-  public static InputStream getResourceAsStream(String resource) {
-    return Io.class.getClassLoader().getResourceAsStream(resource);
   }
 
   public static void loadPropertiesFromResource(Properties properties, String resource) {
