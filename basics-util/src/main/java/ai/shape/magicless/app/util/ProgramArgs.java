@@ -20,6 +20,7 @@
 package ai.shape.magicless.app.util;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /** basic program arguments parsing
  * Usage:
@@ -87,7 +88,8 @@ public class ProgramArgs {
   public static class Syntax {
     Map<String,Option> optionsByShortName = new HashMap<>();
     Map<String,Option> optionsByLongName = new HashMap<>();
-    public Syntax option(String shortName, String longName) {
+    List<Option> options = new ArrayList<>();
+    public Syntax option(String shortName, String longName, String description) {
       Option option = new Option()
         .shortName(shortName)
         .longName(longName);
@@ -97,6 +99,7 @@ public class ProgramArgs {
       if (longName!=null) {
         optionsByLongName.put(longName, option);
       }
+      options.add(option);
       return this;
     }
     Option getOption(String arg) {
@@ -117,11 +120,33 @@ public class ProgramArgs {
     public ProgramArgs parse(String[] args) {
       return new ProgramArgs(this, args);
     }
+
+    public String getOptionDocs() {
+      return getOptionDocs("");
+    }
+    public String getOptionDocs(String prefix) {
+      return options.stream()
+        .map(option->prefix+option.toDoc())
+        .collect(Collectors.joining("\n"));
+    }
   }
 
   private static class Option {
     protected String shortName;
     protected String longName;
+    protected String description;
+
+    public String getDescription() {
+      return this.description;
+    }
+    public void setDescription(String description) {
+      this.description = description;
+    }
+    public Option description(String description) {
+      this.description = description;
+      return this;
+    }
+
 
     public String getLongName() {
       return this.longName;
@@ -145,9 +170,22 @@ public class ProgramArgs {
       return this;
     }
 
+    public String toDoc() {
+      return Lists.of(
+        (shortName!=null ? "-"+shortName : null),
+        (longName!=null ? "--"+longName : null),
+        description)
+        .stream()
+        .filter(field -> field!=null)
+        .collect(Collectors.joining(" "));
+    }
   }
 
   public static Syntax syntax() {
     return new Syntax();
+  }
+
+  public String getOptionDocs() {
+    return syntax.getOptionDocs();
   }
 }
