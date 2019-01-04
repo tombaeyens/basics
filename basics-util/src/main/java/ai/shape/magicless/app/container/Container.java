@@ -52,7 +52,7 @@ public class Container {
   private static final Logger log = getLogger(Container.class.getName());
 
   private static enum ContainerState {
-    NOT_STARTED, STARTED
+    NOT_STARTED, STARTING, STARTED, STOPPING, STOPPED
   }
 
   /**
@@ -65,6 +65,8 @@ public class Container {
    * as they are added.
    */
   List<Component> components = new ArrayList<>();
+  List<Component> startables = new ArrayList<>();
+  List<Component> stoppables = new ArrayList<>();
 
   ContainerState containerState = ContainerState.NOT_STARTED;
 
@@ -73,7 +75,7 @@ public class Container {
 
   private static enum ComponentState {
     /** Ordering matters because .ordinal() is used on these enum values */
-    NOT_CREATED, CREATED, INITIALIZING, INITIALIZED, STARTED
+    NOT_CREATED, CREATED, INITIALIZING, INITIALIZED, STARTING, STARTED, STOPPING, STOPPED
   }
 
   private class Component {
@@ -175,6 +177,13 @@ public class Container {
   private void addComponent(Component component) {
     if (!containsComponent(component)) {
       components.add(component);
+
+      if (component.hasAnnotation(Start.class)) {
+        startables.add(component);
+      }
+      if (component.hasAnnotation(Stop.class)) {
+        stoppables.add(component);
+      }
 
       if (containerState== ContainerState.STARTED) {
         if (component.hasAnnotation(Start.class)) {
@@ -410,61 +419,52 @@ public class Container {
   }
 
   public void start() {
-    if (containerState == ContainerState.NOT_STARTED) {
-      List<Component> startables = new ArrayList<>();
-      for (Component component: components) {
-        if (component.hasAnnotation(Start.class)) {
-          getOpt(component, "startable("+component+")");
-          startables.add(component);
-        }
-      }
-      List<Component> started = new ArrayList<>();
+    if (containerState!=ContainerState.STARTED) {
+      containerState = ContainerState.STARTING;
       try {
+        List<Component> componentsToStart = new ArrayList<>();
         for (Component startable: startables) {
-          started.add(startable);
-          start(startable);
+          if (startable.componentState!=ComponentState.STARTED) {
+            // ensures startables are initialized
+            getOpt(startable, "startable("+startable+")");
+            componentsToStart.add(startable);
+          }
+        }
+        for (Component componentToStart: componentsToStart) {
+          start(componentToStart);
         }
         containerState = ContainerState.STARTED;
       } catch (RuntimeException e) {
-        // Stop the components that were already started
-        for (Component startedComponent: started) {
-          if (startedComponent.hasAnnotation(Stop.class)) {
-            try {
-              stop(startedComponent);
-            } catch (Exception e1) {
-              e1.printStackTrace();
-            }
-          }
-        }
+        stop();
         throw e;
       }
     }
   }
 
   private void start(Component startable) {
-    boolean initializationPathCreated = initializationPathAdd(startable);
-    try {
-      invoke(Start.class, startable.object);
-      startable.componentState = ComponentState.STARTED;
+    if (startable.componentState!=ComponentState.STARTED) {
+      boolean initializationPathStarted = initializationPathAdd(startable);
+      try {
+        startable.componentState = ComponentState.STARTING;
+        invoke(Start.class, startable.object);
+        startable.componentState = ComponentState.STARTED;
 
-    } finally {
-      initializationPathRemove(initializationPathCreated);
+      } finally {
+        initializationPathRemove(initializationPathStarted);
+      }
     }
   }
 
   public void stop() {
-    if (containerState == ContainerState.STARTED) {
-      List<Component> stoppables = new ArrayList<>();
-      for (Component component: components) {
-        if (component.hasAnnotation(Stop.class)) {
-          getOpt(component, "stoppable("+component+")");
-          stoppables.add(component);
+    if (containerState != ContainerState.STOPPED) {
+      containerState = ContainerState.STOPPING;
+      for (Component stoppable: stoppables) {
+        if (stoppable.componentState==ComponentState.STARTED
+            || stoppable.componentState==ComponentState.STARTING) {
+          stop(stoppable);
         }
       }
-      for (Component stoppable: stoppables) {
-        stop(stoppable);
-      }
-      containerState = ContainerState.NOT_STARTED;
+      containerState = ContainerState.STOPPED;
     }
   }
 
@@ -472,7 +472,7 @@ public class Container {
     boolean initializationPathCreated = initializationPathAdd(stoppable);
     try {
       invoke(Stop.class, stoppable.object);
-      stoppable.componentState = ComponentState.INITIALIZED;
+      stoppable.componentState = ComponentState.STOPPED;
 
     } finally {
       initializationPathRemove(initializationPathCreated);
