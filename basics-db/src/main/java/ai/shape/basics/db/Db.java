@@ -41,8 +41,8 @@ public class Db {
   protected String processRef;
 
   public Db(DbConfiguration dbConfiguration) {
-    assertNotNull(dbConfiguration.getUrl(), "Db url is null");
-    assertNotNull(dbConfiguration.getDialect(), "Db dialect is null for %s", dbConfiguration.getUrl());
+    assertNotNull(dbConfiguration.getUrl(), "shape.db.url is null");
+    assertNotNull(dbConfiguration.getDialect(), "Coudn't detect dialect from shape.db.url %s", dbConfiguration.getUrl());
 
     try {
       ComboPooledDataSource dataSource = new ComboPooledDataSource();
@@ -58,6 +58,7 @@ public class Db {
       dataSource.setPassword(dbConfiguration.getPassword());
       dataSource.setAcquireRetryAttempts(1);
       dataSource.setMinPoolSize(1);
+
       // the settings below are optional -- c3p0 can work with defaults
       // dataSource.setMinPoolSize(5);
       // dataSource.setAcquireIncrement(5);
@@ -134,4 +135,5 @@ public class Db {
   public String getProcess() {
     return processRef;
   }
+
 }

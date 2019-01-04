@@ -418,10 +418,26 @@ public class Container {
           startables.add(component);
         }
       }
-      for (Component startable: startables) {
-        start(startable);
+      List<Component> started = new ArrayList<>();
+      try {
+        for (Component startable: startables) {
+          started.add(startable);
+          start(startable);
+        }
+        containerState = ContainerState.STARTED;
+      } catch (RuntimeException e) {
+        // Stop the components that were already started
+        for (Component startedComponent: started) {
+          if (startedComponent.hasAnnotation(Stop.class)) {
+            try {
+              stop(startedComponent);
+            } catch (Exception e1) {
+              e1.printStackTrace();
+            }
+          }
+        }
+        throw e;
       }
-      containerState = ContainerState.STARTED;
     }
   }
 
