@@ -109,12 +109,22 @@ public class HttpClient {
     this.baseUrl = baseUrl;
   }
 
+  public HttpClient baseUrl(String baseUrl) {
+    this.baseUrl = baseUrl;
+    return this;
+  }
+
   public Serializer getSerializer() {
     return serializer;
   }
 
   public void setSerializer(Serializer serializer) {
     this.serializer = serializer;
+  }
+
+  public HttpClient serializer(Serializer serializer) {
+    this.serializer = serializer;
+    return this;
   }
 
   public CloseableHttpClient getApacheHttpClient() {
