@@ -28,7 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ai.shape.magicless.app.util.Exceptions.exceptionWithCause;
+import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
 public abstract class Statement {
 

@@ -18,9 +18,9 @@
  */
 package ai.shape.basics.httpserver;
 
-import ai.shape.magicless.app.container.Start;
-import ai.shape.magicless.app.container.Stop;
-import ai.shape.magicless.app.util.Exceptions;
+import ai.shape.basics.util.container.Start;
+import ai.shape.basics.util.container.Stop;
+import ai.shape.basics.util.Exceptions;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.FilterHolder;

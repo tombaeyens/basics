@@ -18,7 +18,7 @@
  */
 package ai.shape.basics.db;
 
-import ai.shape.magicless.app.util.Exceptions;
+import ai.shape.basics.util.Exceptions;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static ai.shape.magicless.app.util.Exceptions.assertNotNull;
-import static ai.shape.magicless.app.util.Exceptions.exceptionWithCause;
+import static ai.shape.basics.util.Exceptions.assertNotNull;
+import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
 public class SelectResults {
 

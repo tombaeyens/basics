@@ -27,6 +27,7 @@ import ai.shape.basics.db.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class AndCondition implements Condition {
@@ -34,7 +35,10 @@ public class AndCondition implements Condition {
   List<Condition> andConditions;
 
   public AndCondition(Condition[] andConditions) {
-    this.andConditions = new ArrayList<>(Arrays.asList(andConditions));
+    this.andConditions = new ArrayList<>(Arrays
+      .stream(andConditions)
+      .filter(condition->condition!=null)
+      .collect(Collectors.toList()));
   }
 
   @Override

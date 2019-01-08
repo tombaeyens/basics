@@ -18,7 +18,7 @@
  */
 package ai.shape.basics.routerservlet;
 
-import ai.shape.magicless.app.util.Http;
+import ai.shape.basics.util.Http;
 
 /** RequestHandler's must be thread safe.  Meaning that one request handler will be used
  * to handle all the request in a RouterServlet */

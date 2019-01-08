@@ -19,8 +19,8 @@
 
 package ai.shape.basics.httpclient;
 
-import ai.shape.magicless.app.util.Http;
-import ai.shape.magicless.app.util.Log;
+import ai.shape.basics.util.Http;
+import ai.shape.basics.util.Log;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static ai.shape.magicless.app.util.Os.NEWLINE;
+import static ai.shape.basics.util.Os.NEWLINE;
 
 /** Synchronous HTTP client request builder. */
 public class ClientRequest {

@@ -18,7 +18,7 @@
  */
 package ai.shape.basics.db;
 
-import ai.shape.magicless.app.util.Reflection;
+import ai.shape.basics.util.Reflection;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;

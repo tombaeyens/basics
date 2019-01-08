@@ -22,7 +22,7 @@ package ai.shape.basics.db;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ai.shape.magicless.app.util.Exceptions.assertNotNullParameter;
+import static ai.shape.basics.util.Exceptions.assertNotNullParameter;
 
 public class Update extends Statement {
 

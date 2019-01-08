@@ -19,7 +19,7 @@
 package ai.shape.basics.routerservlet;
 
 
-import ai.shape.magicless.app.util.Http;
+import ai.shape.basics.util.Http;
 
 public abstract class PathRequestHandler implements RequestHandler {
 

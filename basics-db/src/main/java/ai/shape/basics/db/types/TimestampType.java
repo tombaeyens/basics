@@ -25,7 +25,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import static ai.shape.magicless.app.util.Exceptions.exceptionWithCause;
+import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class TimestampType implements DataType {

@@ -19,7 +19,7 @@
 
 package ai.shape.magicless.app.test;
 
-import ai.shape.magicless.app.util.Lists;
+import ai.shape.basics.util.Lists;
 import org.junit.Test;
 
 import java.util.HashMap;

@@ -22,8 +22,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import static ai.shape.magicless.app.util.Exceptions.assertNotEmptyCollection;
-import static ai.shape.magicless.app.util.Exceptions.assertNotNull;
+import static ai.shape.basics.util.Exceptions.assertNotEmptyCollection;
+import static ai.shape.basics.util.Exceptions.assertNotNull;
 import static java.util.stream.Collectors.joining;
 
 public class Dialect {

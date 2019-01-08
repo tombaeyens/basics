@@ -18,7 +18,7 @@
  */
 package ai.shape.basics.httpclient;
 
-import ai.shape.magicless.app.util.Http;
+import ai.shape.basics.util.Http;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-import static ai.shape.magicless.app.util.Exceptions.exceptionWithCause;
+import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
 /** Fluent, synchronous HTTP client based on Apache Http Components.
  *
@@ -101,17 +101,22 @@ public class HttpClient {
     }
   }
 
-  public String getBaseUrl() {
-    return baseUrl;
-  }
-
   public void setBaseUrl(String baseUrl) {
-    this.baseUrl = baseUrl;
+    if (baseUrl!=null) {
+      this.baseUrl = baseUrl + (baseUrl.endsWith("/") ? "" : "/");
+    } else {
+      this.baseUrl = null;
+    }
   }
 
   public HttpClient baseUrl(String baseUrl) {
-    this.baseUrl = baseUrl;
+    setBaseUrl(baseUrl);
     return this;
+  }
+
+
+  public String getBaseUrl() {
+    return baseUrl;
   }
 
   public Serializer getSerializer() {

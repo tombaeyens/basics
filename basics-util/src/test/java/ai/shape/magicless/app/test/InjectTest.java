@@ -18,8 +18,8 @@
  */
 package ai.shape.magicless.app.test;
 
-import ai.shape.magicless.app.container.Container;
-import ai.shape.magicless.app.container.Inject;
+import ai.shape.basics.util.container.Container;
+import ai.shape.basics.util.container.Inject;
 import org.hamcrest.core.IsSame;
 import org.junit.Test;
 

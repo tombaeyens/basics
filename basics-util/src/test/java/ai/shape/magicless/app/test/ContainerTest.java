@@ -18,10 +18,10 @@
  */
 package ai.shape.magicless.app.test;
 
-import ai.shape.magicless.app.container.Container;
-import ai.shape.magicless.app.container.Initialize;
-import ai.shape.magicless.app.container.Start;
-import ai.shape.magicless.app.container.Stop;
+import ai.shape.basics.util.container.Container;
+import ai.shape.basics.util.container.Initialize;
+import ai.shape.basics.util.container.Start;
+import ai.shape.basics.util.container.Stop;
 import org.junit.Test;
 
 import java.util.HashMap;

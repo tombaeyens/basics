@@ -29,8 +29,8 @@ import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static ai.shape.magicless.app.util.Exceptions.assertNotNull;
-import static ai.shape.magicless.app.util.Exceptions.exceptionWithCause;
+import static ai.shape.basics.util.Exceptions.assertNotNull;
+import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
 public class Db {
 

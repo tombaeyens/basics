@@ -18,15 +18,15 @@
  */
 package ai.shape.basics.db;
 
-import ai.shape.magicless.app.util.Io;
+import ai.shape.basics.util.Io;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 import static ai.shape.basics.db.Db.DB_LOGGER;
-import static ai.shape.magicless.app.util.Exceptions.exceptionWithCause;
-import static ai.shape.magicless.app.util.Log.logLines;
+import static ai.shape.basics.util.Exceptions.exceptionWithCause;
+import static ai.shape.basics.util.Log.logLines;
 
 public class Tx {
 

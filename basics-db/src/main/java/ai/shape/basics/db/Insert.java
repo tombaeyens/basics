@@ -21,8 +21,8 @@ package ai.shape.basics.db;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ai.shape.magicless.app.util.Exceptions.assertNotNull;
-import static ai.shape.magicless.app.util.Exceptions.assertSame;
+import static ai.shape.basics.util.Exceptions.assertNotNull;
+import static ai.shape.basics.util.Exceptions.assertSame;
 
 public class Insert extends Statement {
 

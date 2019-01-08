@@ -25,7 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static ai.shape.magicless.app.util.Exceptions.exceptionWithCause;
+import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class VarcharType implements DataType {

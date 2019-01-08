@@ -25,8 +25,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static ai.shape.magicless.app.util.Exceptions.assertNotNull;
-import static ai.shape.magicless.app.util.Exceptions.assertNotNullParameter;
+import static ai.shape.basics.util.Exceptions.assertNotNull;
+import static ai.shape.basics.util.Exceptions.assertNotNullParameter;
 
 public class Select extends Statement {
 

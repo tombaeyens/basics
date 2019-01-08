@@ -18,10 +18,10 @@
  */
 package ai.shape.basics.httpclient;
 
-import ai.shape.magicless.app.util.Http;
-import ai.shape.magicless.app.util.Io;
-import ai.shape.magicless.app.util.Log;
-import ai.shape.magicless.app.util.ParameterType;
+import ai.shape.basics.util.Http;
+import ai.shape.basics.util.Io;
+import ai.shape.basics.util.Log;
+import ai.shape.basics.util.ParameterType;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static ai.shape.magicless.app.util.Os.NEWLINE;
+import static ai.shape.basics.util.Os.NEWLINE;
 
 
 /** Obtain a response by starting from the {@link HttpClient} object

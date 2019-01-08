@@ -19,7 +19,7 @@
 
 package ai.shape.basics.db;
 
-import static ai.shape.magicless.app.util.Exceptions.assertNotNullParameter;
+import static ai.shape.basics.util.Exceptions.assertNotNullParameter;
 
 public class Delete extends Statement {
 

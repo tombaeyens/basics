@@ -22,7 +22,7 @@ import ai.shape.basics.db.Column;
 import ai.shape.basics.db.DataType;
 import ai.shape.basics.db.Dialect;
 import ai.shape.basics.db.types.JsonType;
-import ai.shape.magicless.app.util.Io;
+import ai.shape.basics.util.Io;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -30,7 +30,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static ai.shape.magicless.app.util.Exceptions.exceptionWithCause;
+import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
 public class H2Dialect extends Dialect {
 

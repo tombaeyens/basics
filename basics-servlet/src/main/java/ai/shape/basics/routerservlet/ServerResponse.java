@@ -18,7 +18,7 @@
  */
 package ai.shape.basics.routerservlet;
 
-import ai.shape.magicless.app.util.Http;
+import ai.shape.basics.util.Http;
 import org.slf4j.Logger;
 
 import javax.servlet.ServletOutputStream;

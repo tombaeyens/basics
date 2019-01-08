@@ -18,15 +18,15 @@
  */
 package ai.shape.basics.routerservlet;
 
-import ai.shape.magicless.app.util.Http;
-import ai.shape.magicless.app.util.Io;
-import ai.shape.magicless.app.util.Sets;
+import ai.shape.basics.util.Http;
+import ai.shape.basics.util.Io;
+import ai.shape.basics.util.Sets;
 
 import java.util.Map;
 import java.util.Set;
 
-import static ai.shape.magicless.app.util.Maps.entry;
-import static ai.shape.magicless.app.util.Maps.hashMap;
+import static ai.shape.basics.util.Maps.entry;
+import static ai.shape.basics.util.Maps.hashMap;
 
 
 public class ResourceRequestHandler implements RequestHandler {

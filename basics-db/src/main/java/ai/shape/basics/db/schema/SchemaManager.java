@@ -22,9 +22,9 @@ import ai.shape.basics.db.AlterTableAdd;
 import ai.shape.basics.db.Column;
 import ai.shape.basics.db.Db;
 import ai.shape.basics.db.Table;
-import ai.shape.magicless.app.container.Initialize;
-import ai.shape.magicless.app.container.Inject;
-import ai.shape.magicless.app.util.Time;
+import ai.shape.basics.util.container.Initialize;
+import ai.shape.basics.util.container.Inject;
+import ai.shape.basics.util.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
