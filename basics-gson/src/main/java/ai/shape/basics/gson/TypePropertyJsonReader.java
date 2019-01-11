@@ -23,7 +23,6 @@ import com.google.gson.stream.JsonToken;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +45,15 @@ public class TypePropertyJsonReader extends JsonReader {
 
   /** because the super class is not designed for reuse and its
    * constructor requires a non-null reader */
-  private static Reader BOGUS_NON_NULL_READER = new StringReader("");
+  private static Reader BOGUS_NON_NULL_READER = new Reader() {
+    @Override
+    public int read(char[] cbuf, int off, int len) throws IOException {
+      throw new RuntimeException("OOPS");
+    }
+    @Override
+    public void close() throws IOException {
+    }
+  };
 
   /** @param in is assumed to be in a position where it just has already
    *            begun reading the object: in.beginObject() already has been
@@ -60,8 +67,8 @@ public class TypePropertyJsonReader extends JsonReader {
 
   public String readTypeName() {
     try {
-      while (in.peek()!=JsonToken.END_OBJECT
-        && nextPropertyNameIsNotType()) {
+      while ( in.peek()!=JsonToken.END_OBJECT
+              && nextPropertyNameIsNotType() ) {
         cacheValueTokens();
       }
       return typeName;
@@ -320,6 +327,14 @@ public class TypePropertyJsonReader extends JsonReader {
 
   @Override
   public String getPath() {
-    throw new UnsupportedOperationException();
+    try {
+      if (cacheHasMoreTokens()) {
+        return peek().toString();
+      } else {
+        return in.getPath();
+      }
+    } catch (IOException e) {
+      return "?";
+    }
   }
 }

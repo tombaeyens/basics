@@ -174,7 +174,7 @@ public class Tx {
 
   /** Shortcut for: select * from table */
   public Select newSelect(Table table) {
-    return new Select(this).fields(table);
+    return new Select(this).from(table);
   }
 
   public Update newUpdate(Table table) {

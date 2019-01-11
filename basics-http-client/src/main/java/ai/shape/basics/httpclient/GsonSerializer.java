@@ -20,6 +20,7 @@ package ai.shape.basics.httpclient;
 
 import com.google.gson.Gson;
 
+import java.io.StringReader;
 import java.lang.reflect.Type;
 
 public class GsonSerializer implements Serializer {

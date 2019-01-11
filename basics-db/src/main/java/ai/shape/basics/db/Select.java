@@ -45,6 +45,11 @@ public class Select extends Statement {
   }
 
   public SelectResults execute() {
+    froms.forEach(from->{
+      if (!hasFields(from)) {
+        fields(from);
+      }
+    });
     if (froms.size()>1)  {
       if (fields.stream().allMatch(field->field instanceof Column)) {
         Set<String> aliases = new HashSet<>();
@@ -60,6 +65,15 @@ public class Select extends Statement {
     }
 
     return executeQuery();
+  }
+
+  private boolean hasFields(Table table) {
+    for (SelectField field: fields) {
+      if (field instanceof Column && ((Column)field).getTable()==table) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private String findNextAlias(Set<String> aliases) {
