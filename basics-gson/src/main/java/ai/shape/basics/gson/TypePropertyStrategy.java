@@ -30,7 +30,7 @@ public class TypePropertyStrategy implements PolymorphicTypeNameStrategy {
   }
 
   @Override
-  public Object read(JsonReader in, PolymorphicTypeAdapter<?> typeAdapter) throws Exception{
+  public Object read(JsonReader in, PolymorphicTypeAdapter<?> typeAdapter) throws Exception {
     TypePropertyJsonReader typeIn = new TypePropertyJsonReader(in, typePropertyName);
     FieldsReader fieldsReader = new FieldsReader(typeIn, typeAdapter);
     in.beginObject();

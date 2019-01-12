@@ -18,6 +18,7 @@
  */
 package ai.shape.basics.gson;
 
+import com.google.gson.internal.JsonReaderInternalAccess;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
@@ -45,10 +46,10 @@ public class TypePropertyJsonReader extends JsonReader {
 
   /** because the super class is not designed for reuse and its
    * constructor requires a non-null reader */
-  private static Reader BOGUS_NON_NULL_READER = new Reader() {
+  private static Reader THROWING_READER = new Reader() {
     @Override
     public int read(char[] cbuf, int off, int len) throws IOException {
-      throw new RuntimeException("OOPS");
+      throw new RuntimeException("BUG: This reader should not be accessed");
     }
     @Override
     public void close() throws IOException {
@@ -60,9 +61,15 @@ public class TypePropertyJsonReader extends JsonReader {
    *            called.  And it is assumed that in.endObject() is also called
    *            by the caller. */
   public TypePropertyJsonReader(JsonReader in, String typePropertyName) {
-    super(BOGUS_NON_NULL_READER);
+    super(THROWING_READER);
     this.in = in;
     this.typePropertyName = typePropertyName;
+    // log.debug("Creating "+System.identityHashCode(this)+", delegates to "+System.identityHashCode(in));
+  }
+
+  protected <T> T logDelegation(T value, String methodName) {
+    // log.debug(System.identityHashCode(this)+" delegated "+methodName+" to "+System.identityHashCode(in)+": "+value);
+    return value;
   }
 
   public String readTypeName() {
@@ -114,10 +121,14 @@ public class TypePropertyJsonReader extends JsonReader {
     }
     cacheIndex = 0;
     cachedTokenValues.add(tokenValue);
-    // log.debug("Added to cache "+tokenValue);
+    // log.debug("Caching "+tokenValue+" "+" "+System.identityHashCode(this)+in);
   }
 
   private void cacheValueTokens() throws IOException {
+    cacheValueTokens(0);
+  }
+
+  private void cacheValueTokens(int level) throws IOException {
     JsonToken jsonToken = in.peek();
     switch (jsonToken) {
       case STRING:
@@ -133,30 +144,30 @@ public class TypePropertyJsonReader extends JsonReader {
         addTokenToCache(new TokenValue(jsonToken, null));
         break;
       case BEGIN_OBJECT:
-        cacheObject();
+        cacheObject(level);
         break;
       case BEGIN_ARRAY:
-        cacheArray();
+        cacheArray(level);
         break;
     }
   }
 
-  private void cacheObject() throws IOException {
+  private void cacheObject(int level) throws IOException {
     in.beginObject();
     addTokenToCache(new TokenValue(BEGIN_OBJECT, null));
     while (in.peek()!=END_OBJECT) {
       addTokenToCache(new TokenValue(NAME, in.nextName()));
-      cacheValueTokens();
+      cacheValueTokens(level+1);
     }
     in.endObject();
     addTokenToCache(new TokenValue(END_OBJECT, null));
   }
 
-  private void cacheArray() throws IOException {
+  private void cacheArray(int level) throws IOException {
     in.beginArray();
     addTokenToCache(new TokenValue(BEGIN_ARRAY, null));
     while (in.peek()!=END_ARRAY) {
-      cacheValueTokens();
+      cacheValueTokens(level+1);
     }
     in.endArray();
     addTokenToCache(new TokenValue(END_ARRAY, null));
@@ -167,7 +178,7 @@ public class TypePropertyJsonReader extends JsonReader {
     if (cacheHasMoreTokens()) {
       return cachedTokenValues.get(cacheIndex).getTokenType();
     } else {
-      return in.peek();
+      return logDelegation(in.peek(), "peek");
     }
   }
 
@@ -180,7 +191,7 @@ public class TypePropertyJsonReader extends JsonReader {
       JsonToken nextTokenType = peek();
       return nextTokenType!=END_ARRAY && nextTokenType!= END_OBJECT;
     } else {
-      return in.hasNext();
+      return logDelegation(in.hasNext(), "hasNext");
     }
   }
 
@@ -189,7 +200,7 @@ public class TypePropertyJsonReader extends JsonReader {
     if (cacheHasMoreTokens()) {
       return (String) consumeNextFromCache(NAME);
     } else {
-      return in.nextName();
+      return logDelegation(in.nextName(), "nextName");
     }
   }
 
@@ -198,7 +209,7 @@ public class TypePropertyJsonReader extends JsonReader {
     if (cacheHasMoreTokens()) {
       return (String) consumeNextFromCache(STRING);
     } else {
-      return in.nextString();
+      return logDelegation(in.nextString(), "nextString");
     }
   }
 
@@ -207,7 +218,7 @@ public class TypePropertyJsonReader extends JsonReader {
     if (cacheHasMoreTokens()) {
       return (boolean) consumeNextFromCache(BOOLEAN);
     } else {
-      return in.nextBoolean();
+      return logDelegation(in.nextBoolean(), "nextBoolean");
     }
   }
 
@@ -217,6 +228,7 @@ public class TypePropertyJsonReader extends JsonReader {
       consumeNextFromCache(NULL);
     } else {
       in.nextNull();
+      logDelegation("", "nextNull");
     }
   }
 
@@ -226,7 +238,7 @@ public class TypePropertyJsonReader extends JsonReader {
       Number number = (Number) consumeNextFromCache(NUMBER);
       return number.doubleValue();
     } else {
-      return in.nextDouble();
+      return logDelegation(in.nextDouble(), "nextDouble");
     }
   }
 
@@ -236,7 +248,7 @@ public class TypePropertyJsonReader extends JsonReader {
       Number number = (Number) consumeNextFromCache(NUMBER);
       return number.longValue();
     } else {
-      return in.nextLong();
+      return logDelegation(in.nextLong(), "nextLong");
     }
   }
 
@@ -246,7 +258,7 @@ public class TypePropertyJsonReader extends JsonReader {
       Number number = (Number) consumeNextFromCache(NUMBER);
       return number.intValue();
     } else {
-      return in.nextInt();
+      return logDelegation(in.nextInt(), "nextInt");
     }
   }
 
@@ -256,6 +268,7 @@ public class TypePropertyJsonReader extends JsonReader {
       consumeNextFromCache(null);
     } else {
       in.skipValue();
+      logDelegation("", "skipValue");
     }
   }
 
@@ -265,6 +278,7 @@ public class TypePropertyJsonReader extends JsonReader {
       consumeNextFromCache(BEGIN_ARRAY);
     } else {
       in.beginArray();
+      logDelegation("", "beginArray");
     }
   }
 
@@ -274,6 +288,7 @@ public class TypePropertyJsonReader extends JsonReader {
       consumeNextFromCache(END_ARRAY);
     } else {
       in.endArray();
+      logDelegation("", "endArray");
     }
   }
 
@@ -283,6 +298,7 @@ public class TypePropertyJsonReader extends JsonReader {
       consumeNextFromCache(BEGIN_OBJECT);
     } else {
       in.beginObject();
+      logDelegation("", "beginObject");
     }
   }
 
@@ -292,6 +308,7 @@ public class TypePropertyJsonReader extends JsonReader {
       consumeNextFromCache(END_OBJECT);
     } else {
       in.endObject();
+      logDelegation("", "endObject");
     }
   }
 
@@ -301,6 +318,7 @@ public class TypePropertyJsonReader extends JsonReader {
 
   private Object consumeNextFromCache(JsonToken expectedTokenType) {
     TokenValue tokenValue = cachedTokenValues.get(cacheIndex);
+    // log.debug("Consuming from cache: "+tokenValue+" "+" "+System.identityHashCode(this)+in);
     Object value = tokenValue.getTokenValue();
     if (expectedTokenType!=null && expectedTokenType!=tokenValue.getTokenType()) {
       throw new RuntimeException("Unexpected token encountered: Expected "+expectedTokenType+", but was "+tokenValue.getTokenType()+(value!=null ? "("+value+")" : ""));
@@ -318,6 +336,7 @@ public class TypePropertyJsonReader extends JsonReader {
   @Override
   public void close() throws IOException {
     in.close();
+    logDelegation("", "close");
   }
 
   @Override
@@ -337,4 +356,89 @@ public class TypePropertyJsonReader extends JsonReader {
       return "?";
     }
   }
+
+  @Override
+  protected void promoteNameToValue() throws IOException {
+    JsonReaderInternalAccess.INSTANCE.promoteNameToValue(this.in);
+  }
+
+//  @Override
+//  public int peekKeyword() throws IOException {
+//    return this.in.peekKeyword();
+//  }
+//
+//  @Override
+//  public int peekNumber() throws IOException {
+//    return this.in.peekNumber();
+//  }
+//
+//  @Override
+//  public boolean isLiteral(char c) throws IOException {
+//    return this.in.isLiteral(c);
+//  }
+//
+//  @Override
+//  public String nextQuotedValue(char quote) throws IOException {
+//    return this.in.nextQuotedValue(quote);
+//  }
+//
+//  @Override
+//  public String nextUnquotedValue() throws IOException {
+//    return this.in.nextUnquotedValue();
+//  }
+//
+//  @Override
+//  public void skipQuotedValue(char quote) throws IOException {
+//    this.in.skipQuotedValue(quote);
+//  }
+//
+//  @Override
+//  public void skipUnquotedValue() throws IOException {
+//    this.in.skipUnquotedValue();
+//  }
+//
+//  @Override
+//  public void push(int newTop) {
+//    this.in.push(newTop);
+//  }
+//
+//  @Override
+//  public boolean fillBuffer(int minimum) throws IOException {
+//    return logDelegation(this.in.fillBuffer(minimum), "fillBuffer");
+//  }
+//
+//  @Override
+//  public int nextNonWhitespace(boolean throwOnEof) throws IOException {
+//    return this.in.nextNonWhitespace(throwOnEof);
+//  }
+//
+//  @Override
+//  public void checkLenient() throws IOException {
+//    this.in.checkLenient();
+//  }
+//
+//  @Override
+//  public void skipToEndOfLine() throws IOException {
+//    this.in.skipToEndOfLine();
+//  }
+//
+//  @Override
+//  public boolean skipTo(String toFind) throws IOException {
+//    return this.in.skipTo(toFind);
+//  }
+//
+//  @Override
+//  public char readEscapeCharacter() throws IOException {
+//    return this.in.readEscapeCharacter();
+//  }
+//
+//  @Override
+//  public IOException syntaxError(String message) throws IOException {
+//    return this.in.syntaxError(message);
+//  }
+//
+//  @Override
+//  public void consumeNonExecutePrefix() throws IOException {
+//    this.in.consumeNonExecutePrefix();
+//  }
 }
