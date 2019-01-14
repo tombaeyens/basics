@@ -204,6 +204,16 @@ public class Select extends Statement {
     return this;
   }
 
+  public Select join(Table table, Column foreignKeyColumn) {
+    ForeignKey foreignKey = foreignKeyColumn.findForeignKeyTo(table);
+    assertNotNull(foreignKey, "No foreign key found between "+table+" in the froms of this select");
+    Column primaryKey = foreignKey.getTo().getTable().getPrimaryKeyColumn();
+    assertNotNull(primaryKey, "No primary key found in "+table);
+    from(table);
+    where(Condition.equal(foreignKey.getFrom(), primaryKey));
+    return this;
+  }
+
   private ForeignKey findForeignKeyBetweenFromsAndTable(Table destination) {
     for (Table from: froms) {
       for (Column candidate: from.getColumns().values()) {

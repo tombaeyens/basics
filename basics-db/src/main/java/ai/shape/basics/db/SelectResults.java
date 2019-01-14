@@ -69,6 +69,7 @@ public class SelectResults {
     while (resultSetNext()) {
       action.accept(this);
     }
+    this.selectLogger.logRows();
   }
 
   @SuppressWarnings("unchecked")

@@ -22,6 +22,7 @@ import ai.shape.basics.db.Column;
 import ai.shape.basics.db.Condition;
 import ai.shape.basics.db.SqlBuilder;
 import ai.shape.basics.db.Statement;
+import ai.shape.basics.util.Exceptions;
 
 import java.util.List;
 
@@ -40,12 +41,14 @@ public class InCondition implements Condition {
   public void buildSql(SqlBuilder sql, Statement statement) {
     sql.appendText(statement.getQualifiedColumnName(column)+" in (");
 
-    Object first = values.get(0);
-    for (Object value: values) {
-      if (value!=first) {
-        sql.appendText(",");
+    if (values!=null) {
+      Object first = !values.isEmpty() ? values.get(0) : null;
+      for (Object value: values) {
+        if (value!=first) {
+          sql.appendText(",");
+        }
+        sql.appendParameter();
       }
-      sql.appendParameter();
     }
 
     sql.appendText(")");
