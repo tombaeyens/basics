@@ -24,35 +24,35 @@ import java.util.List;
 
 public interface Condition {
 
-  public static Condition equal(SelectField column, Object value) {
+  public static EqualCondition equal(SelectField column, Object value) {
     return new EqualCondition(column, value);
   }
 
-  public static Condition isNull(Column column) {
+  public static IsNullCondition isNull(Column column) {
     return new IsNullCondition(column);
   }
 
-  public static Condition and(Condition... andConditions) {
+  public static AndCondition and(Condition... andConditions) {
     return new AndCondition(andConditions);
   }
 
-  public static Condition or(Condition... andConditions) {
+  public static OrCondition or(Condition... andConditions) {
     return new OrCondition(andConditions);
   }
 
-  public static Condition like(Column column, String pattern) {
+  public static LikeCondition like(Column column, String pattern) {
     return new LikeCondition(column, pattern);
   }
 
-  public static Condition gte(Column column, Object value) {
+  public static GreaterThanOrEqualCondition gte(Column column, Object value) {
     return new GreaterThanOrEqualCondition(column, value);
   }
 
-  public static Condition in(Column column, List<?> values) {
+  public static InCondition in(Column column, List<?> values) {
     return new InCondition(column, values);
   }
 
-  public static Condition notNull(Column column) {
+  public static NotNullCondition notNull(Column column) {
     return new NotNullCondition(column);
   }
 
