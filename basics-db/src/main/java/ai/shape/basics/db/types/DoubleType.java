@@ -56,7 +56,8 @@ public class DoubleType implements DataType {
   @Override
   public Double getResultSetValue(int index, ResultSet resultSet) {
     try {
-      return resultSet.getDouble(index);
+      double doubleValue = resultSet.getDouble(index);
+      return resultSet.wasNull() ? null : doubleValue;
     } catch (SQLException e) {
       throw exceptionWithCause("get JDBC double value "+index+" from result set", e);
     }

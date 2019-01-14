@@ -56,7 +56,8 @@ public class IntegerType implements DataType {
   @Override
   public Integer getResultSetValue(int index, ResultSet resultSet) {
     try {
-      return resultSet.getInt(index);
+      int intValue = resultSet.getInt(index);
+      return resultSet.wasNull() ? null : intValue;
     } catch (SQLException e) {
       throw exceptionWithCause("get JDBC int value "+index+" from result set", e);
     }

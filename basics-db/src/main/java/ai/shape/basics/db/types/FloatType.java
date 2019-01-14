@@ -56,7 +56,8 @@ public class FloatType implements DataType {
   @Override
   public Float getResultSetValue(int index, ResultSet resultSet) {
     try {
-      return resultSet.getFloat(index);
+      float floatValue = resultSet.getFloat(index);
+      return resultSet.wasNull() ? null : floatValue;
     } catch (SQLException e) {
       throw exceptionWithCause("get JDBC float value "+index+" from result set", e);
     }

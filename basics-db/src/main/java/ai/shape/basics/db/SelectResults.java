@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static ai.shape.basics.util.Exceptions.assertNotNull;
@@ -64,6 +65,12 @@ public class SelectResults {
     return Optional.ofNullable(rowObject);
   }
 
+  public void forEach(Consumer<SelectResults> action) {
+    while (resultSetNext()) {
+      action.accept(this);
+    }
+  }
+
   @SuppressWarnings("unchecked")
   public <T> T get(SelectField selectField) {
     if (selectField instanceof Column) {
@@ -101,4 +108,5 @@ public class SelectResults {
       throw exceptionWithCause("get next() on JDBC result set for select \n"+sql.getDebugInfo(), e);
     }
   }
+
 }

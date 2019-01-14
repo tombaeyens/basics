@@ -56,7 +56,8 @@ public class LongType implements DataType {
   @Override
   public Long getResultSetValue(int index, ResultSet resultSet) {
     try {
-      return resultSet.getLong(index);
+      long longValue = resultSet.getLong(index);
+      return resultSet.wasNull() ? null: longValue;
     } catch (SQLException e) {
       throw exceptionWithCause("get JDBC long value "+index+" from result set", e);
     }
