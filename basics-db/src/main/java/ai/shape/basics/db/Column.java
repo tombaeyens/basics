@@ -27,7 +27,7 @@ import ai.shape.basics.db.types.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Column implements SelectField {
+public class Column implements Expression {
 
   protected Table table;
   protected String name;
@@ -35,6 +35,11 @@ public class Column implements SelectField {
   protected List<Constraint> constraints;
   /** index in the list of table columns */
   protected int index;
+
+  @Override
+  public void collectTables(List<Table> fieldTables) {
+    fieldTables.add(table);
+  }
 
   public String getName() {
     return this.name;
@@ -50,6 +55,7 @@ public class Column implements SelectField {
   public DataType getType() {
     return this.type;
   }
+
   public void setType(DataType type) {
     this.type = type;
   }
@@ -119,7 +125,12 @@ public class Column implements SelectField {
   }
 
   @Override
-  public void appendSelectFieldSql(SqlBuilder sql, Statement statement) {
+  public String getTitle() {
+    return getName();
+  }
+
+  @Override
+  public void appendFieldSql(SqlBuilder sql, Statement statement) {
     sql.appendText(statement.getQualifiedColumnName(this));
   }
 
@@ -142,14 +153,11 @@ public class Column implements SelectField {
     return false;
   }
 
-  public ForeignKey findForeignKeyTo(Table destination) {
-    Column primaryKeyColumn = destination.getPrimaryKeyColumn();
+  public ForeignKey findForeignKey() {
     if (constraints!=null) {
       for (Constraint constraint: constraints) {
         if (constraint instanceof ForeignKey) {
-          if (((ForeignKey)constraint).getTo()==primaryKeyColumn) {
-            return (ForeignKey)constraint;
-          }
+          return (ForeignKey)constraint;
         }
       }
     }

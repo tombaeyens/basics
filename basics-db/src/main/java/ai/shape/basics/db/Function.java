@@ -18,34 +18,41 @@
  */
 package ai.shape.basics.db;
 
-public abstract class Function implements SelectField {
+import java.util.List;
+
+public abstract class Function implements Expression {
 
   public static class Lower extends Function {
-    SelectField selectField;
+    Expression expression;
 
-    public Lower(SelectField selectField) {
-      this.selectField = selectField;
+    public Lower(Expression expression) {
+      this.expression = expression;
     }
 
     @Override
-    public String getName() {
-      return "lower("+selectField.getName()+")";
+    public String getTitle() {
+      return "lower("+ expression.getTitle()+")";
     }
 
     @Override
-    public void appendSelectFieldSql(SqlBuilder sql, Statement statement) {
+    public void appendFieldSql(SqlBuilder sql, Statement statement) {
       sql.appendText("lower(");
-      selectField.appendSelectFieldSql(sql, statement);
+      expression.appendFieldSql(sql, statement);
       sql.appendText(")");
     }
 
     @Override
     public DataType getType() {
-      return selectField.getType();
+      return expression.getType();
+    }
+
+    @Override
+    public void collectTables(List<Table> fieldTables) {
+      expression.collectTables(fieldTables);
     }
   }
 
-  public static Lower lowerCase(SelectField selectField) {
-    return new Lower(selectField);
+  public static Lower lowerCase(Column column) {
+    return new Lower(column);
   }
 }

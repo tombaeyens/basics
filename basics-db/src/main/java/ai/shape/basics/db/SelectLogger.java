@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static ai.shape.basics.db.SelectLogger.LogMode.ALL_ROWS_AT_THE_END;
 import static ai.shape.basics.db.SelectLogger.LogMode.ROW_BY_ROW;
@@ -48,7 +49,7 @@ public class SelectLogger {
   Tx tx;
   SelectResults selectResults;
   Select select;
-  List<SelectField> fields;
+  List<ExpressionWithAlias> expressions;
   List<String> fieldNames = null;
   List<Integer> maxColumnLengths = null;
   List<List<String>> rowValues = new ArrayList<>();
@@ -59,7 +60,7 @@ public class SelectLogger {
     this.selectResults = selectResults;
     this.select = selectResults.select;
     this.tx = select.getTx();
-    this.fields = select.getFields();
+    this.expressions = select.getFields();
   }
 
   public void logRowByRow() {
@@ -130,7 +131,7 @@ public class SelectLogger {
       Integer columnLength = maxColumnLengths.get(i);
       rowLength += columnLength+1; // +1 for the | separator
       formatBuilder.append("%");
-      if (!fields.get(i).getType().isRightAligned()) {
+      if (!expressions.get(i).getExpression().getType().isRightAligned()) {
         formatBuilder.append("-");
       }
       formatBuilder.append(columnLength);
@@ -165,14 +166,13 @@ public class SelectLogger {
     if (fieldNames==null) {
       this.maxColumnLengths = new ArrayList<>();
       this.fieldNames = new ArrayList<>();
-      for (int i = 0; i<fields.size(); i++) {
-        SelectField field = fields.get(i);
-        String fieldName = field.getName();
+      for (int i = 0; i< expressions.size(); i++) {
+        ExpressionWithAlias expressionWithAlias = expressions.get(i);
+        String alias = expressionWithAlias.getAlias();
+        String fieldName = alias !=null ? alias : expressionWithAlias.getExpression().getTitle();
         maxColumnLengths.add(Math.min(fieldName.length(), MAX_COLUMN_LENGTH));
         fieldNames.add(fieldName);
       }
     }
   }
-
-
 }

@@ -280,7 +280,8 @@ public class SchemaManager {
   protected List<String> getDbSchemaUpdates() {
     return db.tx(tx->{
       tx.setResult(
-        tx.newSelect(Columns.ID)
+        tx.newSelect(SchemaHistoryTable.TABLE)
+          .field(Columns.ID)
           .where(equal(Columns.TYPE, TYPE_UPDATE))
           .execute()
           .getAll(selectResults->selectResults.get(Columns.ID)));

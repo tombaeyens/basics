@@ -23,20 +23,20 @@ import ai.shape.basics.db.*;
 
 public class EqualCondition implements Condition {
 
-  SelectField column;
+  Expression expression;
   Object value;
 
-  public EqualCondition(SelectField column, Object value) {
-    this.column = column;
+  public EqualCondition(Expression expression, Object value) {
+    this.expression = expression;
     this.value = value;
   }
 
   @Override
   public void buildSql(SqlBuilder sql, Statement statement) {
-    column.appendSelectFieldSql(sql, statement);
+    expression.appendFieldSql(sql, statement);
     sql.appendText(" = ");
     if (value instanceof Column) {
-      ((Column) value).appendSelectFieldSql(sql, statement);
+      ((Column) value).appendFieldSql(sql, statement);
     } else {
       sql.appendParameter();
     }
@@ -45,7 +45,7 @@ public class EqualCondition implements Condition {
   @Override
   public void collectParameters(Statement statement) {
     if (!(value instanceof Column)) {
-      statement.addParameter(value, column.getType());
+      statement.addParameter(value, expression.getType());
     }
   }
 }

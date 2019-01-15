@@ -73,9 +73,9 @@ public class SelectResults {
   }
 
   @SuppressWarnings("unchecked")
-  public <T> T get(SelectField selectField) {
-    if (selectField instanceof Column) {
-      Column column = (Column) selectField;
+  public <T> T get(Expression expression) {
+    if (expression instanceof Column) {
+      Column column = (Column) expression;
       Integer index = select.getSelectorJdbcIndex(column);
       assertNotNull(index, "Could find index position of results "+column+" in select \n"+sql.getDebugInfo());
       DataType type = column.getType();
@@ -83,8 +83,8 @@ public class SelectResults {
       selectLogger.setValue(index-1, type.getLogText(value));
       return value;
     } else {
-      Exceptions.assertNotNullParameter(selectField, "selectField");
-      throw new RuntimeException("Select field of type "+selectField.getClass().getSimpleName()+" not supported yet.");
+      Exceptions.assertNotNullParameter(expression, "selectField");
+      throw new RuntimeException("Select field of type "+ expression.getClass().getSimpleName()+" not supported yet.");
     }
   }
 
@@ -92,8 +92,8 @@ public class SelectResults {
    * @return the number of rows that were logged */
   public long logAllRows() {
     List<Object> nulls = getAll(selectResults -> {
-      for (SelectField field: select.getFields()) {
-        get(field);
+      for (ExpressionWithAlias field: select.getFields()) {
+        get(field.getExpression());
       }
       return null;
     });

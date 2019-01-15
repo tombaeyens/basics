@@ -33,7 +33,7 @@ public class Update extends Statement {
     super(tx);
     assertNotNullParameter(table, "table");
     this.table = table;
-    alias(table, alias);
+    tableAlias(table, alias);
   }
 
   public int execute() {

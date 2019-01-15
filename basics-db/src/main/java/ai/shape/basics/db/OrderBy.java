@@ -27,21 +27,21 @@ public class OrderBy {
   List<FieldDirection> fieldDirections = new ArrayList<>();
 
   public static abstract class FieldDirection {
-    SelectField selectField;
-    public FieldDirection(SelectField selectField) {
-      this.selectField = selectField;
+    Expression expression;
+    public FieldDirection(Expression expression) {
+      this.expression = expression;
     }
 
-    public SelectField getSelectField() {
-      return selectField;
+    public Expression getExpression() {
+      return expression;
     }
 
     public abstract boolean isAscending();
   }
 
   public static class Ascending extends FieldDirection {
-    public Ascending(SelectField selectField) {
-      super(selectField);
+    public Ascending(Expression expression) {
+      super(expression);
     }
     public boolean isAscending() {
       return true;
@@ -49,8 +49,8 @@ public class OrderBy {
   }
 
   public static class Descending extends FieldDirection {
-    public Descending(SelectField selectField) {
-      super(selectField);
+    public Descending(Expression expression) {
+      super(expression);
     }
     public boolean isAscending() {
       return false;

@@ -24,7 +24,11 @@ import java.util.List;
 
 public interface Condition {
 
-  public static EqualCondition equal(SelectField column, Object value) {
+  public static EqualCondition equal(Function function, Object value) {
+    return new EqualCondition(function, value);
+  }
+
+  public static EqualCondition equal(Column column, Object value) {
     return new EqualCondition(column, value);
   }
 

@@ -33,7 +33,7 @@ import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 public abstract class Statement {
 
   protected Tx tx;
-  Map<Table,String> aliases;
+  Map<Table,String> tableAliases;
   Condition whereCondition;
   List<Parameter> parameters;
 
@@ -124,20 +124,20 @@ public abstract class Statement {
   }
 
   public String getQualifiedColumnName(Column column) {
-    String alias = aliases!=null ? aliases.get(column.getTable()) : null;
+    String alias = tableAliases !=null ? tableAliases.get(column.getTable()) : null;
     return alias!=null ? alias+"."+column.getName() : column.getName();
   }
 
-  protected Statement alias(Table table, String alias) {
-    if (aliases==null) {
-      aliases = new LinkedHashMap<>();
+  protected Statement tableAlias(Table table, String alias) {
+    if (tableAliases ==null) {
+      tableAliases = new LinkedHashMap<>();
     }
-    aliases.put(table, alias);
+    tableAliases.put(table, alias);
     return this;
   }
 
   protected String getAlias(Table table) {
-    return aliases.get(table);
+    return tableAliases.get(table);
   }
 
   public Statement where(Condition whereCondition) {

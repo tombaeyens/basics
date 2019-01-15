@@ -20,18 +20,16 @@ package ai.shape.basics.db;
 
 import ai.shape.basics.db.constraints.ForeignKey;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static ai.shape.basics.util.Exceptions.assertNotNull;
 import static ai.shape.basics.util.Exceptions.assertNotNullParameter;
 
 public class Select extends Statement {
 
-  protected List<SelectField> fields = new ArrayList<>();
-  protected List<Table> froms = new ArrayList<>();
+  protected List<ExpressionWithAlias> fields = new ArrayList<>();
+  protected List<From> froms = new ArrayList<>();
+
   protected Integer limit;
   protected OrderBy orderBy;
 
@@ -45,72 +43,78 @@ public class Select extends Statement {
   }
 
   public SelectResults execute() {
-    froms.forEach(from->{
-      if (!hasFields(from)) {
-        fields(from);
+    // If there are froms without fields, add all fields
+    List<Table> fieldTables = new ArrayList<>();
+    fields.stream().forEach(field->field.getExpression().collectTables(fieldTables));
+    List<Table> fromTables = new ArrayList<>();
+    froms.stream().forEach(from->from.collectTables(fromTables));
+
+    List<Table> fromTablesNotUsedInFields = new ArrayList<>();
+    fromTables.forEach(fromTable->{
+      if (!fieldTables.contains(fromTable)) {
+        fromTablesNotUsedInFields.add(fromTable);
       }
     });
-    if (froms.size()>1)  {
-      if (fields.stream().allMatch(field->field instanceof Column)) {
-        Set<String> aliases = new HashSet<>();
-        froms.forEach(from->{
-          String alias = getAlias(from);
-          if (alias==null) {
-            alias = findNextAlias(aliases);
-            alias(from, alias);
-          }
-          aliases.add(alias);
-        });
-      }
+    fromTablesNotUsedInFields.forEach(fromTableNotUsedInFields->
+      fields(fromTableNotUsedInFields.getColumns().values())
+    );
+
+    // If there are multiple tables involved
+    if (fromTables.size()>1)  {
+      // Ensure that all tables have aliases
+      fromTables.forEach(fromTable->{
+        String alias = getAlias(fromTable);
+        if (alias==null) {
+          alias = findNextAlias(fromTable);
+          tableAlias(fromTable, alias);
+        }
+      });
     }
 
     return executeQuery();
   }
 
-  private boolean hasFields(Table table) {
-    for (SelectField field: fields) {
-      if (field instanceof Column && ((Column)field).getTable()==table) {
-        return true;
+  private String findNextAlias(Table table) {
+    // TODO change this by taking the first chars of the table name that are unique and only add numbers if the full table name is unique
+    String base = table.getName().toLowerCase();
+    int length = 1;
+    while (length<base.length()+1) {
+      String candidate = base.substring(0, length);
+      if (!tableAliases.containsValue(candidate)) {
+        return candidate;
       }
+      length++;
     }
-    return false;
+    int index = 2;
+    while (tableAliases.containsValue(base+index)) {
+      index++;
+    }
+    return base+index;
   }
 
-  private String findNextAlias(Set<String> aliases) {
-    int i = aliases.size()+1;
-    while (aliases.contains("T"+i)) {
-      i++;
-    }
-    return "T"+i;
+  public Select fields(Expression... expressions) {
+    return fields(Arrays.asList(expressions));
   }
 
-  public Select field(SelectField selectField) {
-    fields.add(selectField);
-    if (selectField instanceof Column) {
-      from(((Column)selectField).getTable());
-    }
-    return this;
-  }
-
-  public Select fields(SelectField... fields) {
-    if (fields!=null) {
-      for (SelectField field: fields) {
-        field(field);
+  public Select fields(Collection<? extends Expression> expressions) {
+    if (expressions!=null) {
+      for (Expression expression: expressions) {
+        field(expression);
       }
     }
     return this;
   }
 
-  public Select fields(Table table) {
-    return fields(table, null);
+  public Select field(Expression expression) {
+    return field(expression, null);
   }
 
-  public Select fields(Table table, String alias) {
-    if (table!=null && table.getColumns()!=null) {
-      for (Column column: table.getColumns().values()) {
-        field(column);
-      }
-    }
+  public Select field(Expression expression, String alias) {
+    return field(new ExpressionWithAlias(expression, alias));
+  }
+
+  protected Select field(ExpressionWithAlias expressionWithAlias) {
+    fields.add(expressionWithAlias);
     return this;
   }
 
@@ -121,24 +125,55 @@ public class Select extends Statement {
 
   public Select from(Table table, String alias) {
     assertNotNullParameter(table, "table");
-    if (!fromContains(table, alias)) {
-      froms.add(table);
-      alias(table, alias);
-    }
+    froms.add(new From(table));
+    tableAlias(table, alias);
     return this;
   }
 
-  private boolean fromContains(Table table, String alias) {
-    for (Table from: froms) {
-      String fromAlias = getAlias(from);
-      if (table==from
-          && ( (alias==null && fromAlias ==null)
-               || (alias!=null && alias.equals(fromAlias)))
-             ) {
-        return true;
+  public Select join(Table table, Column foreignKeyColumn) {
+    return join(table, foreignKeyColumn, Join.TYPE_DEFAULT_INNER);
+  }
+
+  public Select joinLeftOuter(Table table, Column foreignKeyColumn) {
+    return join(table, foreignKeyColumn, Join.TYPE_LEFT_OUTER);
+  }
+
+  public Select joinRightOuter(Table table, Column foreignKeyColumn) {
+    return join(table, foreignKeyColumn, Join.TYPE_RIGHT_OUTER);
+  }
+
+  protected Select join(Table table, Column foreignKeyColumn, String joinType) {
+    ForeignKey foreignKey = foreignKeyColumn.findForeignKey();
+    assertNotNull(foreignKey, "No foreign key found between "+table+" in the froms of this select");
+
+    Table fromTable = null;
+    Column primaryKeyColumn = null;
+    if (foreignKey.getFrom().getTable()==table) {
+      primaryKeyColumn = foreignKey.getTo().getTable().getPrimaryKeyColumn();
+      fromTable = foreignKey.getTo().getTable();
+    } else {
+      primaryKeyColumn = foreignKey.getFrom().getTable().getPrimaryKeyColumn();
+      fromTable = foreignKey.getFrom().getTable();
+    }
+    assertNotNull(primaryKeyColumn, "No primary key found in "+table);
+
+    From fromTableFrom = findFrom(fromTable);
+
+    fromTableFrom
+      .join(new Join()
+        .type(joinType)
+        .table(table)
+        .on(Condition.equal(foreignKeyColumn, primaryKeyColumn)));
+    return this;
+  }
+
+  private From findFrom(Table fromTable) {
+    for (From from: froms) {
+      if (from.getTable()==fromTable) {
+        return from;
       }
     }
-    return false;
+    return null;
   }
 
   @Override
@@ -148,22 +183,22 @@ public class Select extends Statement {
 
   /** Returns JDBC (meaning starts at 1) index of the results. */
   public Integer getSelectorJdbcIndex(Column column) {
-    for (int i = 0; i<fields.size(); i++) {
-      SelectField selectField = fields.get(i);
-      if (selectField==column) {
+    for (int i = 0; i< fields.size(); i++) {
+      ExpressionWithAlias expression = fields.get(i);
+      if (expression.isColumn(column)) {
         return i+1;
       }
     }
     return null;
   }
 
-  public Select orderAsc(SelectField selectField) {
-    addOrderBy(new OrderBy.Ascending(selectField));
+  public Select orderAsc(Expression expression) {
+    addOrderBy(new OrderBy.Ascending(expression));
     return this;
   }
 
-  public Select orderDesc(SelectField selectField) {
-    addOrderBy(new OrderBy.Descending(selectField));
+  public Select orderDesc(Expression expression) {
+    addOrderBy(new OrderBy.Descending(expression));
     return this;
   }
 
@@ -182,54 +217,16 @@ public class Select extends Statement {
     return tx;
   }
 
-  public List<SelectField> getFields() {
+  public List<ExpressionWithAlias> getFields() {
     return fields;
   }
 
-  public List<Table> getFroms() {
+  public List<From> getFroms() {
     return froms;
   }
 
   public OrderBy getOrderBy() {
     return orderBy;
-  }
-
-  public Select join(Table table) {
-    ForeignKey foreignKey = findForeignKeyBetweenFromsAndTable(table);
-    assertNotNull(foreignKey, "No foreign key found between "+table+" in the froms of this select");
-    Column primaryKey = foreignKey.getTo().getTable().getPrimaryKeyColumn();
-    assertNotNull(primaryKey, "No primary key found in "+table);
-    from(table);
-    where(Condition.equal(foreignKey.getFrom(), primaryKey));
-    return this;
-  }
-
-  public Select join(Table table, Column foreignKeyColumn) {
-    ForeignKey foreignKey = foreignKeyColumn.findForeignKeyTo(table);
-    assertNotNull(foreignKey, "No foreign key found between "+table+" in the froms of this select");
-    Column primaryKey = foreignKey.getTo().getTable().getPrimaryKeyColumn();
-    assertNotNull(primaryKey, "No primary key found in "+table);
-    from(table);
-    where(Condition.equal(foreignKey.getFrom(), primaryKey));
-    return this;
-  }
-
-  private ForeignKey findForeignKeyBetweenFromsAndTable(Table destination) {
-    for (Table from: froms) {
-      for (Column candidate: from.getColumns().values()) {
-        ForeignKey foreignKey = candidate.findForeignKeyTo(destination);
-        if (foreignKey!=null) {
-          return foreignKey;
-        }
-      }
-      for (Column candidate: destination.getColumns().values()) {
-        ForeignKey foreignKey = candidate.findForeignKeyTo(from);
-        if (foreignKey!=null) {
-          return foreignKey;
-        }
-      }
-    }
-    return null;
   }
 
   public Integer getLimit() {

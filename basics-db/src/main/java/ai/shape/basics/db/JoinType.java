@@ -19,34 +19,11 @@
 
 package ai.shape.basics.db;
 
-import static ai.shape.basics.util.Exceptions.assertNotNullParameter;
+public enum JoinType {
 
-public class Delete extends Statement {
+  LEFT_OUTER,
+  RIGHT_OUTER,
 
-  Table table;
-
-  public Delete(Tx tx, Table table, String alias) {
-    super(tx);
-    assertNotNullParameter(table, "table");
-    this.table = table;
-    tableAlias(table, alias);
-  }
-
-  public int execute() {
-    return executeUpdate();
-  }
-
-  @Override
-  protected void buildSql(SqlBuilder sql) {
-    getDialect().buildDeleteSql(sql, this);
-  }
-
-  @Override
-  public Delete where(Condition whereCondition) {
-    return (Delete) super.where(whereCondition);
-  }
-
-  public Table getTable() {
-    return table;
-  }
+  /** The default */
+  INNER
 }

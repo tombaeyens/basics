@@ -18,10 +18,17 @@
  */
 package ai.shape.basics.db;
 
-/** Column, Function or * : values that can be retrieved in a select statement */
-public interface SelectField {
+import java.util.List;
 
-  String getName();
-  void appendSelectFieldSql(SqlBuilder sql, Statement statement);
+/** Column, Function or * : values that can be retrieved in a select statement */
+public interface Expression {
+
+  /** the title used above the column when logging */
+  String getTitle();
+
+  void appendFieldSql(SqlBuilder sql, Statement statement);
+
   DataType getType();
+
+  void collectTables(List<Table> fieldTables);
 }

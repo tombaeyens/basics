@@ -16,31 +16,56 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package ai.shape.basics.db;
 
-public class SelectFrom {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-  Table table;
-  String alias;
+public class From {
 
-  public SelectFrom(Table table, String alias) {
+  protected Table table;
+  protected List<Join> joins;
+
+  public From(Table table) {
     this.table = table;
-    this.alias = alias;
   }
 
   public Table getTable() {
-    return table;
+    return this.table;
   }
-
-  public String getAlias() {
-    return alias;
-  }
-
   public void setTable(Table table) {
     this.table = table;
   }
+  public From table(Table table) {
+    this.table = table;
+    return this;
+  }
 
-  public void setAlias(String alias) {
-    this.alias = alias;
+  public List<Join> getJoins() {
+    return this.joins;
+  }
+  public void setJoins(List<Join> joins) {
+    this.joins = joins;
+  }
+  public From join(Join join) {
+    if (joins==null) {
+      joins = new ArrayList<>();
+    }
+    joins.add(join);
+    return this;
+  }
+
+  public void collectTables(List<Table> fromTables) {
+    if (table!=null) {
+      fromTables.add(table);
+    }
+    if (joins!=null) {
+      fromTables.addAll(joins
+        .stream()
+        .map(join->join.getTable())
+        .collect(Collectors.toList()));
+    }
   }
 }
