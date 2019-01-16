@@ -401,7 +401,7 @@ public class Container {
     return component;
   }
 
-  public <T> T[] getAll(Class<T> classFilter) {
+  public <T> List<T> getAll(Class<T> classFilter) {
     List<T> filteredComponents = new ArrayList<>();
     for (Component component : components) {
       if (classFilter==null || component.isInstanceOf(classFilter)) {
@@ -409,12 +409,10 @@ public class Container {
         filteredComponents.add((T) object);
       }
     }
-    Class<?> arrayType = classFilter != null ? classFilter : Object.class;
-    T[] array = (T[]) Array.newInstance(arrayType, filteredComponents.size());
-    return filteredComponents.toArray(array);
+    return filteredComponents;
   }
 
-  public Object[] getAll() {
+  public List<?> getAll() {
     return getAll(null);
   }
 
