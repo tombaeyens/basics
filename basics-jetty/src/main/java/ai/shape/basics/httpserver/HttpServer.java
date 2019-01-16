@@ -18,9 +18,10 @@
  */
 package ai.shape.basics.httpserver;
 
+import ai.shape.basics.util.Exceptions;
 import ai.shape.basics.util.container.Start;
 import ai.shape.basics.util.container.Stop;
-import ai.shape.basics.util.Exceptions;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
@@ -103,19 +104,26 @@ public class HttpServer {
   @Start
   public HttpServer start() {
     try {
-      this.server = new Server(port);
-      server.setHandler(servletHandler);
-      server.start();
-      log.debug((name!=null ? name : "Server") + " started on port "+getPort());
+      startServer();
     } catch (Exception e) {
-      if (isPortTakenException(e)) {
-        // IDEA consider sending a shutdown command.  But only if you can do it safe so that it's impossible to shutdown production servers.
-        throw new RuntimeException(
-          "Port " +
-          getPort() +
-          " blocked.  You probably have a separate "+
-          (name!=null?name+" ":"")+
-          "Server running.  Please shut down that one and retry.");
+      if (isAddressAlreadyInUseException(e)) {
+        try {
+          stop();
+          HttpClient httpClient = new HttpClient();
+          httpClient.start();
+          httpClient.GET("http://localhost:"+getPort()+"/exit").getStatus();
+          startServer();
+        } catch (Exception e1) {
+          e1.printStackTrace();
+          // IDEA consider sending a shutdown command.  But only if you can do it safe so that it's impossible to shutdown production servers.
+          throw new RuntimeException(
+            "Port " +
+              getPort() +
+              " blocked.  You probably have a separate "+
+              (name!=null?name+" ":"")+
+              "Server running.  Please shut down that one and retry.");
+        }
+
       } else {
         throw new RuntimeException("Couldn't start server: " + e.getMessage(), e);
       }
@@ -123,7 +131,14 @@ public class HttpServer {
     return this;
   }
 
-  private static boolean isPortTakenException(Throwable t) {
+  private void startServer() throws Exception {
+    this.server = new Server(port);
+    server.setHandler(servletHandler);
+    server.start();
+    log.debug((name!=null ? name : "Server") + " started on port "+getPort());
+  }
+
+  private static boolean isAddressAlreadyInUseException(Throwable t) {
     return "Address already in use".equals(t.getMessage())
            && (t instanceof BindException);
   }

@@ -166,6 +166,7 @@ public class Dialect {
   }
 
   protected void appendJoin(SqlBuilder sql, Statement statement, Join join) {
+    sql.appendText(" \n  ");
     sql.appendText(join.getType()+" JOIN ");
     appendTableWithAliasSql(sql, statement, join.getTable());
     sql.appendText(" ON ");

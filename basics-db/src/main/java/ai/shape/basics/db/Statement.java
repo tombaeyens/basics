@@ -140,6 +140,23 @@ public abstract class Statement {
     return tableAliases.get(table);
   }
 
+  protected String findNextAlias(Table table) {
+    String base = table.getName().toUpperCase();
+    int length = 1;
+    while (length<base.length()+1) {
+      String candidate = base.substring(0, length);
+      if (!tableAliases.containsValue(candidate)) {
+        return candidate;
+      }
+      length++;
+    }
+    int index = 2;
+    while (tableAliases.containsValue(base+index)) {
+      index++;
+    }
+    return base+index;
+  }
+
   public Statement where(Condition whereCondition) {
     if (this.whereCondition!=null) {
       if (this.whereCondition instanceof AndCondition) {

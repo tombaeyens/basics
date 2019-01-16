@@ -74,24 +74,6 @@ public class Select extends Statement {
     return executeQuery();
   }
 
-  private String findNextAlias(Table table) {
-    // TODO change this by taking the first chars of the table name that are unique and only add numbers if the full table name is unique
-    String base = table.getName().toLowerCase();
-    int length = 1;
-    while (length<base.length()+1) {
-      String candidate = base.substring(0, length);
-      if (!tableAliases.containsValue(candidate)) {
-        return candidate;
-      }
-      length++;
-    }
-    int index = 2;
-    while (tableAliases.containsValue(base+index)) {
-      index++;
-    }
-    return base+index;
-  }
-
   public Select fields(Expression... expressions) {
     return fields(Arrays.asList(expressions));
   }
@@ -147,17 +129,15 @@ public class Select extends Statement {
     assertNotNull(foreignKey, "No foreign key found between "+table+" in the froms of this select");
 
     Table fromTable = null;
-    Column primaryKeyColumn = null;
     if (foreignKey.getFrom().getTable()==table) {
-      primaryKeyColumn = foreignKey.getTo().getTable().getPrimaryKeyColumn();
       fromTable = foreignKey.getTo().getTable();
     } else {
-      primaryKeyColumn = foreignKey.getFrom().getTable().getPrimaryKeyColumn();
       fromTable = foreignKey.getFrom().getTable();
     }
-    assertNotNull(primaryKeyColumn, "No primary key found in "+table);
-
     From fromTableFrom = findFrom(fromTable);
+
+    Column primaryKeyColumn = foreignKey.getTo().getTable().getPrimaryKeyColumn();
+    assertNotNull(primaryKeyColumn, "No primary key found in "+table);
 
     fromTableFrom
       .join(new Join()

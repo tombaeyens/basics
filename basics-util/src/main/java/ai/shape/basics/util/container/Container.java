@@ -465,6 +465,7 @@ public class Container {
         }
       }
       containerState = ContainerState.STOPPED;
+      log.debug("Stopped the container");
     }
   }
 
