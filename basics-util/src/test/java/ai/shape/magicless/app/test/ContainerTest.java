@@ -18,6 +18,7 @@
  */
 package ai.shape.magicless.app.test;
 
+import ai.shape.basics.util.Lists;
 import ai.shape.basics.util.container.Container;
 import ai.shape.basics.util.container.Initialize;
 import ai.shape.basics.util.container.Start;
@@ -80,10 +81,10 @@ public class ContainerTest {
     };
     assertThat(container.getOpt("linked"), sameInstance(linked));
     assertThat(container.getOpt("tree"), sameInstance(tree));
-    assertThat(container.getAll(LinkedHashMap.class), is(new Object[]{linked}));
-    assertThat(container.getAll(TreeMap.class), is(new Object[]{tree}));
-    assertThat(container.getAll(Map.class), is(new Object[]{tree, linked}));
-    assertThat(container.getAll(), is(new Object[]{tree, linked}));
+    assertThat(container.getAll(LinkedHashMap.class), is(Lists.of(linked)));
+    assertThat(container.getAll(TreeMap.class), is(Lists.of(tree)));
+    assertThat(container.getAll(Map.class), is(Lists.of(tree, linked)));
+    assertThat(container.getAll(), is(Lists.of(tree, linked)));
   }
 
   @Test
