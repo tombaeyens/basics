@@ -28,7 +28,7 @@ import static ai.shape.basics.util.Exceptions.assertNotNullParameter;
 public class Select extends Statement {
 
   protected List<ExpressionWithAlias> fields = new ArrayList<>();
-  protected List<From> froms = new ArrayList<>();
+  protected List<TableWithJoins> froms = new ArrayList<>();
 
   protected Integer limit;
   protected OrderBy orderBy;
@@ -107,7 +107,7 @@ public class Select extends Statement {
 
   public Select from(Table table, String alias) {
     assertNotNullParameter(table, "table");
-    froms.add(new From(table));
+    froms.add(new TableWithJoins(table));
     tableAlias(table, alias);
     return this;
   }
@@ -134,12 +134,12 @@ public class Select extends Statement {
     } else {
       fromTable = foreignKey.getFrom().getTable();
     }
-    From fromTableFrom = findFrom(fromTable);
+    TableWithJoins tableWithJoins = findFrom(fromTable);
 
     Column primaryKeyColumn = foreignKey.getTo().getTable().getPrimaryKeyColumn();
     assertNotNull(primaryKeyColumn, "No primary key found in "+table);
 
-    fromTableFrom
+    tableWithJoins
       .join(new Join()
         .type(joinType)
         .table(table)
@@ -147,10 +147,18 @@ public class Select extends Statement {
     return this;
   }
 
-  private From findFrom(Table fromTable) {
-    for (From from: froms) {
+  private TableWithJoins findFrom(Table fromTable) {
+    for (TableWithJoins from: froms) {
       if (from.getTable()==fromTable) {
         return from;
+      }
+      List<Join> joins = from.getJoins();
+      if (joins!=null) {
+        for (Join join: joins) {
+          if (join.getTable()==fromTable) {
+            return from;
+          }
+        }
       }
     }
     return null;
@@ -201,7 +209,7 @@ public class Select extends Statement {
     return fields;
   }
 
-  public List<From> getFroms() {
+  public List<TableWithJoins> getFroms() {
     return froms;
   }
 

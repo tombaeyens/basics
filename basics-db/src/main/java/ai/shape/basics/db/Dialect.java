@@ -139,11 +139,11 @@ public class Dialect {
 //      }
 //    }
 
-    List<From> froms = select.getFroms();
+    List<TableWithJoins> froms = select.getFroms();
     assertNotEmptyCollection(froms, "froms is empty. Specify at least one non-null select.from(...)");
 
-    From first = froms.get(0);
-    for (From from: froms) {
+    TableWithJoins first = froms.get(0);
+    for (TableWithJoins from: froms) {
       if (from!=first) {
         sql.appendText(", \n     ");
       }

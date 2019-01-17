@@ -19,17 +19,9 @@
 
 package ai.shape.basics.db;
 
-public class Join {
+import java.util.List;
 
-//  public enum Type {
-//    DEFAULT_INNER(""),
-//    LEFT_OUTER("LEFT OUTER"),
-//    RIGHT_OUTER("LEFT OUTER");
-//    String sql;
-//    Type(String sql) {
-//      this.sql = sql;
-//    }
-//  }
+public class Join {
 
   public static final String TYPE_DEFAULT_INNER = "";
   public static final String TYPE_LEFT_OUTER = "LEFT OUTER";
@@ -38,6 +30,10 @@ public class Join {
   protected Table table;
   protected String type;
   protected Condition on;
+
+  public void collectTables(List<Table> fromTables) {
+    fromTables.add(table);
+  }
 
   public Condition getOn() {
     return this.on;

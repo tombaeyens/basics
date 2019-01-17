@@ -23,12 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class From {
+public class TableWithJoins {
 
   protected Table table;
   protected List<Join> joins;
 
-  public From(Table table) {
+  public TableWithJoins(Table table) {
     this.table = table;
   }
 
@@ -38,7 +38,7 @@ public class From {
   public void setTable(Table table) {
     this.table = table;
   }
-  public From table(Table table) {
+  public TableWithJoins table(Table table) {
     this.table = table;
     return this;
   }
@@ -49,7 +49,7 @@ public class From {
   public void setJoins(List<Join> joins) {
     this.joins = joins;
   }
-  public From join(Join join) {
+  public TableWithJoins join(Join join) {
     if (joins==null) {
       joins = new ArrayList<>();
     }
@@ -62,10 +62,7 @@ public class From {
       fromTables.add(table);
     }
     if (joins!=null) {
-      fromTables.addAll(joins
-        .stream()
-        .map(join->join.getTable())
-        .collect(Collectors.toList()));
+      joins.forEach(join->join.collectTables(fromTables));
     }
   }
 }

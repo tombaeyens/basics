@@ -77,7 +77,7 @@ public class SelectResults {
     if (expression instanceof Column) {
       Column column = (Column) expression;
       Integer index = select.getSelectorJdbcIndex(column);
-      assertNotNull(index, "Could find index position of results "+column+" in select \n"+sql.getDebugInfo());
+      assertNotNull(index, "Field '"+column.getTable().getName()+"."+column.getName()+"' was used in the result, but not included in the select fields \n"+sql.getDebugInfo());
       DataType type = column.getType();
       T value = (T)type.getResultSetValue(index, resultSet);
       selectLogger.setValue(index-1, type.getLogText(value));
