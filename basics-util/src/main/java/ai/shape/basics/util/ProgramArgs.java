@@ -99,7 +99,8 @@ public class ProgramArgs {
     public Syntax option(String shortName, String longName, String description) {
       Option option = new Option()
         .shortName(shortName)
-        .longName(longName);
+        .longName(longName)
+        .description(description);
       if (shortName!=null) {
         optionsByShortName.put(shortName, option);
       }
