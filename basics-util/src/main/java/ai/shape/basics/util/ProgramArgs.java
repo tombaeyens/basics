@@ -56,18 +56,18 @@ public class ProgramArgs {
       for (int i=0; i<args.length; i++) {
         String arg = args[i];
         if (currentOption==null) {
-          options.put(currentOption.getShortName(), arg);
-          options.put(currentOption.getLongName(), arg);
-          currentOption = null;
-        } else {
           Option option = syntax.getOption(arg);
           if (option!=null) {
-            options.put(currentOption.getShortName(), "");
-            options.put(currentOption.getLongName(), "");
+            options.put(option.getShortName(), "");
+            options.put(option.getLongName(), "");
             currentOption = option;
           } else {
             nonOptions.add(arg);
           }
+        } else {
+          options.put(currentOption.getShortName(), arg);
+          options.put(currentOption.getLongName(), arg);
+          currentOption = null;
         }
       }
     }
@@ -79,7 +79,7 @@ public class ProgramArgs {
 
   public String getOption(String name) {
     if (!options.containsKey(name)) {
-      throw new RuntimeException("Option "+name+" is required:\n"+syntax.getOptionDocs("  "));
+      throw new RuntimeException("Option "+name+" is required:\n"+Arrays.toString(args)+"\n"+syntax.getOptionDocs("  "));
     }
     return options.get(name);
   }
@@ -118,8 +118,8 @@ public class ProgramArgs {
           return optionsByLongName.get(longName);
         }
         if (arg.startsWith("-")
-            && arg.length()>2) {
-          String shortName = arg.substring(2);
+            && arg.length()>1) {
+          String shortName = arg.substring(1);
           return optionsByShortName.get(shortName);
         }
       }

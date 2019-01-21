@@ -405,6 +405,7 @@ public class Io {
   }
 
   public static ReadBlock readFrom(Reader reader) {
+    Exceptions.assertNotNullParameter(reader, "reader");
     return new ReadBlock(reader);
   }
 
