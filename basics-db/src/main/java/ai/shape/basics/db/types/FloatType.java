@@ -35,13 +35,13 @@ public class FloatType implements DataType {
   }
 
   @Override
-  public void setParameter(PreparedStatement statement, int i, Object value) {
+  public void setParameter(PreparedStatement statement, int jdbcParameterIndex, Object value) {
     try {
       if (value!=null) {
         float floatValue = ((Number) value).floatValue();
-        statement.setFloat(i, floatValue);
+        statement.setFloat(jdbcParameterIndex, floatValue);
       } else {
-        statement.setNull(i, Types.FLOAT);
+        statement.setNull(jdbcParameterIndex, Types.FLOAT);
       }
     } catch (SQLException e) {
       throw exceptionWithCause("set JDBC float appendParameter value "+value, e);

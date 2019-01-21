@@ -72,6 +72,10 @@ public class SelectResults {
     this.selectLogger.logRows();
   }
 
+  public boolean has(Column column) {
+    return select.getSelectorJdbcIndex(column)!=null;
+  }
+
   @SuppressWarnings("unchecked")
   public <T> T get(Expression expression) {
     if (expression instanceof Column) {
@@ -109,5 +113,4 @@ public class SelectResults {
       throw exceptionWithCause("get next() on JDBC result set for select \n"+sql.getDebugInfo(), e);
     }
   }
-
 }

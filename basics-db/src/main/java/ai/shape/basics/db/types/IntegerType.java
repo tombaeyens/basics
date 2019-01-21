@@ -35,13 +35,13 @@ public class IntegerType implements DataType {
   }
 
   @Override
-  public void setParameter(PreparedStatement statement, int i, Object value) {
+  public void setParameter(PreparedStatement statement, int jdbcParameterIndex, Object value) {
     try {
       if (value!=null) {
         int intValue = ((Number) value).intValue();
-        statement.setInt(i, intValue);
+        statement.setInt(jdbcParameterIndex, intValue);
       } else {
-        statement.setNull(i, Types.INTEGER);
+        statement.setNull(jdbcParameterIndex, Types.INTEGER);
       }
     } catch (SQLException e) {
       throw exceptionWithCause("set JDBC int appendParameter value "+value, e);

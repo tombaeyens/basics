@@ -35,12 +35,12 @@ public class BooleanType implements DataType {
   }
 
   @Override
-  public void setParameter(PreparedStatement statement, int i, Object value) {
+  public void setParameter(PreparedStatement statement, int jdbcParameterIndex, Object value) {
     try {
       if (value!=null) {
-        statement.setBoolean(i, (Boolean) value);
+        statement.setBoolean(jdbcParameterIndex, (Boolean) value);
       } else {
-        statement.setNull(i, Types.BOOLEAN);
+        statement.setNull(jdbcParameterIndex, Types.BOOLEAN);
       }
     } catch (SQLException e) {
       throw exceptionWithCause("set JDBC boolean appendParameter value "+value, e);

@@ -35,13 +35,13 @@ public class LongType implements DataType {
   }
 
   @Override
-  public void setParameter(PreparedStatement statement, int i, Object value) {
+  public void setParameter(PreparedStatement statement, int jdbcParameterIndex, Object value) {
     try {
       if (value!=null) {
         long longValue = value!=null ? ((Number) value).longValue() : null;
-        statement.setLong(i, longValue);
+        statement.setLong(jdbcParameterIndex, longValue);
       } else {
-        statement.setNull(i, Types.INTEGER);
+        statement.setNull(jdbcParameterIndex, Types.INTEGER);
       }
     } catch (SQLException e) {
       throw exceptionWithCause("set JDBC long appendParameter value "+value, e);

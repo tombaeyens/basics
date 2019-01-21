@@ -29,6 +29,7 @@ import java.io.StringReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
@@ -44,14 +45,16 @@ public class H2Dialect extends Dialect {
     }
 
     @Override
-    public void setParameter(PreparedStatement statement, int i, Object value) {
+    public void setParameter(PreparedStatement statement, int jdbcParameterIndex, Object value) {
       try {
         if (value!=null) {
           if (value instanceof String) {
-            statement.setClob(i, new StringReader((String) value));
+            statement.setClob(jdbcParameterIndex, new StringReader((String) value));
           } else {
             throw new RuntimeException("Unsupported data type: "+value);
           }
+        } else {
+          statement.setNull(jdbcParameterIndex, Types.CLOB);
         }
 
       } catch (SQLException e) {

@@ -20,6 +20,7 @@ package ai.shape.basics.db;
 
 import ai.shape.basics.db.conditions.*;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface Condition {
@@ -52,7 +53,7 @@ public interface Condition {
     return new GreaterThanOrEqualCondition(column, value);
   }
 
-  public static InCondition in(Column column, List<?> values) {
+  public static InCondition in(Column column, Collection<?> values) {
     return new InCondition(column, values);
   }
 

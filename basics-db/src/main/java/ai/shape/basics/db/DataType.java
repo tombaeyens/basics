@@ -26,7 +26,7 @@ public interface DataType {
 
   String getSql();
 
-  void setParameter(PreparedStatement statement, int i, Object value);
+  void setParameter(PreparedStatement statement, int jdbcParameterIndex, Object value);
 
   Object getResultSetValue(int index, ResultSet resultSet);
 

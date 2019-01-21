@@ -67,6 +67,14 @@ public class Column implements Expression {
     type(new VarcharType(n));
     return this;
   }
+  public Column typeClob() {
+    type(new ClobType());
+    return this;
+  }
+  public Column typeJson() {
+    type(new JsonType());
+    return this;
+  }
   public Column typeInteger() {
     type(new IntegerType());
     return this;
@@ -89,12 +97,6 @@ public class Column implements Expression {
   }
   public Column typeBoolean() {
     type(new BooleanType());
-    return this;
-  }
-
-
-  public Column typeJson() {
-    type(new JsonType());
     return this;
   }
 

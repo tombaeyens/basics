@@ -19,64 +19,50 @@
 package ai.shape.basics.db.types;
 
 import ai.shape.basics.db.DataType;
-import org.slf4j.Logger;
 
-import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 
 import static ai.shape.basics.util.Exceptions.exceptionWithCause;
-import static org.slf4j.LoggerFactory.getLogger;
 
-public class TimestampType implements DataType {
-
-  private static final Logger log = getLogger(TimestampType.class.getName());
+public class ClobType implements DataType {
 
   @Override
   public String getSql() {
-    return "TIMESTAMP";
+    return "CLOB";
   }
 
   @Override
   public void setParameter(PreparedStatement statement, int jdbcParameterIndex, Object value) {
     try {
-      Timestamp timestamp = null;
-
       if (value!=null) {
-        if (value instanceof Timestamp) {
-          timestamp = (Timestamp) value;
-        } else if (value instanceof Date) {
-          timestamp = new Timestamp(((Date)value).getTime());
-        } else if (value instanceof LocalDateTime) {
-          timestamp = Timestamp.valueOf((LocalDateTime)value);
+        if (value instanceof String) {
+          statement.setString(jdbcParameterIndex, (String)value);
         } else {
           throw new RuntimeException("Unsupported data type: "+value);
         }
-      }
-
-      if (timestamp!=null) {
-        statement.setTimestamp(jdbcParameterIndex, timestamp);
       } else {
-        statement.setNull(jdbcParameterIndex, getSqlType());
+        statement.setNull(jdbcParameterIndex, Types.CLOB);
       }
-
     } catch (SQLException e) {
-      throw exceptionWithCause("set JDBC timestamp appendParameter value "+value, e);
+      throw exceptionWithCause("set JDBC clob parameter value "+value, e);
     }
   }
 
   @Override
-  public LocalDateTime getResultSetValue(int index, ResultSet resultSet) {
+  public String getResultSetValue(int index, ResultSet resultSet) {
     try {
-      Timestamp timestamp = resultSet.getTimestamp(index);
-      return timestamp!=null ? timestamp.toLocalDateTime() : null;
+      return resultSet.getString(index);
     } catch (SQLException e) {
-      throw exceptionWithCause("get JDBC timestamp result set value "+index, e);
+      throw exceptionWithCause("get JDBC clob result set value "+index, e);
     }
   }
 
   @Override
   public int getSqlType() {
-    return Types.TIMESTAMP;
+    return Types.CLOB;
   }
+
 }

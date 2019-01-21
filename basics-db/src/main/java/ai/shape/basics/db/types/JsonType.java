@@ -18,43 +18,10 @@
  */
 package ai.shape.basics.db.types;
 
-import ai.shape.basics.db.DataType;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import static ai.shape.basics.util.Exceptions.exceptionWithCause;
-
-public class JsonType implements DataType {
+public class JsonType extends ClobType {
 
   @Override
   public String getSql() {
     return "JSON";
   }
-
-  @Override
-  public void setParameter(PreparedStatement statement, int i, Object value) {
-    try {
-      if (value!=null) {
-        if (value instanceof String) {
-          statement.setString(i, (String)value);
-        } else {
-          throw new RuntimeException("Unsupported data type: "+value);
-        }
-      }
-    } catch (SQLException e) {
-      throw exceptionWithCause("set JDBC json parameter value "+value, e);
-    }
-  }
-
-  @Override
-  public String getResultSetValue(int index, ResultSet resultSet) {
-    try {
-      return resultSet.getString(index);
-    } catch (SQLException e) {
-      throw exceptionWithCause("get JDBC json result set value "+index, e);
-    }
-  }
-
 }

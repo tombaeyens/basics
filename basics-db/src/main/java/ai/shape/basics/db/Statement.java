@@ -104,7 +104,8 @@ public abstract class Statement {
         Parameter parameter = parameters.get(i);
         DataType type = parameter.getType();
         Object value = parameter.getValue();
-        type.setParameter(jdbcStatement, i + 1, value);
+        int jdbcParameterIndex = i + 1;
+        type.setParameter(jdbcStatement, jdbcParameterIndex, value);
         parameter.setLogValue(type.getLogText(value));
       }
     }

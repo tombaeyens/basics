@@ -24,15 +24,16 @@ import ai.shape.basics.db.SqlBuilder;
 import ai.shape.basics.db.Statement;
 import ai.shape.basics.util.Exceptions;
 
+import java.util.Collection;
 import java.util.List;
 
 
 public class InCondition implements Condition {
 
   Column column;
-  List<?> values;
+  Collection<?> values;
 
-  public InCondition(Column column, List<?> values) {
+  public InCondition(Column column, Collection<?> values) {
     this.column = column;
     this.values = values;
   }
@@ -42,7 +43,7 @@ public class InCondition implements Condition {
     sql.appendText(statement.getQualifiedColumnName(column)+" in (");
 
     if (values!=null) {
-      Object first = !values.isEmpty() ? values.get(0) : null;
+      Object first = !values.isEmpty() ? values.iterator().next() : null;
       for (Object value: values) {
         if (value!=first) {
           sql.appendText(",");

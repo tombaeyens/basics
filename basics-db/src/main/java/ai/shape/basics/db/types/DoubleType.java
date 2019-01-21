@@ -35,13 +35,13 @@ public class DoubleType implements DataType {
   }
 
   @Override
-  public void setParameter(PreparedStatement statement, int i, Object value) {
+  public void setParameter(PreparedStatement statement, int jdbcParameterIndex, Object value) {
     try {
       if (value!=null) {
         double doubleValue = ((Number) value).doubleValue();
-        statement.setDouble(i, doubleValue);
+        statement.setDouble(jdbcParameterIndex, doubleValue);
       } else {
-        statement.setNull(i, Types.DOUBLE);
+        statement.setNull(jdbcParameterIndex, Types.DOUBLE);
       }
     } catch (SQLException e) {
       throw exceptionWithCause("set JDBC double appendParameter value "+value, e);

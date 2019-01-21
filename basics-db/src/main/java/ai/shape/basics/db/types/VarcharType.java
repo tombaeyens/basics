@@ -53,7 +53,7 @@ public class VarcharType implements DataType {
   }
 
   @Override
-  public void setParameter(PreparedStatement statement, int i, Object value) {
+  public void setParameter(PreparedStatement statement, int jdbcParameterIndex, Object value) {
     try {
       String string = null;
 
@@ -65,10 +65,10 @@ public class VarcharType implements DataType {
 
       if (string!=null) {
         // logAllRows.debug("Setting param "+i+" to string value "+string);
-        statement.setString(i, string);
+        statement.setString(jdbcParameterIndex, string);
       } else {
         // logAllRows.debug("Setting param "+i+" to null");
-        statement.setNull(i, getSqlType());
+        statement.setNull(jdbcParameterIndex, getSqlType());
       }
 
     } catch (SQLException e) {
