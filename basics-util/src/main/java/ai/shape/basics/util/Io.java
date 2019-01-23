@@ -23,6 +23,8 @@ import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.Scanner;
 
+import static ai.shape.basics.util.Exceptions.exceptionWithCause;
+
 public class Io {
 
   public static final Charset UTF8 = Charset.forName("UTF-8");
@@ -131,9 +133,9 @@ public class Io {
       }
     } catch (Exception e) {
       if (cause != null) {
-        throw Exceptions.exceptionWithCause("close resource stream", cause);
+        throw exceptionWithCause("close resource stream", cause);
       } else {
-        throw Exceptions.exceptionWithCause("close resource stream", e);
+        throw exceptionWithCause("close resource stream", e);
       }
     }
   }
@@ -167,9 +169,9 @@ public class Io {
         buffer.close();
       } catch (IOException e) {
         if (exception!=null) {
-          throw Exceptions.exceptionWithCause("close buffer", exception);
+          throw exceptionWithCause("close buffer", exception);
         } else {
-          throw Exceptions.exceptionWithCause("close buffer", e);
+          throw exceptionWithCause("close buffer", e);
         }
       }
     }
@@ -216,7 +218,7 @@ public class Io {
           InputStream resourceStream = new FileInputStream(file);
           loadPropertiesFromStream(properties, resourceStream);
         } catch (FileNotFoundException e) {
-          throw Exceptions.exceptionWithCause("find proeprties file "+fileName, e);
+          throw exceptionWithCause("find proeprties file "+fileName, e);
         }
       }
     }
@@ -229,7 +231,7 @@ public class Io {
         properties.load(stream);
       } catch (Exception e) {
         exception = e;
-        throw Exceptions.exceptionWithCause("read properties", e);
+        throw exceptionWithCause("read properties", e);
       } finally {
         closeResourceStream(stream, exception);
       }
@@ -253,7 +255,7 @@ public class Io {
       byte[] bytes = getBytes(inputStream);
       return new String(bytes, charset!=null ? charset : UTF8);
     } catch (Exception e) {
-      throw Exceptions.exceptionWithCause("read file "+fileName, e);
+      throw exceptionWithCause("read file "+fileName, e);
     }
   }
 
@@ -265,7 +267,7 @@ public class Io {
     try {
       return File.createTempFile(prefix, suffix, directory);
     } catch (IOException e) {
-      throw Exceptions.exceptionWithCause("create temp file "+prefix+"..."+suffix, e);
+      throw exceptionWithCause("create temp file "+prefix+"..."+suffix, e);
     }
   }
 
@@ -277,7 +279,7 @@ public class Io {
     try {
       return new FileWriter(file);
     } catch (IOException e) {
-      throw Exceptions.exceptionWithCause("create file writer for "+file, e);
+      throw exceptionWithCause("create file writer for "+file, e);
     }
   }
 
@@ -289,7 +291,7 @@ public class Io {
     try {
       return new FileReader(file);
     } catch (IOException e) {
-      throw Exceptions.exceptionWithCause("create file reader for "+file, e);
+      throw exceptionWithCause("create file reader for "+file, e);
     }
   }
 
@@ -297,7 +299,7 @@ public class Io {
     try {
       return file!=null ? file.getCanonicalPath() : null;
     } catch (IOException e) {
-      throw Exceptions.exceptionWithCause("get canonical path for "+file, e);
+      throw exceptionWithCause("get canonical path for "+file, e);
     }
   }
 
@@ -311,6 +313,49 @@ public class Io {
 
   public static boolean isDirectory(String fileName) {
     return new File(fileName).isDirectory();
+  }
+
+  public static OutputStreamBlock writeTo(OutputStream outputStream) {
+    return new OutputStreamBlock(outputStream);
+  }
+
+  public static OutputStream createFileOutputStream(String fileName) {
+    try {
+      return new FileOutputStream(fileName);
+    } catch (FileNotFoundException e) {
+      throw exceptionWithCause("create FileOutputStream "+fileName, e);
+    }
+  }
+
+  public static class OutputStreamBlock {
+    String description;
+    OutputStream outputStream;
+    public OutputStreamBlock(OutputStream outputStream) {
+      this.outputStream = outputStream;
+    }
+    public OutputStreamBlock description(String description) {
+      this.description = description;
+      return this;
+    }
+    public void write(CheckedFunction<OutputStream> function) {
+      Exception exception = null;
+      try {
+        function.apply(outputStream);
+        outputStream.flush();
+      } catch (Exception e) {
+        throw exceptionWithCause(description, e);
+      } finally {
+        try {
+          outputStream.close();
+        } catch (IOException e) {
+          if (exception!=null) {
+            throw exceptionWithCause(description, exception);
+          } else {
+            throw exceptionWithCause(description, e);
+          }
+        }
+      }
+    }
   }
 
   public interface CheckedFunction<T> {
@@ -333,15 +378,15 @@ public class Io {
         function.apply(writer);
         writer.flush();
       } catch (Exception e) {
-        throw Exceptions.exceptionWithCause(description, e);
+        throw exceptionWithCause(description, e);
       } finally {
         try {
           writer.close();
         } catch (IOException e) {
           if (exception!=null) {
-            throw Exceptions.exceptionWithCause(description, exception);
+            throw exceptionWithCause(description, exception);
           } else {
-            throw Exceptions.exceptionWithCause(description, e);
+            throw exceptionWithCause(description, e);
           }
         }
       }
@@ -371,15 +416,15 @@ public class Io {
       try {
         return function.apply(reader);
       } catch (Exception e) {
-        throw Exceptions.exceptionWithCause(description, e);
+        throw exceptionWithCause(description, e);
       } finally {
         try {
           reader.close();
         } catch (IOException e) {
           if (exception!=null) {
-            throw Exceptions.exceptionWithCause(description, exception);
+            throw exceptionWithCause(description, exception);
           } else {
-            throw Exceptions.exceptionWithCause(description, e);
+            throw exceptionWithCause(description, e);
           }
         }
       }
@@ -389,15 +434,15 @@ public class Io {
       try {
         function.apply(reader);
       } catch (Exception e) {
-        throw Exceptions.exceptionWithCause(description, e);
+        throw exceptionWithCause(description, e);
       } finally {
         try {
           reader.close();
         } catch (IOException e) {
           if (exception!=null) {
-            throw Exceptions.exceptionWithCause(description, exception);
+            throw exceptionWithCause(description, exception);
           } else {
-            throw Exceptions.exceptionWithCause(description, e);
+            throw exceptionWithCause(description, e);
           }
         }
       }

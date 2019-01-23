@@ -66,12 +66,16 @@ public class Dialect {
     DataType type = column.getType();
     assertNotNull(type, "Column %d has type null", column.getIndex());
 
-    sql.appendText(column.getName() + " " + type.getSql());
+    sql.appendText(column.getName() + " " + getTypeSql(type));
 
     List<Constraint> constraints = column.getConstraints();
     if (constraints != null) {
       constraints.forEach(constraint -> appendCreateTableColumnConstraintSql(sql, constraint));
     }
+  }
+
+  protected String getTypeSql(DataType type) {
+    return type.getSql();
   }
 
   protected void appendCreateTableColumnConstraintSql(SqlBuilder sql, Constraint constraint) {

@@ -21,6 +21,7 @@ package ai.shape.basics.db.dialects;
 import ai.shape.basics.db.Column;
 import ai.shape.basics.db.DataType;
 import ai.shape.basics.db.Dialect;
+import ai.shape.basics.db.types.ClobType;
 import ai.shape.basics.db.types.JsonType;
 
 public class PostgreSQLDialect extends Dialect {
@@ -43,5 +44,11 @@ public class PostgreSQLDialect extends Dialect {
     super.initializeColumn(column);
   }
 
-
+  @Override
+  protected String getTypeSql(DataType type) {
+    if (type instanceof ClobType) {
+      return "TEXT";
+    }
+    return super.getTypeSql(type);
+  }
 }
