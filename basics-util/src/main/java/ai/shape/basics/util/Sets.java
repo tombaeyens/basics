@@ -18,6 +18,7 @@
  */
 package ai.shape.basics.util;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,4 +34,9 @@ public class Sets {
     }
     return set;
   }
+
+  public static boolean isNotEmpty(Collection<?> collection) {
+    return collection!=null && !collection.isEmpty();
+  }
+
 }
