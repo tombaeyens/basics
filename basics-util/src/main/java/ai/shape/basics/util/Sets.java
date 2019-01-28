@@ -20,6 +20,7 @@ package ai.shape.basics.util;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class Sets {
@@ -37,6 +38,9 @@ public class Sets {
 
   public static boolean isNotEmpty(Collection<?> collection) {
     return collection!=null && !collection.isEmpty();
+  }
+  public static boolean isNotEmpty(Map<?,?> map) {
+    return map!=null && !map.isEmpty();
   }
 
 }
