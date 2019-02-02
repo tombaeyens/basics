@@ -168,7 +168,7 @@ public class Tx {
   }
 
   /** Shortcut for: select fields ... (from table is automatically added for selectFields that are columns) */
-  public Select newSelect(Expression... expressions) {
+  public Select newSelect(FieldExpression... expressions) {
     return new Select(this).fields(expressions);
   }
 

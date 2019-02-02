@@ -27,7 +27,7 @@ import static ai.shape.basics.util.Exceptions.assertNotNullParameter;
 
 public class Select extends Statement {
 
-  protected List<ExpressionWithAlias> fields = new ArrayList<>();
+  protected List<FieldExpressionWithAlias> fields = new ArrayList<>();
   protected List<TableWithJoins> froms = new ArrayList<>();
 
   protected Integer limit;
@@ -74,28 +74,28 @@ public class Select extends Statement {
     return executeQuery();
   }
 
-  public Select fields(Expression... expressions) {
+  public Select fields(FieldExpression... expressions) {
     return fields(Arrays.asList(expressions));
   }
 
-  public Select fields(Collection<? extends Expression> expressions) {
+  public Select fields(Collection<? extends FieldExpression> expressions) {
     if (expressions!=null) {
-      for (Expression expression: expressions) {
+      for (FieldExpression expression: expressions) {
         field(expression);
       }
     }
     return this;
   }
 
-  public Select field(Expression expression) {
+  public Select field(FieldExpression expression) {
     return field(expression, null);
   }
 
-  public Select field(Expression expression, String alias) {
-    return field(new ExpressionWithAlias(expression, alias));
+  public Select field(FieldExpression expression, String alias) {
+    return field(new FieldExpressionWithAlias(expression, alias));
   }
 
-  protected Select field(ExpressionWithAlias expressionWithAlias) {
+  protected Select field(FieldExpressionWithAlias expressionWithAlias) {
     fields.add(expressionWithAlias);
     return this;
   }
@@ -172,7 +172,7 @@ public class Select extends Statement {
   /** Returns JDBC (meaning starts at 1) index of the results. */
   public Integer getSelectorJdbcIndex(Column column) {
     for (int i = 0; i< fields.size(); i++) {
-      ExpressionWithAlias expression = fields.get(i);
+      FieldExpressionWithAlias expression = fields.get(i);
       if (expression.isColumn(column)) {
         return i+1;
       }
@@ -180,12 +180,12 @@ public class Select extends Statement {
     return null;
   }
 
-  public Select orderAsc(Expression expression) {
+  public Select orderAsc(FieldExpression expression) {
     addOrderBy(new OrderBy.Ascending(expression));
     return this;
   }
 
-  public Select orderDesc(Expression expression) {
+  public Select orderDesc(FieldExpression expression) {
     addOrderBy(new OrderBy.Descending(expression));
     return this;
   }
@@ -205,7 +205,7 @@ public class Select extends Statement {
     return tx;
   }
 
-  public List<ExpressionWithAlias> getFields() {
+  public List<FieldExpressionWithAlias> getFields() {
     return fields;
   }
 

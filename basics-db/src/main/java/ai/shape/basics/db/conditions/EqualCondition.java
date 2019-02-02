@@ -23,10 +23,10 @@ import ai.shape.basics.db.*;
 
 public class EqualCondition implements Condition {
 
-  Expression expression;
+  FieldExpression expression;
   Object value;
 
-  public EqualCondition(Expression expression, Object value) {
+  public EqualCondition(FieldExpression expression, Object value) {
     this.expression = expression;
     this.value = value;
   }

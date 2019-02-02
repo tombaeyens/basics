@@ -19,14 +19,12 @@
 
 package ai.shape.basics.db;
 
-import java.util.List;
+public class FieldExpressionWithAlias {
 
-public class ExpressionWithAlias {
-
-  protected Expression expression;
+  protected FieldExpression expression;
   protected String alias;
 
-  public ExpressionWithAlias(Expression expression, String alias) {
+  public FieldExpressionWithAlias(FieldExpression expression, String alias) {
     this.expression = expression;
     this.alias = alias;
   }
@@ -39,13 +37,13 @@ public class ExpressionWithAlias {
     return expression==column;
   }
 
-  public Expression getExpression() {
+  public FieldExpression getExpression() {
     return this.expression;
   }
-  public void setExpression(Expression expression) {
+  public void setExpression(FieldExpression expression) {
     this.expression = expression;
   }
-  public ExpressionWithAlias expression(Expression expression) {
+  public FieldExpressionWithAlias expression(FieldExpression expression) {
     this.expression = expression;
     return this;
   }
@@ -56,7 +54,7 @@ public class ExpressionWithAlias {
   public void setAlias(String alias) {
     this.alias = alias;
   }
-  public ExpressionWithAlias alias(String alias) {
+  public FieldExpressionWithAlias alias(String alias) {
     this.alias = alias;
     return this;
   }

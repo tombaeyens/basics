@@ -27,7 +27,7 @@ import ai.shape.basics.db.types.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Column implements Expression {
+public class Column implements FieldExpression {
 
   protected Table table;
   protected String name;

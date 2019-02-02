@@ -20,12 +20,12 @@ package ai.shape.basics.db;
 
 import java.util.List;
 
-public abstract class Function implements Expression {
+public abstract class Function implements FieldExpression {
 
   public static class Lower extends Function {
-    Expression expression;
+    FieldExpression expression;
 
-    public Lower(Expression expression) {
+    public Lower(FieldExpression expression) {
       this.expression = expression;
     }
 

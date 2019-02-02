@@ -116,11 +116,11 @@ public class Dialect {
   }
 
   protected void appendSelectFieldsSql(SqlBuilder sql, Select select) {
-    List<ExpressionWithAlias> expressions = select.getFields();
+    List<FieldExpressionWithAlias> expressions = select.getFields();
     assertNotEmptyCollection(expressions, "fields is empty. Specify at least one non-null Column or Function in Tx.newSelect(...)");
 
-    ExpressionWithAlias first = expressions.get(0);
-    for (ExpressionWithAlias expression : expressions) {
+    FieldExpressionWithAlias first = expressions.get(0);
+    for (FieldExpressionWithAlias expression : expressions) {
       if (expression !=first) {
         sql.appendText(", ");
       }

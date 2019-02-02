@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static ai.shape.basics.db.SelectLogger.LogMode.ALL_ROWS_AT_THE_END;
 import static ai.shape.basics.db.SelectLogger.LogMode.ROW_BY_ROW;
@@ -49,7 +48,7 @@ public class SelectLogger {
   Tx tx;
   SelectResults selectResults;
   Select select;
-  List<ExpressionWithAlias> expressions;
+  List<FieldExpressionWithAlias> expressions;
   List<String> fieldNames = null;
   List<Integer> maxColumnLengths = null;
   List<List<String>> rowValues = new ArrayList<>();
@@ -167,7 +166,7 @@ public class SelectLogger {
       this.maxColumnLengths = new ArrayList<>();
       this.fieldNames = new ArrayList<>();
       for (int i = 0; i< expressions.size(); i++) {
-        ExpressionWithAlias expressionWithAlias = expressions.get(i);
+        FieldExpressionWithAlias expressionWithAlias = expressions.get(i);
         String alias = expressionWithAlias.getAlias();
         String fieldName = alias !=null ? alias : expressionWithAlias.getExpression().getTitle();
         maxColumnLengths.add(Math.min(fieldName.length(), MAX_COLUMN_LENGTH));

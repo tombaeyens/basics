@@ -77,7 +77,7 @@ public class SelectResults {
   }
 
   @SuppressWarnings("unchecked")
-  public <T> T get(Expression expression) {
+  public <T> T get(FieldExpression expression) {
     if (expression instanceof Column) {
       Column column = (Column) expression;
       Integer index = select.getSelectorJdbcIndex(column);
@@ -96,7 +96,7 @@ public class SelectResults {
    * @return the number of rows that were logged */
   public long logAllRows() {
     List<Object> nulls = getAll(selectResults -> {
-      for (ExpressionWithAlias field: select.getFields()) {
+      for (FieldExpressionWithAlias field: select.getFields()) {
         get(field.getExpression());
       }
       return null;

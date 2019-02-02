@@ -21,7 +21,7 @@ package ai.shape.basics.db;
 import java.util.List;
 
 /** Column, Function or * : values that can be retrieved in a select statement */
-public interface Expression {
+public interface FieldExpression {
 
   /** the title used above the column when logging */
   String getTitle();
