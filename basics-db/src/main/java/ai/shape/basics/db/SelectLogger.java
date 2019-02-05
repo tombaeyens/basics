@@ -143,6 +143,7 @@ public class SelectLogger {
     Object[] truncatedValues = new String[rowValues.size()];
     for (int i=0; i<rowValues.size(); i++) {
       String rowValue = rowValues.get(i);
+      rowValue = rowValue.replaceAll("(\\s)+"," ");
       if (rowValue!=null && rowValue.length()>MAX_COLUMN_LENGTH) {
         rowValue = rowValue.substring(0, MAX_COLUMN_LENGTH-3)+"...";
       }
