@@ -18,19 +18,16 @@
  */
 package ai.shape.basics.db.schema;
 
-import ai.shape.basics.db.AlterTableAdd;
-import ai.shape.basics.db.Column;
-import ai.shape.basics.db.Db;
-import ai.shape.basics.db.Table;
+import ai.shape.basics.db.*;
+import ai.shape.basics.db.constraints.ForeignKey;
+import ai.shape.basics.util.Sets;
 import ai.shape.basics.util.container.Initialize;
 import ai.shape.basics.util.container.Inject;
 import ai.shape.basics.util.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ai.shape.basics.db.Condition.*;
@@ -91,10 +88,55 @@ public class SchemaManager {
   /** Creates all the tables without any checks in the same order as they are passed in {@link #tables(Table...)}.  To be used in tests. */
   public void createSchema() {
     db.tx(tx->{
+      Map<Table, List<ForeignKey>> delayedForeignKeyConstraints = new LinkedHashMap<>();
+      Set<Table> createdTables = new HashSet<>();
       for (Table table: tables) {
-        tx.newCreateTable(table).execute();
+        List<ForeignKey> foreignKeysToNonCreatedTables = extractForeignKeysToNonCreatedTables(table, createdTables);
+        if (Sets.isNotEmpty(foreignKeysToNonCreatedTables)) {
+          delayedForeignKeyConstraints.put(table, foreignKeysToNonCreatedTables);
+        }
+        tx.newCreateTable(table)
+          .execute();
+        createdTables.add(table);
+      }
+      for (Table table: delayedForeignKeyConstraints.keySet()) {
+        List<ForeignKey> foreignKeys = delayedForeignKeyConstraints.get(table);
+        for (ForeignKey foreignKey: foreignKeys) {
+          tx.newAlterTableAdd(table)
+            .add(foreignKey)
+            .execute();
+          foreignKey.getFrom().getConstraints().add(foreignKey);
+        }
       }
     });
+  }
+
+  private List<ForeignKey> extractForeignKeysToNonCreatedTables(Table table, Set<Table> createdTables) {
+    List<ForeignKey> extractedForeignKeys = new ArrayList<>();
+    for (Column column: table.getColumns().values()) {
+      // This if is an optimisation: only start replacing the constraints collections
+      // if there is a foreign key pointing to a non created table
+      if (column.getConstraints()!=null
+          && column.getConstraints().stream()
+              .filter(constraint -> constraint instanceof ForeignKey)
+              .map(constraint -> (ForeignKey) constraint)
+              .filter(foreignKey -> !createdTables.contains(foreignKey.getTo().getTable()))
+              .findFirst()
+              .isPresent()) {
+
+        List<Constraint> constraintsWithoutExtractedForeignKeys = new ArrayList<>();
+        for (Constraint constraint: column.getConstraints()) {
+          if (constraint instanceof ForeignKey
+              && !createdTables.contains(((ForeignKey)constraint).getTo().getTable())) {
+            extractedForeignKeys.add((ForeignKey)constraint);
+          } else {
+            constraintsWithoutExtractedForeignKeys.add(constraint);
+          }
+        }
+        column.setConstraints(constraintsWithoutExtractedForeignKeys);
+      }
+    }
+    return extractedForeignKeys;
   }
 
   /** Drops all the tables without any checks in reverse order as they are passed in {@link #tables(Table...)}.  To be used in tests. */

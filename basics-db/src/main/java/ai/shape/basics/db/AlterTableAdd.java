@@ -18,6 +18,8 @@
  */
 package ai.shape.basics.db;
 
+import ai.shape.basics.db.constraints.ForeignKey;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,7 @@ public class AlterTableAdd extends Statement {
 
   Table table;
   List<Column> columns = new ArrayList<>();
+  List<ForeignKey> foreignKeys = new ArrayList<>();
 
   public AlterTableAdd(Tx tx, Table table) {
     super(tx);
@@ -33,6 +36,14 @@ public class AlterTableAdd extends Statement {
 
   public AlterTableAdd add(Column column) {
     columns.add(column);
+    return this;
+  }
+  public AlterTableAdd add(ForeignKey foreignKey) {
+    foreignKeys.add(foreignKey);
+    return this;
+  }
+  public AlterTableAdd addAll(List<ForeignKey> foreignKeys) {
+    this.foreignKeys.addAll(foreignKeys);
     return this;
   }
 
@@ -54,5 +65,9 @@ public class AlterTableAdd extends Statement {
 
   public List<Column> getColumns() {
     return columns;
+  }
+
+  public List<ForeignKey> getForeignKeys() {
+    return foreignKeys;
   }
 }

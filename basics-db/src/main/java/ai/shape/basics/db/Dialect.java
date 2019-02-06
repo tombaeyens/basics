@@ -18,6 +18,9 @@
  */
 package ai.shape.basics.db;
 
+import ai.shape.basics.db.constraints.ForeignKey;
+import ai.shape.basics.util.Sets;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -98,9 +101,51 @@ public class Dialect {
   // ALTER TABLE //////////////////////////////////////////////////////////////////////////////////////////
 
   public void buildAlterTableAddSql(SqlBuilder sql, AlterTableAdd alterTableAdd) {
-    sql.appendText("ALTER TABLE "+ alterTableAdd.getTable().getName()+" ADD (");
-    appendCreateTableColumnsSql(sql, alterTableAdd.getColumns());
-    sql.appendText("\n);");
+    sql.appendText("ALTER TABLE "+ alterTableAdd.getTable().getName()+" ");
+    List<Column> columns = alterTableAdd.getColumns();
+    if (Sets.isNotEmpty(columns)) {
+      appendAlterTableAddColumnsSql(sql, columns);
+    }
+    List<ForeignKey> foreignKeys = alterTableAdd.getForeignKeys();
+    if (Sets.isNotEmpty(foreignKeys)) {
+      appendAlterTableAddForeignKeysSql(sql, foreignKeys);
+    }
+    sql.appendText(";");
+  }
+
+  protected void appendAlterTableAddColumnsSql(SqlBuilder sql, Collection<Column> columns) {
+    boolean first = true;
+    for (Column column: columns) {
+      if (first) {
+        first = false;
+      } else {
+        sql.appendText(",");
+      }
+      sql.appendText("\n");
+      appendAlterTableAddColumnSql(sql, column);
+    }
+  }
+
+  private void appendAlterTableAddColumnSql(SqlBuilder sql, Column column) {
+    sql.appendText("ADD COLUMN ");
+    appendCreateTableColumnSql(sql, column);
+  }
+
+  private void appendAlterTableAddForeignKeysSql(SqlBuilder sql, List<ForeignKey> foreignKeys) {
+    boolean first = true;
+    for (ForeignKey foreignKey: foreignKeys) {
+      if (first) {
+        first = false;
+      } else {
+        sql.appendText(",");
+      }
+      sql.appendText("\n  ");
+      appendAlterTableAddForeignKeySql(sql, foreignKey);
+    }
+  }
+
+  private void appendAlterTableAddForeignKeySql(SqlBuilder sql, ForeignKey foreignKey) {
+    sql.appendText("ADD FOREIGN KEY ("+foreignKey.getFrom().getName()+") "+foreignKey.getCreateTableSql());
   }
 
   // SELECT //////////////////////////////////////////////////////////////////////////////////////////

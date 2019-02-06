@@ -103,6 +103,9 @@ public class Column implements FieldExpression {
   public List<Constraint> getConstraints() {
     return this.constraints;
   }
+  public void setConstraints(List<Constraint> constraints) {
+    this.constraints = constraints;
+  }
   public Column constraint(Constraint constraint) {
     if (constraints==null) {
       constraints = new ArrayList<>();
