@@ -102,8 +102,7 @@ public class SchemaManager {
       for (Table table: delayedForeignKeyConstraints.keySet()) {
         List<ForeignKey> foreignKeys = delayedForeignKeyConstraints.get(table);
         for (ForeignKey foreignKey: foreignKeys) {
-          tx.newAlterTableAdd(table)
-            .add(foreignKey)
+          tx.newAlterTableAddForeignKey(foreignKey)
             .execute();
           foreignKey.getFrom().getConstraints().add(foreignKey);
         }
@@ -277,18 +276,13 @@ public class SchemaManager {
               entry->entry.getValue()
             ));
 
-          AlterTableAdd alterTableAdd = tx.newAlterTableAdd(table);
-
           for (Column column: table.getColumns().values()) {
             String columnNameLowerCase = column.getName().toLowerCase();
             Column metaDataColumn = metaDataColumnsByNameLowerCase.get(columnNameLowerCase);
             if (metaDataColumn==null) {
-              alterTableAdd.add(column);
+              tx.newAlterTableAddColumn(column)
+                .execute();
             }
-          }
-
-          if (alterTableAdd.getColumns().size()>0) {
-            alterTableAdd.execute();
           }
 
         } else {

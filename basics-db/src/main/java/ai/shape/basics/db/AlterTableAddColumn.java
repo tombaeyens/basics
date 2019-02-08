@@ -23,28 +23,15 @@ import ai.shape.basics.db.constraints.ForeignKey;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AlterTableAdd extends Statement {
+public class AlterTableAddColumn extends Statement {
 
-  Table table;
-  List<Column> columns = new ArrayList<>();
-  List<ForeignKey> foreignKeys = new ArrayList<>();
+  // column is singular because H2 does not support
+  // ALTER TABLE ADD with multiple things to add
+  Column column;
 
-  public AlterTableAdd(Tx tx, Table table) {
+  public AlterTableAddColumn(Tx tx, Column column) {
     super(tx);
-    this.table = table;
-  }
-
-  public AlterTableAdd add(Column column) {
-    columns.add(column);
-    return this;
-  }
-  public AlterTableAdd add(ForeignKey foreignKey) {
-    foreignKeys.add(foreignKey);
-    return this;
-  }
-  public AlterTableAdd addAll(List<ForeignKey> foreignKeys) {
-    this.foreignKeys.addAll(foreignKeys);
-    return this;
+    this.column = column;
   }
 
   public int execute() {
@@ -53,21 +40,17 @@ public class AlterTableAdd extends Statement {
 
   @Override
   protected void buildSql(SqlBuilder sqlBuilder) {
-    getDialect().buildAlterTableAddSql(sqlBuilder, this);
+    getDialect().buildAlterTableAddColumnSql(sqlBuilder, this);
   }
 
   protected void logUpdateCount(int updateCount) {
   }
 
+  public Column getColumn() {
+    return column;
+  }
+
   public Table getTable() {
-    return table;
-  }
-
-  public List<Column> getColumns() {
-    return columns;
-  }
-
-  public List<ForeignKey> getForeignKeys() {
-    return foreignKeys;
+    return column.getTable();
   }
 }

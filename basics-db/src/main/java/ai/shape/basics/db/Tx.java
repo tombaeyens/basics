@@ -18,6 +18,7 @@
  */
 package ai.shape.basics.db;
 
+import ai.shape.basics.db.constraints.ForeignKey;
 import ai.shape.basics.util.Io;
 
 import java.sql.*;
@@ -159,8 +160,12 @@ public class Tx {
     return new DropTable(this, table);
   }
 
-  public AlterTableAdd newAlterTableAdd(Table table) {
-    return new AlterTableAdd(this, table);
+  public AlterTableAddForeignKey newAlterTableAddForeignKey(ForeignKey foreignKey) {
+    return new AlterTableAddForeignKey(this, foreignKey);
+  }
+
+  public AlterTableAddColumn newAlterTableAddColumn(Column column) {
+    return new AlterTableAddColumn(this, column);
   }
 
   public Select newSelect() {

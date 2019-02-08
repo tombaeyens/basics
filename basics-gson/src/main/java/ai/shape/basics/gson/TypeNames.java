@@ -17,13 +17,11 @@
  * under the License.
  */
 
-package ai.shape.basics.util;
+package ai.shape.basics.gson;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
-
-import static ai.shape.basics.util.Exceptions.assertTrue;
 
 public class TypeNames {
 
@@ -31,7 +29,9 @@ public class TypeNames {
   protected Map<Type,String> namesByType = new HashMap<>();
 
   public TypeNames typeName(Type type, String typeName) {
-    assertTrue(!typesByName.containsKey(typeName), "typeName %s already exists", typeName);
+    if (typesByName.containsKey(typeName)) {
+      throw new RuntimeException("typeName "+typeName+" already exists");
+    }
     typesByName.put(typeName, type);
     namesByType.put(type, typeName);
     return this;
