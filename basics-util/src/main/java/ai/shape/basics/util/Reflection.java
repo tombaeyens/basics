@@ -27,6 +27,23 @@ import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
 public class Reflection {
 
+  public static Method findMethodInClass(Class<?> clazz, String methodName) {
+    if (clazz==null || methodName==null) {
+      return null;
+    }
+    for (Method method: clazz.getDeclaredMethods()) {
+      if (methodName.equals(method.getName())) {
+        return method;
+      }
+    }
+    Class<?> superclass = clazz.getSuperclass();
+    if (superclass!=null) {
+      return findMethodInClass(superclass, methodName);
+    }
+    return null;
+
+  }
+
   public static Field findFieldInObject(Object target, String fieldName) {
     if (target==null || fieldName==null) {
       return null;
