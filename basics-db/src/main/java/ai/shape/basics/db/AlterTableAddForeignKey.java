@@ -19,10 +19,6 @@
 package ai.shape.basics.db;
 
 import ai.shape.basics.db.constraints.ForeignKey;
-import com.sun.tools.javac.util.Name;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /** DDL for ALTER TABLE ADD FOREIGN KEY. */
 public class AlterTableAddForeignKey extends Statement {
