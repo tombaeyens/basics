@@ -44,7 +44,6 @@
       <artifactId>c3p0</artifactId>
       <version>0.9.5.1</version>
     </dependency>
-
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
@@ -52,5 +51,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
 </project>
