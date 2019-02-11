@@ -7,7 +7,11 @@ So far the pull request https://github.com/google/gson/pull/1455 is not yet acce
 In order to build this library, you need to clone the 
 master branch in https://github.com/tombaeyens/gson
 and build it locally with 
-
 ```
 mvn clean install
+```
+
+Or just install locally :
+```
+mvn install:install-file -Dfile=./gson-2.8.6-SNAPSHOT.jar
 ```
