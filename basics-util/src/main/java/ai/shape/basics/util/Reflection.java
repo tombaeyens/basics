@@ -41,7 +41,6 @@ public class Reflection {
       return findMethodInClass(superclass, methodName);
     }
     return null;
-
   }
 
   public static Field findFieldInObject(Object target, String fieldName) {
