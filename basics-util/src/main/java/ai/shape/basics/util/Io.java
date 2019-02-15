@@ -203,6 +203,32 @@ public class Io {
     }
   }
 
+  /** does not perform flush and close on the input stream */
+  public static void transfer(InputStream inputStream, OutputStream outputStream) {
+    transfer(inputStream, outputStream, 16384);
+  }
+
+  /** does not perform flush and close on the input stream */
+  public static void transfer(InputStream inputStream, OutputStream outputStream, int bufferSize) {
+    if (inputStream==null) {
+      return;
+    }
+    if (outputStream==null) {
+      throw new RuntimeException("Writer is null and reader is not");
+    }
+    RuntimeException exception = null;
+    try {
+      int nRead;
+      byte[] data = new byte[bufferSize];
+      while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+        outputStream.write(data, 0, nRead);
+      }
+    } catch (IOException e) {
+      exception = new RuntimeException("Couldn't transfer chars from reader to writer: "+e.getMessage(), e);
+      throw exception;
+    }
+  }
+
   public static void loadPropertiesFromResource(Properties properties, String resource) {
     if (properties!=null && resource!=null) {
       InputStream resourceStream = Io.getResourceAsStream(resource);
