@@ -353,6 +353,18 @@ public class Io {
     }
   }
 
+  public static byte[] getBytes(File file) {
+    return getBytes(createFileInputStream(file));
+  }
+
+  public static FileInputStream createFileInputStream(File file) {
+    try {
+      return new FileInputStream(file);
+    } catch (FileNotFoundException e) {
+      throw exceptionWithCause("create file input stream", e);
+    }
+  }
+
   public static class OutputStreamBlock {
     String description;
     OutputStream outputStream;
