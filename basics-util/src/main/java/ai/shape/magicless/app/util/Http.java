@@ -70,6 +70,7 @@ public class Http {
     String ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
     String ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
     String COOKIE = "Cookie";
+    String SET_COOKIE = "Set-Cookie";
     String ACCEPT = "Accept";
   }
 

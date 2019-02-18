@@ -279,7 +279,7 @@ public class ClientResponse {
 
   public List<String> getHeader(String headerName) {
     if (headers != null) {
-      return headers.get(Http.Headers.CONTENT_TYPE);
+      return headers.get(headerName);
     }
     return null;
   }
