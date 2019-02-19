@@ -44,7 +44,6 @@
       <artifactId>jetty-all</artifactId>
       <version>9.4.7.v20170914</version>
       <type>pom</type>
-      <scope>provided</scope>
     </dependency>
 
   </dependencies>
