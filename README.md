@@ -1,17 +1,19 @@
-### The modified gson library needed
+### Build preparation
 
-The basics-gson requires a small change to the gson library.
+To build, you first need to install our modified version of the gson library
 
-So far the pull request https://github.com/google/gson/pull/1455 is not yet accepted.
+```
+mvn install:install-file -Dfile=../basics/basics-gson/src/main/gson-customized/gson-2.8.6-SNAPSHOT.jar -DgroupId=com.google.code.gson -DartifactId=gson -Dversion=2.8.6-SNAPSHOT -Dpackaging=jar
+```
 
-In order to build this library, you need to clone the 
-master branch in https://github.com/tombaeyens/gson
-and build it locally with 
+So far our pull request https://github.com/google/gson/pull/1455 is not yet accepted.
+The pull request also serves as documentation on what changed.
+
+### Build
+
 ```
 mvn clean install
 ```
 
-Or just install locally :
-```
-mvn install:install-file -Dfile=./gson-2.8.6-SNAPSHOT.jar
-```
+As a result of the build, the jars are added to your local repo and available in the 
+target directories.
