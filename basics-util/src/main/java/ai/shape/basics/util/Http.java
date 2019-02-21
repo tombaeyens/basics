@@ -71,6 +71,7 @@ public class Http {
     String ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
     String COOKIE = "Cookie";
     String ACCEPT = "Accept";
+    String SET_COOKIE = "Set-Cookie";
   }
 
   public interface ContentTypes {
