@@ -92,6 +92,20 @@ public class ProgramArgs {
     return nonOptions;
   }
 
+  /** throws RuntimeException if the option value is a string that cannot be parsed as an integer with Integer.parseInt() */
+  public int getOptionInt(String name, int defaultValue) {
+    String valueString = getOption(name, null);
+    if (valueString!=null) {
+      try {
+        return Integer.parseInt(valueString);
+      } catch (NumberFormatException e) {
+        throw new RuntimeException("Invalid integer value for option "+name+": "+valueString);
+      }
+    } else {
+      return defaultValue;
+    }
+  }
+
   public static class Syntax {
     Map<String,Option> optionsByShortName = new HashMap<>();
     Map<String,Option> optionsByLongName = new HashMap<>();
