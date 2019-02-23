@@ -177,6 +177,36 @@ public class Io {
     }
   }
 
+  /** flushes writer and closes both reader and writer */
+  public static void transferAndClose(Reader reader, Writer writer) {
+    try {
+      transfer(reader, writer, 16384);
+    } finally {
+      IOException first = null;
+      try {
+        writer.flush();
+      } catch (IOException e) {
+        e.printStackTrace();
+        first = e;
+      }
+      try {
+        reader.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+        first = first!=null ? first : e;
+      }
+      try {
+        writer.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+        first = first!=null ? first : e;
+      }
+      if (first!=null) {
+        throw exceptionWithCause("flush transfer streams", first);
+      }
+    }
+  }
+
   /** does not perform flush and close on the input stream */
   public static void transfer(Reader reader, Writer writer) {
     transfer(reader, writer, 16384);
