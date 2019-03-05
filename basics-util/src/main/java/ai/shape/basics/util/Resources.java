@@ -37,4 +37,13 @@ public class Resources {
   public static String getCodeSource(Class<?> clazz) {
     return getCodeSourceLocation(clazz).toString();
   }
+
+  /** For example
+   * /Code/shape/basics/basics-util/target/classes/
+   * /Code/shape/basics/basics-util/target/basics-util-1.0.0-SNAPSHOT.jar */  public static String getCodeSourceFile(Class<?> clazz) {
+    return getCodeSourceLocation(clazz)
+      .toString()
+      .substring(5);
+  }
+
 }
