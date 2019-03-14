@@ -36,6 +36,11 @@ public class ResourceRequestHandler implements RequestHandler {
   String basePath;
   Map<String, String> contentTypesByExtension;
   Set<String> indexFileNames;
+  /** The resource returned when the path is not found (Optional).
+   * This can be used in single page applications that want the index.html returned for URLs that don't match any resources.
+   * When the path is not found and notFoundResourceName is specified, then the response status will be 200 OK.
+   * When the path is not found and notFoundResourceName is not specified, this request handler will not match. */
+  String notFoundResourceName;
 
   public ResourceRequestHandler(String basePath) {
     this(basePath, createDefaultExtensions(), createDefaultIndexFileNames());
@@ -84,6 +89,10 @@ public class ResourceRequestHandler implements RequestHandler {
       request.setContextObject(REQUEST_CONTEXT_KEY_RESOURCE_PATH, resourcePath);
       return true;
     }
+    if (notFoundResourceName!=null) {
+      request.setContextObject(REQUEST_CONTEXT_KEY_RESOURCE_PATH, basePath+"/"+notFoundResourceName);
+      return true;
+    }
     return false;
   }
 
@@ -102,5 +111,14 @@ public class ResourceRequestHandler implements RequestHandler {
       return contentTypesByExtension.get(extension);
     }
     return null;
+  }
+
+  /** The resource returned when the path is not found (Optional).
+   * This can be used in single page applications that want the index.html returned for URLs that don't match any resources.
+   * When the path is not found and notFoundResourceName is specified, then the response status will be 200 OK.
+   * When the path is not found and notFoundResourceName is not specified, this request handler will not match. */
+  public ResourceRequestHandler notFoundResourceName(String notFoundResourceName) {
+    this.notFoundResourceName = notFoundResourceName;
+    return this;
   }
 }
