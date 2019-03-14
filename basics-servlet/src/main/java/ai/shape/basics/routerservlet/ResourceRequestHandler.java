@@ -24,6 +24,7 @@ import ai.shape.basics.util.Sets;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import static ai.shape.basics.util.Maps.entry;
 import static ai.shape.basics.util.Maps.hashMap;
@@ -89,16 +90,20 @@ public class ResourceRequestHandler implements RequestHandler {
       request.setContextObject(REQUEST_CONTEXT_KEY_RESOURCE_PATH, resourcePath);
       return true;
     }
-    if (notFoundResourceName!=null) {
-      request.setContextObject(REQUEST_CONTEXT_KEY_RESOURCE_PATH, basePath+"/"+notFoundResourceName);
-      return true;
-    }
-    return false;
+    return true;
   }
 
   @Override
   public void handle(ServerRequest request, ServerResponse response) {
     String resourcePath = request.getContextObject(REQUEST_CONTEXT_KEY_RESOURCE_PATH);
+    String pathInfo = request.getPathInfo();
+    if (resourcePath == null) {
+      if(pathInfo.contains("new/")){
+        resourcePath = "http/new/index.html";
+      } else {
+        response.sendRedirect("/");
+      }
+    }
     response.headerContentType(getContentType(resourcePath));
     byte[] resourceBytes = Io.getResourceAsBytes(resourcePath);
     response.bodyBytes(resourceBytes);
