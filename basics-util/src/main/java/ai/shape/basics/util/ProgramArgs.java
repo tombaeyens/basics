@@ -139,7 +139,7 @@ public class ProgramArgs {
       }
       return null;
     }
-    public ProgramArgs parse(String[] args) {
+    public ProgramArgs parse(String... args) {
       return new ProgramArgs(this, args);
     }
 
