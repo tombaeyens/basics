@@ -45,6 +45,10 @@ public interface Condition {
     return new OrCondition(andConditions);
   }
 
+  public static NotCondition not(Condition condition) {
+    return new NotCondition(condition);
+  }
+
   public static LikeCondition like(Column column, String pattern) {
     return new LikeCondition(column, pattern);
   }
