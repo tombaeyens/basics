@@ -31,4 +31,8 @@ public class TestIdGenerator implements IdGenerator {
   private String nextId() {
     return Long.toString(nextId++);
   }
+
+  public void setNextId(int nextId) {
+    this.nextId = nextId;
+  }
 }
