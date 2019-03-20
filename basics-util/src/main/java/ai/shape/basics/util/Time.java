@@ -32,4 +32,8 @@ public class Time {
   public static void setNow(LocalDateTime now) {
     Time.now = now;
   }
+
+  public static boolean isConfigured() {
+    return now!=null;
+  }
 }
