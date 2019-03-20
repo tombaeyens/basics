@@ -22,6 +22,8 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
@@ -367,6 +369,12 @@ public class Io {
     }
   }
 
+  public static void mkdirs(String dirPath) {
+    if (dirPath!=null) {
+      new File(dirPath).mkdirs();
+    }
+  }
+
   public static boolean isDirectory(String fileName) {
     return new File(fileName).isDirectory();
   }
@@ -538,5 +546,42 @@ public class Io {
       deleteDirectoryContentsRecursive(file);
     }
     file.delete();
+  }
+
+  public void unzip(String zipFilePath, String destinationDir) {
+    try {
+      String fileZip = zipFilePath;
+      File destDir = new File(destinationDir);
+      byte[] buffer = new byte[1024];
+      ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
+      ZipEntry zipEntry = zis.getNextEntry();
+      while (zipEntry != null) {
+        File newFile = unzipNewFile(destDir, zipEntry);
+        FileOutputStream fos = new FileOutputStream(newFile);
+        int len;
+        while ((len = zis.read(buffer)) > 0) {
+          fos.write(buffer, 0, len);
+        }
+        fos.close();
+        zipEntry = zis.getNextEntry();
+      }
+      zis.closeEntry();
+      zis.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  static File unzipNewFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+    File destFile = new File(destinationDir, zipEntry.getName());
+
+    String destDirPath = destinationDir.getCanonicalPath();
+    String destFilePath = destFile.getCanonicalPath();
+
+    if (!destFilePath.startsWith(destDirPath + File.separator)) {
+      throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+    }
+
+    return destFile;
   }
 }
