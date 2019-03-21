@@ -19,7 +19,10 @@
 package ai.shape.basics.db;
 
 import ai.shape.basics.db.constraints.ForeignKey;
+import ai.shape.basics.util.Exceptions;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 
 import static ai.shape.basics.util.Exceptions.assertNotNull;
@@ -40,6 +43,20 @@ public class Select extends Statement {
   @Override
   protected void buildSql(SqlBuilder sqlBuilder) {
     getDialect().buildSelectSql(sqlBuilder, this);
+  }
+
+  /* overriden to set the limit */
+  @Override
+  protected PreparedStatement createPreparedStatement(SqlBuilder sql) {
+    PreparedStatement preparedStatement = super.createPreparedStatement(sql);
+    if (limit!=null) {
+      try {
+        preparedStatement.setMaxRows(limit);
+      } catch (SQLException e) {
+        throw Exceptions.exceptionWithCause("set JDBC limit on prepared statement", e);
+      }
+    }
+    return preparedStatement;
   }
 
   public SelectResults execute() {
