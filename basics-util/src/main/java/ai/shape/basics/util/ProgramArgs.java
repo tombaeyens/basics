@@ -92,6 +92,21 @@ public class ProgramArgs {
     return nonOptions;
   }
 
+  public Boolean getOptionBoolean(String name, Boolean defaultValue) {
+    String valueString = getOption(name, null);
+    if (Strings.isNonEmpty(valueString)) {
+      if ("true".equals(valueString.toLowerCase())) {
+        return Boolean.TRUE;
+      }
+      if ("false".equals(valueString.toLowerCase())) {
+        return Boolean.FALSE;
+      }
+      throw new RuntimeException("Invalid boolean value for option "+name+": "+valueString);
+    } else {
+      return defaultValue;
+    }
+  }
+
   /** throws RuntimeException if the option value is a string that cannot be parsed as an integer with Integer.parseInt() */
   public int getOptionInt(String name, int defaultValue) {
     String valueString = getOption(name, null);
@@ -104,6 +119,10 @@ public class ProgramArgs {
     } else {
       return defaultValue;
     }
+  }
+
+  public boolean hasOption(String name) {
+    return options.containsKey(name);
   }
 
   public static class Syntax {
