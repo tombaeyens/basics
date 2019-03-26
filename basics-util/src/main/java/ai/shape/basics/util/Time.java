@@ -22,6 +22,10 @@ import java.time.LocalDateTime;
 
 public class Time {
 
+//  public static setTimeZoneToUTC() {
+//    LocalDateTime.
+//  }
+
   static LocalDateTime now = null;
 
   public static LocalDateTime now() {
