@@ -19,17 +19,20 @@
 package ai.shape.basics.util;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class Time {
 
-//  public static setTimeZoneToUTC() {
-//    LocalDateTime.
-//  }
+  static ZoneId UTC_ZONE_ID = ZoneId.of("UTC").normalized();
 
   static LocalDateTime now = null;
 
   public static LocalDateTime now() {
-    return now!=null ? now : LocalDateTime.now();
+    return now!=null ? now : createNowInUtc();
+  }
+
+  public static LocalDateTime createNowInUtc() {
+    return LocalDateTime.now(UTC_ZONE_ID);
   }
 
   /** to be used by tests */

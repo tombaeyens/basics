@@ -22,8 +22,9 @@ package ai.shape.basics.gson;
 import com.google.gson.*;
 
 import java.lang.reflect.Type;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 
 
 /** Usage while building a Gson object
@@ -36,16 +37,23 @@ import java.time.format.DateTimeFormatter;
  */
 public class LocalDateTimeConverter implements JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime> {
 
-  private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+  private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+  public static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC").normalized();
 
   @Override
-  public JsonElement serialize(LocalDateTime src, Type typeOfSrc, JsonSerializationContext context) {
-    return new JsonPrimitive(FORMATTER.format(src));
+  public JsonElement serialize(LocalDateTime localDateTime, Type typeOfSrc, JsonSerializationContext context) {
+    return new JsonPrimitive(FORMATTER.format(localDateTime.atOffset(ZoneOffset.UTC)));
   }
 
   @Override
-  public LocalDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-    throws JsonParseException {
-    return FORMATTER.parse(json.getAsString(), LocalDateTime::from);
+  public LocalDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    String dateTimeString = json.getAsString();
+    if (!dateTimeString.endsWith("Z")) {
+      dateTimeString += "Z";
+    }
+    TemporalAccessor temporalAccessor = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(dateTimeString);
+    OffsetDateTime offsetDateTime = OffsetDateTime.from(temporalAccessor);
+    ZonedDateTime zonedDateTime = offsetDateTime.atZoneSameInstant(UTC_ZONE_ID);
+    return zonedDateTime.toLocalDateTime();
   }
 }
