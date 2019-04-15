@@ -39,8 +39,18 @@ public class Sets {
   public static boolean isNotEmpty(Collection<?> collection) {
     return collection!=null && !collection.isEmpty();
   }
+
   public static boolean isNotEmpty(Map<?,?> map) {
     return map!=null && !map.isEmpty();
   }
 
+  public static <T> Set<T> flatHashSet(Set<T>... sets) {
+    HashSet<T> flatSets = new HashSet<>();
+    if (sets!=null) {
+      for (Set<T> set: sets) {
+        flatSets.addAll(set);
+      }
+    }
+    return flatSets;
+  }
 }
