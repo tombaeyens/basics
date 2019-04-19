@@ -18,7 +18,11 @@
  */
 package ai.shape.basics.db;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
+import ai.shape.basics.db.dialects.H2Dialect;
+import ai.shape.basics.db.dialects.MySQLDialect;
+import ai.shape.basics.db.dialects.PostgreSQLDialect;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,53 +32,109 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Properties;
 
-import static ai.shape.basics.util.Exceptions.assertNotNull;
 import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
 public class Db {
 
   public static final Logger DB_LOGGER = LoggerFactory.getLogger(Db.class);
 
+  public static final String PROPERTY_NAME_JDBC_URL = "jdbcUrl";
+  public static final String PROPERTY_NAME_USER = "user";
+  public static final String PROPERTY_NAME_PASSWORD = "password";
+  public static final String PROPERTY_NAME_PROCESS_REF = "process.ref";
+
   protected DataSource dataSource;
   protected Dialect dialect;
   protected String processRef;
 
-  public Db(DbConfiguration dbConfiguration) {
-    assertNotNull(dbConfiguration.getUrl(), "shape.db.url is null");
-    assertNotNull(dbConfiguration.getDialect(), "Coudn't detect dialect from shape.db.url %s", dbConfiguration.getUrl());
-
+  /**
+   * For docs see https://github.com/brettwooldridge/HikariCP
+   *
+   * From https://github.com/brettwooldridge/HikariCP/wiki/MySQL-Configuration :
+   *
+   * A typical MySQL configuration for HikariCP might look something like this:
+   *
+   * jdbcUrl=jdbc:mysql://localhost:3306/simpsons
+   * user=test
+   * password=test
+   * dataSource.cachePrepStmts=true
+   * dataSource.prepStmtCacheSize=250
+   * dataSource.prepStmtCacheSqlLimit=2048
+   * dataSource.useServerPrepStmts=true
+   * dataSource.useLocalSessionState=true
+   * dataSource.rewriteBatchedStatements=true
+   * dataSource.cacheResultSetMetadata=true
+   * dataSource.cacheServerConfiguration=true
+   * dataSource.elideSetAutoCommits=true
+   * dataSource.maintainTimeStats=false
+   */
+  public Db(Properties properties) {
     try {
-      ComboPooledDataSource dataSource = new ComboPooledDataSource();
-
-      DB_LOGGER.debug("driver  : "+dbConfiguration.getDriver());
-      DB_LOGGER.debug("url     : "+dbConfiguration.getUrl());
-      DB_LOGGER.debug("username: "+dbConfiguration.getUsername());
-
-      this.dataSource = dataSource;
-      dataSource.setDriverClass(dbConfiguration.getDriver()); //loads the jdbc driver
-      dataSource.setJdbcUrl(dbConfiguration.getUrl());
-      dataSource.setUser(dbConfiguration.getUsername());
-      dataSource.setPassword(dbConfiguration.getPassword());
-      dataSource.setAcquireRetryAttempts(1);
-      dataSource.setMinPoolSize(1);
-
-      // the settings below are optional -- c3p0 can work with defaults
-      // dataSource.setMinPoolSize(5);
-      // dataSource.setAcquireIncrement(5);
-      // dataSource.setMaxPoolSize(20);
-
-      this.dialect = dbConfiguration.getDialect();
-      this.processRef = initializeProcessRef(dbConfiguration);
-
+      DB_LOGGER.debug("Creating Db "+properties.getProperty(PROPERTY_NAME_JDBC_URL));
+      DB_LOGGER.debug("Creating Db "+properties);
+      this.dataSource = createDataSource(properties);
+      this.dialect = getDialect(properties);
+      this.processRef = initializeProcessRef(properties);
 
     } catch (Exception e) {
-      throw exceptionWithCause("create data source " + dbConfiguration.getUrl(), e);
+      throw exceptionWithCause("create DataSource with configuration "+properties, e);
     }
   }
 
-  protected String initializeProcessRef(DbConfiguration dbConfiguration) {
-    String processRef = dbConfiguration.getProcessRef();
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+    Properties properties = new Properties();
+    public Builder property(String name, String value) {
+      if (name!=null && value!=null) {
+        properties.setProperty(name, value);
+      }
+      return this;
+    }
+    public Db build() {
+      return new Db(properties);
+    }
+  }
+
+  protected Dialect getDialect(Properties properties) {
+    String jdbcUrl = properties.getProperty(PROPERTY_NAME_JDBC_URL);
+    String dbType = getDbTypeTextFromUrl(jdbcUrl);
+    if ("h2".equals(dbType)) {
+      return H2Dialect.INSTANCE;
+    } else if ("postgresql".equals(dbType)) {
+      return PostgreSQLDialect.INSTANCE;
+    } else if ("mysql".equals(dbType)) {
+      return MySQLDialect.INSTANCE;
+    }
+    throw new RuntimeException("Database type "+dbType+" not supported "+ PROPERTY_NAME_JDBC_URL +"="+jdbcUrl+" ");
+  }
+
+  protected String getDbTypeTextFromUrl(String url) {
+    // Calculate the dialect from the url
+    if (url.startsWith("jdbc:") && url.length()>6) {
+      int endIndex = url.indexOf(":", 5);
+      if (endIndex!=-1) {
+        return url.substring(5, endIndex);
+      }
+    }
+    return null;
+  }
+
+  private DataSource createDataSource(Properties properties) {
+    try {
+      HikariConfig hikariConfig = new HikariConfig(properties);
+      return new HikariDataSource(hikariConfig);
+    } catch (Exception e) {
+      throw exceptionWithCause("create DataSource with properties "+properties, e);
+    }
+  }
+
+  protected String initializeProcessRef(Properties properties) {
+    String processRef = properties.getProperty(PROPERTY_NAME_PROCESS_REF);
     if (processRef==null) {
       processRef = ManagementFactory.getRuntimeMXBean().getName();
       if (processRef==null) {
@@ -135,5 +195,4 @@ public class Db {
   public String getProcess() {
     return processRef;
   }
-
 }

@@ -22,6 +22,7 @@ import ai.shape.basics.db.Column;
 import ai.shape.basics.db.DataType;
 import ai.shape.basics.db.Dialect;
 import ai.shape.basics.db.types.ClobType;
+import ai.shape.basics.db.types.DoubleType;
 import ai.shape.basics.db.types.JsonType;
 
 public class PostgreSQLDialect extends Dialect {
@@ -48,6 +49,8 @@ public class PostgreSQLDialect extends Dialect {
   protected String getTypeSql(DataType type) {
     if (type instanceof ClobType) {
       return "TEXT";
+    } else if (type instanceof DoubleType) {
+      return "DOUBLE PRECISION";
     }
     return super.getTypeSql(type);
   }

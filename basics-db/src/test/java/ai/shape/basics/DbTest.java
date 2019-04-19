@@ -19,7 +19,6 @@
 package ai.shape.basics;
 
 import ai.shape.basics.db.Db;
-import ai.shape.basics.db.DbConfiguration;
 import ai.shape.basics.db.schema.SchemaManager;
 import ai.shape.basics.tables.UsersDao;
 import org.junit.Test;
@@ -32,8 +31,9 @@ public class DbTest {
 
   @Test
   public void testDb() throws Exception {
-    Db db = new Db(new DbConfiguration()
-      .url("jdbc:h2:mem:test"));
+    Db db = Db.builder()
+      .property(Db.PROPERTY_NAME_JDBC_URL, "jdbc:h2:mem:test")
+      .build();
 
     // creates the schema history
     log.debug("Schema manager 1: creating the schema history table");

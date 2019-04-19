@@ -104,4 +104,25 @@ public class Configuration {
     properties.remove(name);
     return this;
   }
+
+  public Properties getProperties() {
+    return properties;
+  }
+
+  public Properties getPropertiesWithPrefixRemoved(String prefix) {
+    return getPropertiesWithPrefixRemoved(properties, prefix);
+  }
+
+  public static Properties getPropertiesWithPrefixRemoved(Properties properties, String prefix) {
+    Properties filteredProperties = new Properties();
+    int prefixLength = prefix.length();
+    for (String propertyName: properties.stringPropertyNames()) {
+      if (propertyName.startsWith(prefix)) {
+        String filteredPropertyName = propertyName.substring(prefixLength);
+        String propertyValue = properties.getProperty(propertyName);
+        filteredProperties.setProperty(filteredPropertyName, propertyValue);
+      }
+    }
+    return filteredProperties;
+  }
 }

@@ -20,10 +20,12 @@ package ai.shape.basics.db;
 
 import ai.shape.basics.db.constraints.ForeignKey;
 import ai.shape.basics.util.Io;
+import ai.shape.basics.util.Sets;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static ai.shape.basics.db.Db.DB_LOGGER;
 import static ai.shape.basics.util.Exceptions.exceptionWithCause;
@@ -126,25 +128,28 @@ public class Tx {
     }
   }
 
+  private static final Set<String> IGNORED_TABLE_NAMES = Sets.hashSet("sys_config");
   public List<Table> getMetaDataTables() {
     List<Table> tables = new ArrayList<>();
     try {
-      ResultSet tablesResultSet = connection.getMetaData().getTables(null, null, "%", new String[]{"TABLE"});
+      DatabaseMetaData databaseMetaData = connection.getMetaData();
+      ResultSet tablesResultSet = databaseMetaData.getTables(null, null, null, new String[]{"TABLE"});
       while (tablesResultSet.next()) {
-        Table table = new Table();
-        table.name(tablesResultSet.getString(3));
+        String tableName = tablesResultSet.getString("TABLE_NAME");
+        if (!IGNORED_TABLE_NAMES.contains(tableName)) {
+          Table table = new Table();
+          table.name(tableName);
 
-        ResultSetMetaData resultSetMetaData = connection
-          .createStatement()
-          .executeQuery("select * from " + table.getName())
-          .getMetaData();
-        for (int i=1; i<=resultSetMetaData.getColumnCount(); i++) {
-          Column column = new Column();
-          column.name(resultSetMetaData.getColumnLabel(i));
-          table.column(column);
+          ResultSet columnsResultSet = databaseMetaData.getColumns(null,null, tableName, null);
+          while(columnsResultSet.next()) {
+            String columnName = columnsResultSet.getString("COLUMN_NAME");
+            Column column = new Column();
+            column.name(columnName);
+            table.column(column);
+          }
+
+          tables.add(table);
         }
-
-        tables.add(table);
       }
       return tables;
     } catch (SQLException e) {
