@@ -79,7 +79,7 @@ public class Db {
       this.processRef = initializeProcessRef(properties);
 
     } catch (Exception e) {
-      throw exceptionWithCause("create DataSource with configuration "+properties, e);
+      throw exceptionWithCause("create Db with properties "+properties, e);
     }
   }
 
@@ -125,12 +125,8 @@ public class Db {
   }
 
   private DataSource createDataSource(Properties properties) {
-    try {
-      HikariConfig hikariConfig = new HikariConfig(properties);
-      return new HikariDataSource(hikariConfig);
-    } catch (Exception e) {
-      throw exceptionWithCause("create DataSource with properties "+properties, e);
-    }
+    HikariConfig hikariConfig = new HikariConfig(properties);
+    return new HikariDataSource(hikariConfig);
   }
 
   protected String initializeProcessRef(Properties properties) {
