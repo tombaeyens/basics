@@ -125,6 +125,7 @@ public class Db {
   }
 
   private DataSource createDataSource(Properties properties) {
+    DB_LOGGER.debug("Creating Hikari DataSource with configuration "+properties);
     HikariConfig hikariConfig = new HikariConfig(properties);
     return new HikariDataSource(hikariConfig);
   }
