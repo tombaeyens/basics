@@ -103,11 +103,11 @@ public class Db {
   protected Dialect getDialect(Properties properties) {
     String jdbcUrl = properties.getProperty(PROPERTY_NAME_JDBC_URL);
     String dbType = getDbTypeTextFromUrl(jdbcUrl);
-    if ("h2".equals(dbType)) {
+    if (dbType.contains("h2")) {
       return H2Dialect.INSTANCE;
-    } else if ("postgresql".equals(dbType)) {
+    } else if (dbType.contains("postgresql")) {
       return PostgreSQLDialect.INSTANCE;
-    } else if ("mysql".equals(dbType)) {
+    } else if (dbType.contains("mysql")) {
       return MySQLDialect.INSTANCE;
     }
     throw new RuntimeException("Database type "+dbType+" not supported "+ PROPERTY_NAME_JDBC_URL +"="+jdbcUrl+" ");
