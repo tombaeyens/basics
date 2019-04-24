@@ -20,6 +20,7 @@ package ai.shape.basics.db.schema;
 
 import ai.shape.basics.db.*;
 import ai.shape.basics.db.constraints.ForeignKey;
+import ai.shape.basics.util.Lists;
 import ai.shape.basics.util.Sets;
 import ai.shape.basics.util.container.Initialize;
 import ai.shape.basics.util.container.Inject;
@@ -140,8 +141,12 @@ public class SchemaManager {
 
   /** Drops all the tables without any checks in reverse order as they are passed in {@link #tables(Table...)}.  To be used in tests. */
   public void dropSchema() {
+    dropTables(Lists.reverse(tables));
+  }
+
+  public void dropTables(List<Table> tables) {
     db.tx(tx->{
-      for (int i=tables.size()-1; i>=0; i--) {
+      for (int i = tables.size()-1; i>=0; i--) {
         tx.newDropTable(tables.get(i))
           .ifExists()
           .execute();
