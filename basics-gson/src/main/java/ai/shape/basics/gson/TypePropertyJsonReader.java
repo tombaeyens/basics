@@ -76,7 +76,6 @@ public class TypePropertyJsonReader extends JsonReader {
     try {
       while ( in.peek()!=JsonToken.END_OBJECT
               && nextPropertyNameIsNotType() ) {
-        System.out.println("Caching value");
         cacheValueTokens();
       }
       return typeName;
@@ -90,10 +89,8 @@ public class TypePropertyJsonReader extends JsonReader {
       String propertyName = in.nextName();
       if (typePropertyName.equals(propertyName)) {
         typeName = in.nextString();
-        System.out.println("typeName = "+typeName);
         return false;
       } else {
-        System.out.println("Caching property name "+propertyName);
         addTokenToCache(new TokenValue(NAME, propertyName));
       }
     }
@@ -201,7 +198,6 @@ public class TypePropertyJsonReader extends JsonReader {
   @Override
   public String nextName() throws IOException {
     if (cacheHasMoreTokens()) {
-//      System.out.println("")
       return (String) consumeNextFromCache(NAME);
     } else {
       return logDelegation(in.nextName(), "nextName");
