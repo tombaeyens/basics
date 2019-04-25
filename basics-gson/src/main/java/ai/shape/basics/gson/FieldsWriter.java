@@ -18,7 +18,7 @@
  */
 package ai.shape.basics.gson;
 
-import com.google.gson.stream.JsonWriter;
+import ai.shape.com.google.gson.stream.JsonWriter;
 
 public class FieldsWriter {
 

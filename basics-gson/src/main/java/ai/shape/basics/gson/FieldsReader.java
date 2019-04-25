@@ -18,7 +18,7 @@
  */
 package ai.shape.basics.gson;
 
-import com.google.gson.stream.JsonReader;
+import ai.shape.com.google.gson.stream.JsonReader;
 
 public class FieldsReader {
 

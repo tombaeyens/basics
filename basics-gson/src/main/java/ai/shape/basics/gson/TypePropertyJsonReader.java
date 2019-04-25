@@ -18,16 +18,16 @@
  */
 package ai.shape.basics.gson;
 
-import com.google.gson.internal.JsonReaderInternalAccess;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
+import ai.shape.com.google.gson.internal.JsonReaderInternalAccess;
+import ai.shape.com.google.gson.stream.JsonReader;
+import ai.shape.com.google.gson.stream.JsonToken;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.gson.stream.JsonToken.*;
+import static ai.shape.com.google.gson.stream.JsonToken.*;
 
 /**
  * Helper for {@link TypePropertyStrategy} that provides access to the type property
@@ -76,6 +76,7 @@ public class TypePropertyJsonReader extends JsonReader {
     try {
       while ( in.peek()!=JsonToken.END_OBJECT
               && nextPropertyNameIsNotType() ) {
+        System.out.println("Caching value");
         cacheValueTokens();
       }
       return typeName;
@@ -89,8 +90,10 @@ public class TypePropertyJsonReader extends JsonReader {
       String propertyName = in.nextName();
       if (typePropertyName.equals(propertyName)) {
         typeName = in.nextString();
+        System.out.println("typeName = "+typeName);
         return false;
       } else {
+        System.out.println("Caching property name "+propertyName);
         addTokenToCache(new TokenValue(NAME, propertyName));
       }
     }
@@ -198,6 +201,7 @@ public class TypePropertyJsonReader extends JsonReader {
   @Override
   public String nextName() throws IOException {
     if (cacheHasMoreTokens()) {
+//      System.out.println("")
       return (String) consumeNextFromCache(NAME);
     } else {
       return logDelegation(in.nextName(), "nextName");

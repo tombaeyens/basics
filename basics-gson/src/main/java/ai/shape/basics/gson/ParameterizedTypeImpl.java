@@ -23,8 +23,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
-import static com.google.gson.internal.$Gson$Types.canonicalize;
-import static com.google.gson.internal.$Gson$Types.typeToString;
+import static ai.shape.com.google.gson.internal.$Gson$Types.canonicalize;
+import static ai.shape.com.google.gson.internal.$Gson$Types.typeToString;
 
 public class ParameterizedTypeImpl implements ParameterizedType, Serializable {
 

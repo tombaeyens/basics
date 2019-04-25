@@ -18,10 +18,10 @@
  */
 package ai.shape.basics.gson;
 
-import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
+import ai.shape.com.google.gson.Gson;
+import ai.shape.com.google.gson.TypeAdapter;
+import ai.shape.com.google.gson.TypeAdapterFactory;
+import ai.shape.com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
@@ -80,7 +80,7 @@ public class PolymorphicTypeAdapterFactory implements TypeAdapterFactory {
     // adapter for the whole hierarchy
 
     // https://google.github.io/gson/apidocs/com/google/gson/TypeAdapterFactory.html
-    // If a factory cannot support a given type, it must return null when that type is passed to create(com.google.gson.Gson, com.google.gson.reflect.TypeToken<T>)
+    // If a factory cannot support a given type, it must return null when that type is passed to create(Gson, TypeToken<T>)
 
     if (type.getType() instanceof WildcardType) {
       WildcardType wildcardType = (WildcardType) type.getType();

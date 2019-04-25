@@ -18,7 +18,7 @@
  */
 package ai.shape.basics.gson;
 
-import com.google.gson.reflect.TypeToken;
+import ai.shape.com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;

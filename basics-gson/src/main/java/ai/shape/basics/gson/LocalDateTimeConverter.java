@@ -19,7 +19,7 @@
 
 package ai.shape.basics.gson;
 
-import com.google.gson.*;
+import ai.shape.com.google.gson.*;
 
 import java.lang.reflect.Type;
 import java.time.*;

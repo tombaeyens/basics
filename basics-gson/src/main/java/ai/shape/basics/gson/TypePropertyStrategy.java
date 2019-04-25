@@ -18,8 +18,8 @@
  */
 package ai.shape.basics.gson;
 
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import ai.shape.com.google.gson.stream.JsonReader;
+import ai.shape.com.google.gson.stream.JsonWriter;
 
 public class TypePropertyStrategy implements PolymorphicTypeNameStrategy {
 
@@ -31,6 +31,8 @@ public class TypePropertyStrategy implements PolymorphicTypeNameStrategy {
 
   @Override
   public Object read(JsonReader in, PolymorphicTypeAdapter<?> typeAdapter) throws Exception {
+    System.out.println("Reading "+typeAdapter.polymorphicTypesByName.keySet());
+
     TypePropertyJsonReader typeIn = new TypePropertyJsonReader(in, typePropertyName);
     FieldsReader fieldsReader = new FieldsReader(typeIn, typeAdapter);
     in.beginObject();

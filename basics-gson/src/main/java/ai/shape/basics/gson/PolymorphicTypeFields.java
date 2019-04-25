@@ -18,12 +18,12 @@
  */
 package ai.shape.basics.gson;
 
-import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
+import ai.shape.com.google.gson.Gson;
+import ai.shape.com.google.gson.TypeAdapter;
+import ai.shape.com.google.gson.reflect.TypeToken;
+import ai.shape.com.google.gson.stream.JsonReader;
+import ai.shape.com.google.gson.stream.JsonToken;
+import ai.shape.com.google.gson.stream.JsonWriter;
 
 import java.lang.reflect.*;
 import java.util.*;

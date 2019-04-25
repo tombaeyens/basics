@@ -18,8 +18,8 @@
  */
 package ai.shape.basics.gson;
 
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import ai.shape.com.google.gson.stream.JsonReader;
+import ai.shape.com.google.gson.stream.JsonWriter;
 
 /** represents how the type information is encoded in the JSON
  *
