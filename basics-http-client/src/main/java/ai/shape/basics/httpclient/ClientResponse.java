@@ -229,10 +229,14 @@ public class ClientResponse {
       ? new ParameterType(type, genericTypeArgs)
       : type;
 
+    String body = getBody();
+    System.out.println("");
+    System.out.println("RESPONSE BODY STRING:");
+    System.out.println(body);
     return (T) request
       .getHttpClient()
       .getSerializer()
-      .deserialize(getBody(), combinedType);
+      .deserialize(body, combinedType);
   }
 
   @SuppressWarnings("unchecked")
