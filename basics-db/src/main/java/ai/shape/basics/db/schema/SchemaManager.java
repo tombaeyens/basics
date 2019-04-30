@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import static ai.shape.basics.db.Condition.*;
 import static ai.shape.basics.db.schema.SchemaHistoryTable.Columns;
+import static java.util.stream.Collectors.toMap;
 
 public class SchemaManager {
 
@@ -100,15 +101,19 @@ public class SchemaManager {
           .execute();
         createdTables.add(table);
       }
-      for (Table table: delayedForeignKeyConstraints.keySet()) {
-        List<ForeignKey> foreignKeys = delayedForeignKeyConstraints.get(table);
-        for (ForeignKey foreignKey: foreignKeys) {
-          tx.newAlterTableAddForeignKey(foreignKey)
-            .execute();
-          foreignKey.getFrom().getConstraints().add(foreignKey);
-        }
-      }
+      addDelayedForeignKeyConstraint(tx, delayedForeignKeyConstraints);
     });
+  }
+
+  private void addDelayedForeignKeyConstraint(Tx tx, Map<Table, List<ForeignKey>> delayedForeignKeyConstraints) {
+    for (Table table : delayedForeignKeyConstraints.keySet()) {
+      List<ForeignKey> foreignKeys = delayedForeignKeyConstraints.get(table);
+      for (ForeignKey foreignKey : foreignKeys) {
+        tx.newAlterTableAddForeignKey(foreignKey)
+          .execute();
+        foreignKey.getFrom().getConstraints().add(foreignKey);
+      }
+    }
   }
 
   private List<ForeignKey> extractForeignKeysToNonCreatedTables(Table table, Set<Table> createdTables) {
@@ -160,7 +165,7 @@ public class SchemaManager {
   public void ensureCurrentSchema() {
     Map<String, Table> metaDataTablesByNameLowerCase = getMetaDataTables()
       .stream()
-      .collect(Collectors.toMap(
+      .collect(toMap(
         table->table.getName().toLowerCase(),
         table->table
       ));
@@ -267,6 +272,18 @@ public class SchemaManager {
 
   protected void upgradeSchema(Map<String, Table> metaDataTablesByNameLowerCase) {
     db.tx(tx->{
+      Map<Table, List<ForeignKey>> delayedForeignKeyConstraints = new LinkedHashMap<>();
+
+      Map<String,Table> tablesByLowerCaseName = tables.stream()
+        .collect(toMap(
+          table -> table.getName().toLowerCase(),
+          table -> table
+        ));
+      Set<Table> createdTables = new HashSet<>(metaDataTablesByNameLowerCase.keySet()
+        .stream()
+        .map(tableNameLowerCase -> tablesByLowerCaseName.get(tableNameLowerCase))
+        .collect(Collectors.toSet()));
+
       for (Table table: this.tables) {
         String tableNameLowerCase = table.getName().toLowerCase();
         Table metaDataTable = metaDataTablesByNameLowerCase.get(tableNameLowerCase);
@@ -276,7 +293,7 @@ public class SchemaManager {
             .getColumns()
             .entrySet()
             .stream()
-            .collect(Collectors.toMap(
+            .collect(toMap(
               entry->entry.getKey().toLowerCase(),
               entry->entry.getValue()
             ));
@@ -291,9 +308,17 @@ public class SchemaManager {
           }
 
         } else {
+          List<ForeignKey> foreignKeysToNonCreatedTables = extractForeignKeysToNonCreatedTables(table, createdTables);
+          if (Sets.isNotEmpty(foreignKeysToNonCreatedTables)) {
+            delayedForeignKeyConstraints.put(table, foreignKeysToNonCreatedTables);
+          }
+
           tx.newCreateTable(table).execute();
+          createdTables.add(table);
         }
       }
+
+      addDelayedForeignKeyConstraint(tx, delayedForeignKeyConstraints);
     });
 
     List<String> dbSchemaUpdates = getDbSchemaUpdates();
