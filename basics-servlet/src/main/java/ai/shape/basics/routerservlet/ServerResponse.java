@@ -19,6 +19,7 @@
 package ai.shape.basics.routerservlet;
 
 import ai.shape.basics.util.Http;
+import ai.shape.basics.util.Io;
 import org.slf4j.Logger;
 
 import javax.servlet.ServletOutputStream;
@@ -26,9 +27,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.nio.charset.Charset;
 
 public class ServerResponse {
@@ -60,47 +59,42 @@ public class ServerResponse {
     return this;
   }
 
-  public ServerResponse bodyBytes(byte[] bytes) {
-    if (bytes!=null) {
-      bodyBytes(bytes, "..." + bytes.length + " bytes...");
-    }
-    return this;
-  }
-
-  public ServerResponse bodyBytes(byte[] bytes, String bodyLog) {
-    if (bytes!=null) {
-      writeBodyBytes(bytes);
-    }
-    setBodyLog(bodyLog);
-    return this;
-  }
-
-  private void writeBodyBytes(byte[] bytes) {
-    try {
-      headerContentLength(bytes.length);
-      ServletOutputStream out = response.getOutputStream();
-      out.write(bytes);
-      out.flush();
-    } catch (IOException e) {
-      throw new RuntimeException("Couldn't send body: "+e.getMessage(), e);
-    }
-  }
-
-  public ServerResponse bodyString(String responseBody) {
-    return bodyString(responseBody, responseBody);
-  }
-
-  public ServerResponse bodyString(String responseBody, String bodyLog) {
-    byte[] bytes = responseBody.getBytes(Charset.forName("UTF-8"));
-    setBodyLog(bodyLog);
-    writeBodyBytes(bytes);
-    return this;
-  }
-
   public ServerResponse bodyJsonString(String responseBody) {
     headerContentTypeApplicationJson();
     bodyString(responseBody);
     return this;
+  }
+
+  public ServerResponse bodyString(String responseBody) {
+    return bodyString(responseBody, Io.UTF8);
+  }
+
+  public ServerResponse bodyString(String responseBody, Charset charset) {
+    if (responseBody!=null) {
+      setBodyLog(responseBody);
+      byte[] bytes = responseBody.getBytes(charset);
+      bodyInputStream(new ByteArrayInputStream(bytes), bytes.length);
+    }
+    return this;
+  }
+
+  public ServerResponse bodyBytes(byte[] bytes) {
+    if (bytes!=null) {
+      setBodyLog("..." + bytes.length + " bytes...");
+      bodyInputStream(new ByteArrayInputStream(bytes), bytes.length);
+    }
+    return this;
+  }
+
+  public void bodyInputStream(InputStream inputStream, long contentLength) {
+    try {
+      headerContentLength(contentLength);
+      ServletOutputStream out = response.getOutputStream();
+      Io.transfer(inputStream, out);
+      out.flush();
+    } catch (IOException e) {
+      throw new RuntimeException("Couldn't send body: "+e.getMessage(), e);
+    }
   }
 
   public void setBodyLog(String bodyLog) {
