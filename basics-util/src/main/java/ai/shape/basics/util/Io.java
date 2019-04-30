@@ -30,6 +30,7 @@ import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 public class Io {
 
   public static final Charset UTF8 = Charset.forName("UTF-8");
+  public static final Charset UTF16 = Charset.forName("UTF-16");
 
   public static String getString(InputStream inputStream) {
     return getString(inputStream, UTF8);
