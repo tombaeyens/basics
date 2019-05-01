@@ -31,8 +31,6 @@ public class TypePropertyStrategy implements PolymorphicTypeNameStrategy {
 
   @Override
   public Object read(JsonReader in, PolymorphicTypeAdapter<?> typeAdapter) throws Exception {
-    System.out.println("Reading "+typeAdapter.polymorphicTypesByName.keySet());
-
     TypePropertyJsonReader typeIn = new TypePropertyJsonReader(in, typePropertyName);
     FieldsReader fieldsReader = new FieldsReader(typeIn, typeAdapter);
     in.beginObject();
