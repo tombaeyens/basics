@@ -554,11 +554,13 @@ public class Io {
     try {
       String fileZip = sourceZipFilePath;
       File destDir = new File(destinationDir);
+      destDir.mkdirs();
       byte[] buffer = new byte[1024];
       ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
       ZipEntry zipEntry = zis.getNextEntry();
       while (zipEntry != null) {
         File newFile = unzipNewFile(destDir, zipEntry);
+        newFile.getParentFile().mkdirs();
         FileOutputStream fos = new FileOutputStream(newFile);
         int len;
         while ((len = zis.read(buffer)) > 0) {
