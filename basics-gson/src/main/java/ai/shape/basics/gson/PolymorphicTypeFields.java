@@ -24,11 +24,19 @@ import ai.shape.com.google.gson.reflect.TypeToken;
 import ai.shape.com.google.gson.stream.JsonReader;
 import ai.shape.com.google.gson.stream.JsonToken;
 import ai.shape.com.google.gson.stream.JsonWriter;
+import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.*;
 
+import static ai.shape.com.google.gson.stream.JsonToken.*;
+import static ai.shape.com.google.gson.stream.JsonToken.END_ARRAY;
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class PolymorphicTypeFields {
+
+  private static final Logger log = getLogger(PolymorphicTypeFields.class.getName());
 
   String typeName;
   Map<String,PolymorphicField<?>> polymorphicFields = new LinkedHashMap<>();
@@ -135,6 +143,9 @@ public class PolymorphicTypeFields {
       // ignore non-existing fields
       if (field!=null) {
         field.read(in, bean);
+      } else {
+        log.debug("Skipping invalid JSON field "+fieldName);
+        in.skipValue();
       }
     }
   }
