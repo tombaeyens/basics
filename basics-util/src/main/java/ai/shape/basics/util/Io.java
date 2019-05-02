@@ -24,6 +24,7 @@ import java.util.Properties;
 import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
@@ -549,9 +550,9 @@ public class Io {
     file.delete();
   }
 
-  public void unzip(String zipFilePath, String destinationDir) {
+  public static void unzip(String sourceZipFilePath, String destinationDir) {
     try {
-      String fileZip = zipFilePath;
+      String fileZip = sourceZipFilePath;
       File destDir = new File(destinationDir);
       byte[] buffer = new byte[1024];
       ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
@@ -573,7 +574,7 @@ public class Io {
     }
   }
 
-  static File unzipNewFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+  private static File unzipNewFile(File destinationDir, ZipEntry zipEntry) throws IOException {
     File destFile = new File(destinationDir, zipEntry.getName());
 
     String destDirPath = destinationDir.getCanonicalPath();
@@ -584,5 +585,42 @@ public class Io {
     }
 
     return destFile;
+  }
+
+  public static void zip(String sourceDirectory, String destinationZipFilePath) {
+    try {
+      File srcDirectoryFile = new File(sourceDirectory);
+      File destZipFile = new File(destinationZipFilePath);
+      try (FileOutputStream fileWriter = new FileOutputStream(destZipFile);
+           ZipOutputStream zip = new ZipOutputStream(fileWriter)) {
+
+        addFolderToZip(srcDirectoryFile, srcDirectoryFile, zip);
+      }
+    } catch (Exception e) {
+      Exceptions.exceptionWithCause("create zip file "+destinationZipFilePath, e);
+    }
+  }
+
+  private static void addFileToZip(File rootPath, File srcFile, ZipOutputStream zip) throws Exception {
+    if (srcFile.isDirectory()) {
+      addFolderToZip(rootPath, srcFile, zip);
+    } else {
+      byte[] buf = new byte[4096];
+      int len;
+      try (FileInputStream in = new FileInputStream(srcFile)) {
+        String name = srcFile.getPath();
+        name = name.replace(rootPath.getPath(), "");
+        zip.putNextEntry(new ZipEntry(name));
+        while ((len = in.read(buf)) > 0) {
+          zip.write(buf, 0, len);
+        }
+      }
+    }
+  }
+
+  private static void addFolderToZip(File rootPath, File srcFolder, ZipOutputStream zip) throws Exception {
+    for (File fileName : srcFolder.listFiles()) {
+      addFileToZip(rootPath, fileName, zip);
+    }
   }
 }
