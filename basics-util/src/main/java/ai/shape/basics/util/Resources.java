@@ -64,8 +64,12 @@ public class Resources {
   /** Same as {@link #getCodeSourceFileWithoutEnd(Class, String)} but throws
    * a RuntimeException if the code source file dir does not end with the given end.*/
   public static String getCodeSourceFileWithoutEndRequired(Class<?> clazz, String end) {
-    String dir = getCodeSourceFileWithoutEnd(clazz, end);
-    Exceptions.assertNotNull(dir, "Code source dir %s does not end with %s", dir, end);
-    return dir;
+    String dir = getCodeSourceLocation(clazz)
+      .toString()
+      .substring(5);
+    if (!dir.endsWith(end)) {
+      throw new RuntimeException("Code source "+dir+" does not end with "+end);
+    }
+    return dir.substring(0, dir.length()-end.length());
   }
 }
