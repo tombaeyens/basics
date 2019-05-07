@@ -38,6 +38,9 @@ import java.util.Set;
  * <p>This implementation was derived from Android 4.1's TreeMap class.
  */
 public final class LinkedTreeMap<K, V> extends AbstractMap<K, V> implements Serializable {
+
+  private static final long serialVersionUID = -3098754L;
+
   @SuppressWarnings({ "unchecked", "rawtypes" }) // to avoid Comparable<Comparable<Comparable<...>>>
   private static final Comparator<Comparable> NATURAL_ORDER = new Comparator<Comparable>() {
     public int compare(Comparable a, Comparable b) {

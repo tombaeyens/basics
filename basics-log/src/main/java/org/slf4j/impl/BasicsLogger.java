@@ -33,6 +33,8 @@ public class BasicsLogger extends MarkerIgnoringBase {
   static final int LOG_LEVEL_WARN = LocationAwareLogger.WARN_INT;
   static final int LOG_LEVEL_ERROR = LocationAwareLogger.ERROR_INT;
 
+  private static final long serialVersionUID = -2350513843919223573L;
+
   String name;
   int level;
 

@@ -335,6 +335,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
     throw new IllegalStateException();
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public char getAsCharacter() {
     if (elements.size() == 1) {

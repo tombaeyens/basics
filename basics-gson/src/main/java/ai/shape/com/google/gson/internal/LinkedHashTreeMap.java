@@ -565,6 +565,7 @@ public final class LinkedHashTreeMap<K, V> extends AbstractMap<K, V> implements 
    * Returns a new array containing the same nodes as {@code oldTable}, but with
    * twice as many trees, each of (approximately) half the previous size.
    */
+  @SuppressWarnings("rawtypes")
   static <K, V> Node<K, V>[] doubleCapacity(Node<K, V>[] oldTable) {
     // TODO: don't do anything if we're already at MAX_CAPACITY
     int oldCapacity = oldTable.length;

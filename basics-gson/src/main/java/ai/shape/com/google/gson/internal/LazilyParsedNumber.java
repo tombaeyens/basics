@@ -27,6 +27,9 @@ import java.math.BigDecimal;
  * @author Inderjeet Singh
  */
 public final class LazilyParsedNumber extends Number {
+
+  private static final long serialVersionUID = 99283749204L;
+
   private final String value;
 
   /** @param value must not be null */
