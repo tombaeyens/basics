@@ -40,6 +40,9 @@ import java.util.Set;
  * LinkedHashMap classes.
  */
 public final class LinkedHashTreeMap<K, V> extends AbstractMap<K, V> implements Serializable {
+
+  private static final long serialVersionUID = -3784569160389506754L;
+
   @SuppressWarnings({ "unchecked", "rawtypes" }) // to avoid Comparable<Comparable<Comparable<...>>>
   private static final Comparator<Comparable> NATURAL_ORDER = new Comparator<Comparable>() {
     public int compare(Comparable a, Comparable b) {
