@@ -1,0 +1,1 @@
+Tweaked version of the simple-slf4j implementation that is programmatically configurable

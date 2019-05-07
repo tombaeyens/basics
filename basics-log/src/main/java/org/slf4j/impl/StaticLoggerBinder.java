@@ -17,42 +17,20 @@
  * under the License.
  */
 
-package ai.shape.basics.db;
+package org.slf4j.impl;
 
-import static ai.shape.basics.util.Exceptions.assertNotNullParameter;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.spi.LoggerFactoryBinder;
 
-public class Delete extends Statement {
+public class StaticLoggerBinder implements LoggerFactoryBinder {
 
-  Table table;
-  Boolean cascade;
-
-  public Delete(Tx tx, Table table, String alias) {
-    super(tx);
-    assertNotNullParameter(table, "table");
-    this.table = table;
-    tableAlias(table, alias);
-  }
-
-  public int execute() {
-    return executeUpdate();
+  @Override
+  public ILoggerFactory getLoggerFactory() {
+    return new BasicsLoggerFactoryInvisible();
   }
 
   @Override
-  protected void buildSql(SqlBuilder sql) {
-    getDialect().buildDeleteSql(sql, this);
-  }
-
-  @Override
-  public Delete where(Condition whereCondition) {
-    return (Delete) super.where(whereCondition);
-  }
-
-  public Delete cascade() {
-    this.cascade = Boolean.TRUE;
-    return this;
-  }
-
-  public Table getTable() {
-    return table;
+  public String getLoggerFactoryClassStr() {
+    return BasicsLoggerFactoryInvisible.class.getName();
   }
 }

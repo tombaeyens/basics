@@ -124,6 +124,11 @@ public class Column implements FieldExpression {
     return this;
   }
 
+  public Column foreignKeyCascadeDelete(Column column) {
+    constraint(new ForeignKey(this, column).onDeleteCascade());
+    return this;
+  }
+
   public Column notNull() {
     constraint(new NotNull());
     return this;

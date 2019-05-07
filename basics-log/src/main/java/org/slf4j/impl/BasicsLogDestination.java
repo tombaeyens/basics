@@ -17,42 +17,9 @@
  * under the License.
  */
 
-package ai.shape.basics.db;
+package org.slf4j.impl;
 
-import static ai.shape.basics.util.Exceptions.assertNotNullParameter;
+public interface BasicsLogDestination {
 
-public class Delete extends Statement {
-
-  Table table;
-  Boolean cascade;
-
-  public Delete(Tx tx, Table table, String alias) {
-    super(tx);
-    assertNotNullParameter(table, "table");
-    this.table = table;
-    tableAlias(table, alias);
-  }
-
-  public int execute() {
-    return executeUpdate();
-  }
-
-  @Override
-  protected void buildSql(SqlBuilder sql) {
-    getDialect().buildDeleteSql(sql, this);
-  }
-
-  @Override
-  public Delete where(Condition whereCondition) {
-    return (Delete) super.where(whereCondition);
-  }
-
-  public Delete cascade() {
-    this.cascade = Boolean.TRUE;
-    return this;
-  }
-
-  public Table getTable() {
-    return table;
-  }
+  void log(BasicsLogger basicsLogger, int level, String message, Throwable t);
 }

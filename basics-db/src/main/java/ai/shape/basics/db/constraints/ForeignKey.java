@@ -25,6 +25,7 @@ public class ForeignKey implements Constraint {
 
   Column from;
   Column to;
+  Boolean onDeleteCascade;
 
   public ForeignKey(Column from, Column to) {
     this.from = from;
@@ -33,7 +34,13 @@ public class ForeignKey implements Constraint {
 
   @Override
   public String getCreateTableSql() {
-    return "REFERENCES "+to.getTable().getName()+"("+to.getName()+")";
+    return "REFERENCES "+to.getTable().getName()+"("+to.getName()+")"+
+      (Boolean.TRUE.equals(onDeleteCascade) ? " ON DELETE CASCADE" : "");
+  }
+
+  public ForeignKey onDeleteCascade() {
+    onDeleteCascade = true;
+    return this;
   }
 
   public Column getFrom() {

@@ -17,42 +17,31 @@
  * under the License.
  */
 
-package ai.shape.basics.db;
+package org.slf4j.impl;
 
-import static ai.shape.basics.util.Exceptions.assertNotNullParameter;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
 
-public class Delete extends Statement {
+import java.util.HashMap;
+import java.util.Map;
 
-  Table table;
-  Boolean cascade;
+public class BasicsLoggerFactoryInvisible implements ILoggerFactory {
 
-  public Delete(Tx tx, Table table, String alias) {
-    super(tx);
-    assertNotNullParameter(table, "table");
-    this.table = table;
-    tableAlias(table, alias);
-  }
-
-  public int execute() {
-    return executeUpdate();
-  }
+  /** maps log name parts to either log level or more detailed log level configurations */
+  static Map<String,BasicsLogger> loggers = new HashMap<>();
 
   @Override
-  protected void buildSql(SqlBuilder sql) {
-    getDialect().buildDeleteSql(sql, this);
+  public Logger getLogger(String name) {
+    BasicsLogger basicsLogger = loggers.get(name);
+    if (basicsLogger!=null) {
+      return basicsLogger;
+    }
+    return add(new BasicsLogger(name));
   }
 
-  @Override
-  public Delete where(Condition whereCondition) {
-    return (Delete) super.where(whereCondition);
-  }
-
-  public Delete cascade() {
-    this.cascade = Boolean.TRUE;
-    return this;
-  }
-
-  public Table getTable() {
-    return table;
+  private BasicsLogger add(BasicsLogger basicsLogger) {
+    loggers.put(basicsLogger.getName(), basicsLogger);
+    BasicsLoggerConfiguration.get().initializeLevel(basicsLogger);
+    return basicsLogger;
   }
 }

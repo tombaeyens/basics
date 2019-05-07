@@ -44,6 +44,7 @@ public class Sets {
     return map!=null && !map.isEmpty();
   }
 
+  @SuppressWarnings("varargs")
   public static <T> Set<T> flatHashSet(Set<T>... sets) {
     HashSet<T> flatSets = new HashSet<>();
     if (sets!=null) {
