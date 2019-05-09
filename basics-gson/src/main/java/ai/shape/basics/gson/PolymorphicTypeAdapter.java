@@ -35,6 +35,7 @@ import java.util.Set;
 
 public class PolymorphicTypeAdapter<T> extends TypeAdapter<T> {
 
+  Class<?> baseType = null;
   PolymorphicTypeAdapterFactory factory;
   Map<String,PolymorphicTypeFields> polymorphicTypesByName = new HashMap<>();
   Map<Class<?>, PolymorphicTypeFields> polymorphicTypesByRawClass = new HashMap<>();
@@ -53,6 +54,9 @@ public class PolymorphicTypeAdapter<T> extends TypeAdapter<T> {
       Class<?> rawClass = type.getRawType();
       this.polymorphicTypesByRawClass.put(rawClass, polymorphicTypeFields);
       this.typesByName.put(typeName, rawClass);
+      if (baseType==null || rawClass.isAssignableFrom(baseType)) {
+        baseType = rawClass;
+      }
     }
   }
 

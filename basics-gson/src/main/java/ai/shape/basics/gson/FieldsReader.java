@@ -20,6 +20,8 @@ package ai.shape.basics.gson;
 
 import ai.shape.com.google.gson.stream.JsonReader;
 
+import java.util.stream.Collectors;
+
 public class FieldsReader {
 
   JsonReader in;
@@ -34,7 +36,12 @@ public class FieldsReader {
   public Object instantiateBean(String typeName) {
     Class<?> concreteType = typeAdapter.typesByName.get(typeName);
     if (concreteType==null) {
-      throw new RuntimeException("No concrete type for "+typeName);
+      throw new RuntimeException("No concrete "+typeAdapter.baseType.getSimpleName()+" for type name "+typeName+": \n"+
+        typeAdapter.typesByName.entrySet()
+          .stream()
+          .map(entry->entry.getKey()+" -> "+entry.getValue())
+          .collect(Collectors.joining("\n"))
+      );
     }
     polymorphicTypeFields = typeAdapter.polymorphicTypesByName.get(typeName);
     try {
