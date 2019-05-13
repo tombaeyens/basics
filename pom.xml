@@ -32,9 +32,20 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.release>8</maven.compiler.release>
     <shape.version>1.0.0-SNAPSHOT</shape.version>
   </properties>
+
+  <profiles>
+    <profile>
+      <id>java9+</id>
+      <activation>
+        <jdk>[1.9,</jdk>
+      </activation>
+      <properties>
+        <maven.compiler.release>8</maven.compiler.release>
+      </properties>
+    </profile>
+  </profiles>
 
   <modules>
     <module>basics-util</module>
