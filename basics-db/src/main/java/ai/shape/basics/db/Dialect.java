@@ -107,7 +107,7 @@ public class Dialect {
   }
 
   private void appendAlterTableAddForeignKeySql(SqlBuilder sql, ForeignKey foreignKey) {
-    sql.appendText("ADD FOREIGN KEY ("+foreignKey.getFrom().getName()+") "+foreignKey.getCreateTableSql());
+    sql.appendText("ADD CONSTRAINT "+foreignKey.getName()+" FOREIGN KEY ("+foreignKey.getFrom().getName()+") "+foreignKey.getCreateTableSql());
   }
 
   public void buildAlterTableAddColumnSql(SqlBuilder sql, AlterTableAddColumn alterTableAddColumn) {

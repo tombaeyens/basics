@@ -38,6 +38,10 @@ public class ForeignKey implements Constraint {
       (Boolean.TRUE.equals(onDeleteCascade) ? " ON DELETE CASCADE" : "");
   }
 
+  public String getName() {
+    return "fk_"+from.getTable().getName()+"_"+from.getName()+"_"+to.getTable().getName();
+  }
+
   public ForeignKey onDeleteCascade() {
     onDeleteCascade = true;
     return this;
