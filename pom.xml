@@ -22,6 +22,7 @@
 
   <modelVersion>4.0.0</modelVersion>
 
+
   <name>Basics parent</name>
   <groupId>ai.shape.basics</groupId>
   <artifactId>basics</artifactId>
