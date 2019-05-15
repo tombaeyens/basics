@@ -176,4 +176,8 @@ public class HttpServer {
   public int getPort() {
     return ((ServerConnector)server.getConnectors()[0]).getPort();
   }
+
+  public Server getServer() {
+    return server;
+  }
 }
