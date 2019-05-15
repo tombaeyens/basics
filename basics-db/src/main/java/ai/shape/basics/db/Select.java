@@ -40,8 +40,9 @@ public class Select extends Statement {
     super(tx);
   }
 
+
   @Override
-  protected void buildSql(SqlBuilder sqlBuilder) {
+  protected void buildSqlOld(SqlBuilder sqlBuilder) {
     getDialect().buildSelectSql(sqlBuilder, this);
   }
 

@@ -19,7 +19,6 @@
 package ai.shape.basics.db;
 
 import ai.shape.basics.db.constraints.ForeignKey;
-import ai.shape.basics.util.Sets;
 
 import java.util.Collection;
 import java.util.List;
@@ -41,6 +40,20 @@ public class Dialect {
   }
 
   // CREATE TABLE //////////////////////////////////////////////////////////////////////////////////////////
+
+  public CreateTable newCreateTable(Tx tx, Table table) {
+    return new CreateTable(tx, table);
+  }
+
+  public CreateTableSqlColumn getCreateTableColumnSqlAppender(SqlBuilder sql2) {
+    return new CreateTableSqlColumn(sql2);
+  }
+
+  public CreateTableSqlColumnConstraint getCreateTableColumnConstraintSqlAppender(SqlBuilder sql2) {
+    return new CreateTableSqlColumnConstraint(sql2);
+  }
+
+
 
   public void buildCreateTableSql(SqlBuilder sql, CreateTable createTable) {
     sql.appendText("CREATE TABLE "+createTable.getTable().getName()+" (");

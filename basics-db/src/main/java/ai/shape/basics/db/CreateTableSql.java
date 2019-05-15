@@ -16,30 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package ai.shape.basics.db;
 
-public class CreateTable extends Statement {
+public class CreateTableSql extends SqlBuilder {
 
-  Table table;
+  CreateTable createTable;
 
-  public CreateTable(Tx tx, Table table) {
-    super(tx);
-    this.table = table;
-  }
-
-  public int execute() {
-    return executeUpdate();
+  public CreateTableSql(CreateTable createTable) {
+    super(createTable);
+    this.createTable = createTable;
   }
 
   @Override
-  protected SqlBuilder createSqlBuilderNew() {
-    return new CreateTableSql(this);
-  }
-
-  protected void logUpdateCount(int updateCount) {
-  }
-
-  public Table getTable() {
-    return table;
+  public void buildSqlNew() {
+    Table table = createTable.getTable();
+    appendText("CREATE TABLE "+table.getName()+" (");
+    CreateTableSqlColumn columnSqlAppender = dialect.getCreateTableColumnSqlAppender(this);
+    table.getColumns().values().stream().forEach(column->columnSqlAppender.append(column));
+    appendText("\n);");
   }
 }

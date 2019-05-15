@@ -16,30 +16,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package ai.shape.basics.db;
 
-public class CreateTable extends Statement {
+public class SqlDelegator {
 
-  Table table;
+  boolean isFirst = true;
+  SqlBuilder target;
 
-  public CreateTable(Tx tx, Table table) {
-    super(tx);
-    this.table = table;
+  public SqlDelegator(SqlBuilder target) {
+    this.target = target;
   }
 
-  public int execute() {
-    return executeUpdate();
+  protected void sql2(String sql) {
+    target.appendText(sql);
   }
 
-  @Override
-  protected SqlBuilder createSqlBuilderNew() {
-    return new CreateTableSql(this);
+  protected void sql2Parameter() {
+    target.appendParameter();
   }
 
-  protected void logUpdateCount(int updateCount) {
+  protected void sqlSeparator(String separator) {
+    if (isFirst) {
+      isFirst = false;
+    } else {
+      sql2(separator);
+    }
   }
 
-  public Table getTable() {
-    return table;
+  public Dialect getDialect() {
+    return target.getDialect();
   }
 }

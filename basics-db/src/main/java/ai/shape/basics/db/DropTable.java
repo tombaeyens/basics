@@ -41,7 +41,7 @@ public class DropTable extends Statement {
   }
 
   @Override
-  protected void buildSql(SqlBuilder sql) {
+  protected void buildSqlOld(SqlBuilder sql) {
     getDialect().buildDropTableSql(sql, this);
   }
 

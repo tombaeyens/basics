@@ -16,30 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package ai.shape.basics.db;
 
-public class CreateTable extends Statement {
+public class CreateTableSqlColumnConstraint extends SqlDelegator {
 
-  Table table;
-
-  public CreateTable(Tx tx, Table table) {
-    super(tx);
-    this.table = table;
+  public CreateTableSqlColumnConstraint(SqlBuilder sql2) {
+    super(sql2);
   }
 
-  public int execute() {
-    return executeUpdate();
-  }
-
-  @Override
-  protected SqlBuilder createSqlBuilderNew() {
-    return new CreateTableSql(this);
-  }
-
-  protected void logUpdateCount(int updateCount) {
-  }
-
-  public Table getTable() {
-    return table;
+  public void append(Constraint constraint) {
+    sql2(" "+constraint.getCreateTableSql());
   }
 }

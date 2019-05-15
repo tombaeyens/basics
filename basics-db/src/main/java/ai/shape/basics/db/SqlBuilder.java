@@ -19,10 +19,14 @@
 
 package ai.shape.basics.db;
 
+import ai.shape.basics.util.Exceptions;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class SqlBuilder {
 
+  Dialect dialect;
   List<Parameter> parameters;
   int nextParameterIndex = 0;
   StringBuilder sql = new StringBuilder();
@@ -30,6 +34,14 @@ public class SqlBuilder {
 
   public SqlBuilder(List<Parameter> parameters) {
     this.parameters = parameters;
+  }
+
+  public SqlBuilder(Statement statement) {
+    this.parameters = statement.parameters;
+    this.dialect = statement.getDialect();
+  }
+
+  public void buildSqlNew() {
   }
 
   /** Appends the sqlText to the sql statement appendText */
@@ -64,5 +76,9 @@ public class SqlBuilder {
       debugInfo.append("sql with parameters:\n"+sqlLog.toString()+"\n");
     }
     return debugInfo.toString();
+  }
+
+  public Dialect getDialect() {
+    return dialect;
   }
 }

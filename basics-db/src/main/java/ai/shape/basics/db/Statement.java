@@ -19,6 +19,7 @@
 package ai.shape.basics.db;
 
 import ai.shape.basics.db.conditions.AndCondition;
+import org.slf4j.Logger;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,8 +30,11 @@ import java.util.List;
 import java.util.Map;
 
 import static ai.shape.basics.util.Exceptions.exceptionWithCause;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public abstract class Statement {
+
+  protected static final Logger log = getLogger(Statement.class.getName());
 
   protected Tx tx;
   Map<Table,String> tableAliases;
@@ -60,9 +64,6 @@ public abstract class Statement {
     }
   }
 
-  /** Delegates to the appropriate dialect method */
-  protected abstract void buildSql(SqlBuilder sqlBuilder);
-
   protected void logUpdateCount(int updateCount) {
     Db.DB_LOGGER.debug(tx + " " + getPastTense() + " " + updateCount + " rows");
   }
@@ -81,14 +82,44 @@ public abstract class Statement {
 
   protected PreparedStatement createPreparedStatement(SqlBuilder sql) {
     try {
-      buildSql(sql);
-      PreparedStatement jdbcStatement = tx.createPreparedStatement(sql.getSql());
+      String sqlText = generateSql(sql);
+
+      PreparedStatement jdbcStatement = tx.createPreparedStatement(sqlText);
       setParameters(jdbcStatement);
-      tx.logSQL(sql.getSqlLog());
       return jdbcStatement;
     } catch (Exception e) {
       throw exceptionWithCause("create prepared statement \n"+sql.getDebugInfo()+"\n-->", e);
     }
+  }
+
+  protected String generateSql(SqlBuilder sql) {
+    SqlBuilder sqlBuilderNew = createSqlBuilderNew();
+    if (sqlBuilderNew!=null) {
+      try {
+        sqlBuilderNew.buildSqlNew();
+        tx.logSQL(sqlBuilderNew.getSqlLog());
+      } catch (Exception e) {
+        log.error("Problem building SQL: \n"+sqlBuilderNew.getDebugInfo()+"\n", e);
+      }
+      return sqlBuilderNew.getSql();
+    }
+    return generateSqlOld(sql);
+  }
+
+  /** Override to migrate to the new sql builder style */
+  protected SqlBuilder createSqlBuilderNew() {
+    return null;
+  }
+
+  protected String generateSqlOld(SqlBuilder sql) {
+    buildSqlOld(sql);
+    String sqlText = sql.getSql();
+    tx.logSQL(sql.getSqlLog());
+    return sqlText;
+  }
+
+  /** Delegates to the appropriate dialect method */
+  protected void buildSqlOld(SqlBuilder sqlBuilder) {
   }
 
   public void addParameter(Object value, DataType type) {

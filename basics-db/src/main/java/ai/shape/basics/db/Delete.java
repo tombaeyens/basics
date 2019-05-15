@@ -38,7 +38,7 @@ public class Delete extends Statement {
   }
 
   @Override
-  protected void buildSql(SqlBuilder sql) {
+  protected void buildSqlOld(SqlBuilder sql) {
     getDialect().buildDeleteSql(sql, this);
   }
 
