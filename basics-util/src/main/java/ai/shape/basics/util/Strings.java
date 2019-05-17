@@ -31,4 +31,11 @@ public class Strings {
   public static boolean isNonEmpty(String string) {
     return string!=null && string.length()>0;
   }
+
+  public static String removeEnd(String string, String end) {
+    if (string==null || end==null) {
+      return string;
+    }
+    return string.substring(0, string.length()-end.length());
+  }
 }

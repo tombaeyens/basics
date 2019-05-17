@@ -52,9 +52,7 @@ public class Resources {
    * Eg when getCodeSourceFile(c)} returns /Code/shape/basics/basics-util/target/classes/,
    * getCodeSourceFileWithoutEnd(c, "target/classes/") returns /Code/shape/basics/basics-util/ */
   public static String getCodeSourceFileWithoutEnd(Class<?> clazz, String end) {
-    String dir = getCodeSourceLocation(clazz)
-      .toString()
-      .substring(5);
+    String dir = getCodeSourceFile(clazz);
     if (dir.endsWith(end)) {
       return dir.substring(0, dir.length()-end.length());
     }
@@ -64,9 +62,7 @@ public class Resources {
   /** Same as {@link #getCodeSourceFileWithoutEnd(Class, String)} but throws
    * a RuntimeException if the code source file dir does not end with the given end.*/
   public static String getCodeSourceFileWithoutEndRequired(Class<?> clazz, String end) {
-    String dir = getCodeSourceLocation(clazz)
-      .toString()
-      .substring(5);
+    String dir = getCodeSourceFile(clazz);
     if (!dir.endsWith(end)) {
       throw new RuntimeException("Code source "+dir+" does not end with "+end);
     }

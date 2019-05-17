@@ -22,6 +22,8 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -552,25 +554,56 @@ public class Io {
 
   public static void unzip(String sourceZipFilePath, String destinationDir) {
     try {
-      String fileZip = sourceZipFilePath;
+      FileInputStream sourceZipInputStream = new FileInputStream(sourceZipFilePath);
+      unzip(sourceZipInputStream, destinationDir);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public static void unzipFiles(InputStream sourceZipInputStream, Pattern filePattern, Consumer<InputStream> fileOperation) {
+    ZipInputStream zipInputStream = new ZipInputStream(sourceZipInputStream);
+    try {
+      ZipEntry zipEntry = zipInputStream.getNextEntry();
+      while (zipEntry != null) {
+        String zipEntryFileName = zipEntry.getName();
+        if (filePattern.matcher(zipEntryFileName).matches()) {
+          fileOperation.accept(zipInputStream);
+        }
+        while (zipInputStream.skip(1000)>0);
+        zipEntry = zipInputStream.getNextEntry();
+      }
+      zipInputStream.closeEntry();
+    } catch (IOException e) {
+      e.printStackTrace();
+      try {
+        zipInputStream.close();
+      } catch (IOException closeException) {
+        closeException.printStackTrace();
+      }
+    }
+  }
+
+  public static void unzip(InputStream sourceZipInputStream, String destinationDir) {
+    try {
       File destDir = new File(destinationDir);
       destDir.mkdirs();
       byte[] buffer = new byte[1024];
-      ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
-      ZipEntry zipEntry = zis.getNextEntry();
+      ZipInputStream zipInputStream = new ZipInputStream(sourceZipInputStream);
+      ZipEntry zipEntry = zipInputStream.getNextEntry();
       while (zipEntry != null) {
         File newFile = unzipNewFile(destDir, zipEntry);
         newFile.getParentFile().mkdirs();
         FileOutputStream fos = new FileOutputStream(newFile);
         int len;
-        while ((len = zis.read(buffer)) > 0) {
+        while ((len = zipInputStream.read(buffer)) > 0) {
           fos.write(buffer, 0, len);
         }
         fos.close();
-        zipEntry = zis.getNextEntry();
+        zipEntry = zipInputStream.getNextEntry();
       }
-      zis.closeEntry();
-      zis.close();
+      zipInputStream.closeEntry();
+      zipInputStream.close();
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -593,10 +626,10 @@ public class Io {
     try {
       File srcDirectoryFile = new File(sourceDirectory);
       File destZipFile = new File(destinationZipFilePath);
-      try (FileOutputStream fileWriter = new FileOutputStream(destZipFile);
-           ZipOutputStream zip = new ZipOutputStream(fileWriter)) {
-
-        addFolderToZip(srcDirectoryFile, srcDirectoryFile, zip);
+      try (OutputStream destinationZipOutputStream = new FileOutputStream(destZipFile)) {
+        try (ZipOutputStream zip = new ZipOutputStream(destinationZipOutputStream)) {
+          addFolderToZip(srcDirectoryFile, srcDirectoryFile, zip);
+        }
       }
     } catch (Exception e) {
       Exceptions.exceptionWithCause("create zip file "+destinationZipFilePath, e);
