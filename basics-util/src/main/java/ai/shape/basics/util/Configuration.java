@@ -18,6 +18,7 @@
  */
 package ai.shape.basics.util;
 
+import java.util.Map;
 import java.util.Properties;
 
 public class Configuration {
@@ -44,6 +45,13 @@ public class Configuration {
 
   public void loadConfigurationFromProperties(Properties properties) {
     this.properties.putAll(properties);
+  }
+
+  public void loadConfigurationFromEnvironmentVariables() {
+    Map<String, String> environmentVariables = System.getenv();
+    if (environmentVariables!=null) {
+      this.properties.putAll(environmentVariables);
+    }
   }
 
   public String getString(String name) {
