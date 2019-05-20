@@ -19,6 +19,7 @@
 package ai.shape.basics.routerservlet;
 
 import ai.shape.basics.util.Http;
+import ai.shape.basics.util.Sets;
 import org.slf4j.Logger;
 
 import javax.servlet.http.Cookie;
@@ -109,7 +110,7 @@ public class ServerRequest {
         try {
           scanner.useDelimiter("\\A");
           bodyString = scanner.hasNext() ? scanner.next() : null;
-          bodyStringLogger.logBodyString(bodyString, RouterServlet.log);
+          bodyStringLogger.logBodyString(bodyString, HttpLogger.log);
         } finally {
           scanner.close();
         }
@@ -155,22 +156,28 @@ public class ServerRequest {
     return request.getParameterMap();
   }
 
+  private static final Set<String> SKIPPED_HEADER_NAMES = Sets.hashSet(
+    "Connection", "User-Agent", "Host", "Accept-Encoding", "Content-Length"
+  );
+
   public void logRequest() {
-    if (RouterServlet.log.isDebugEnabled()) {
+    if (HttpLogger.log.isDebugEnabled()) {
       // Log request url line
       String queryString = request.getQueryString() != null ? "?"+request.getQueryString() : "";
-      RouterServlet.log.debug("> " + request.getMethod() + " " + request.getRequestURI()+queryString);
+      HttpLogger.log.debug("> " + request.getMethod() + " " + request.getRequestURI()+queryString);
 
-//      // Log headers
-//      if (request.getHeaderNames().hasMoreElements()) {
-//        Collections.list(request.getHeaderNames()).stream()
-//          .forEach(headerName -> {
-//            Collections.list(request.getHeaders(headerName)).stream()
-//              .forEach(headerValue -> {
-//                RouterServlet.log.debug("  " + headerName + ": " + headerValue);
-//              });
-//          });
-//      }
+      // Log headers
+      if (request.getHeaderNames().hasMoreElements()) {
+        Collections.list(request.getHeaderNames())
+          .stream()
+          .filter(headerName -> !SKIPPED_HEADER_NAMES.contains(headerName))
+          .forEach(headerName -> {
+            Collections.list(request.getHeaders(headerName)).stream()
+              .forEach(headerValue -> {
+                HttpLogger.log.trace("  " + headerName + ": " + headerValue);
+              });
+          });
+      }
     }
   }
 

@@ -19,8 +19,6 @@
 package ai.shape.basics.routerservlet;
 
 import ai.shape.basics.util.Http;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServlet;
@@ -38,8 +36,6 @@ import java.util.Map;
 public class RouterServlet extends HttpServlet {
 
   private static final long serialVersionUID = 5826674732887125068L;
-
-  static Logger log = LoggerFactory.getLogger(RouterServlet.class.getName()+".HTTP");
 
   /** maps methods to list of request paths */
   private List<RequestHandler> requestHandlers = new ArrayList<>();
@@ -65,7 +61,7 @@ public class RouterServlet extends HttpServlet {
           exceptionListener.exception(request, response, e);
         }
       } catch (Throwable e) {
-        log.debug("Problem by "+requestHandler.getClass().getSimpleName()+" for request "+request.getPathInfo(), e);
+        HttpLogger.log.debug("Problem by "+requestHandler.getClass().getSimpleName()+" for request "+request.getPathInfo(), e);
         response.statusInternalServerError();
         response.bodyString("{\"message\":\"See the server logs for more details\"}");
         if (exceptionListener!=null) {
@@ -73,10 +69,10 @@ public class RouterServlet extends HttpServlet {
         }
       }
     } else {
-      log.debug("No handler found for "+request.getPathInfo());
+      HttpLogger.log.debug("No handler found for "+request.getPathInfo());
       response.statusNotFound();
     }
-    if (log.isDebugEnabled()) response.logTo(log);
+    if (HttpLogger.log.isDebugEnabled()) response.logTo(HttpLogger.log);
   }
 
   private RequestHandler findRequestHandler(ServerRequest request) {
