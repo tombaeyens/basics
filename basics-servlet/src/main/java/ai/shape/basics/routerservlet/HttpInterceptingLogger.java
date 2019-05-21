@@ -25,6 +25,8 @@ import org.slf4j.spi.LocationAwareLogger;
 
 public class HttpInterceptingLogger extends MarkerIgnoringBase {
 
+  private static final long serialVersionUID = 1998479855895316832L;
+
   Logger delegate;
   HttpLogInterceptor httpLogInterceptor;
 
