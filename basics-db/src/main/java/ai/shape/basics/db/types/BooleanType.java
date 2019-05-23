@@ -29,6 +29,8 @@ import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
 public class BooleanType implements DataType {
 
+  public static final BooleanType INSTANCE = new BooleanType();
+
   @Override
   public String getSql() {
     return "BOOLEAN";

@@ -29,6 +29,8 @@ import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
 public class FloatType implements DataType {
 
+  public static final FloatType INSTANCE = new FloatType();
+
   @Override
   public String getSql() {
     return "REAL";

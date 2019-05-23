@@ -16,36 +16,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ai.shape.basics.db.conditions;
 
-import ai.shape.basics.db.*;
+package ai.shape.basics.db;
 
+import java.util.List;
 
-public class EqualCondition implements Condition {
+public class Count implements SqlExpression {
 
-  SqlExpression expression;
-  Object value;
-
-  public EqualCondition(SqlExpression expression, Object value) {
-    this.expression = expression;
-    this.value = value;
+  @Override
+  public String getTitle() {
+    return "count(*)";
   }
 
   @Override
-  public void buildSql(SqlBuilder sql, Statement statement) {
-    expression.appendFieldSql(sql, statement);
-    sql.appendText(" = ");
-    if (value instanceof Column) {
-      ((Column) value).appendFieldSql(sql, statement);
-    } else {
-      sql.appendParameter();
-    }
+  public void appendFieldSql(SqlBuilder sql, Statement statement) {
+    sql.appendText("count(*)");
   }
 
   @Override
-  public void collectParameters(Statement statement) {
-    if (!(value instanceof Column)) {
-      statement.addParameter(value, expression.getType());
-    }
+  public DataType getType() {
+    return DataType.longType();
+  }
+
+  @Override
+  public void collectTables(List<Table> fieldTables) {
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other==null) return false;
+    return other instanceof Count;
   }
 }

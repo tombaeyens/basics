@@ -29,6 +29,8 @@ import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
 public class LongType implements DataType {
 
+  public static final LongType INSTANCE = new LongType();
+
   @Override
   public String getSql() {
     return "INTEGER";

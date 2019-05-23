@@ -30,6 +30,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class VarcharType implements DataType {
 
+  public static final VarcharType ID_TYPE = new VarcharType(255);
+
   private static final Logger log = getLogger(VarcharType.class.getName());
 
   int n;

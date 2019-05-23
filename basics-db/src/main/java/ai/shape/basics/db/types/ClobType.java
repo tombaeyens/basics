@@ -29,6 +29,8 @@ import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
 public class ClobType implements DataType {
 
+  public static final ClobType INSTANCE = new ClobType();
+
   @Override
   public String getSql() {
     return "CLOB";

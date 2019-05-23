@@ -21,29 +21,21 @@ package ai.shape.basics.db;
 
 public class FieldExpressionWithAlias {
 
-  protected FieldExpression expression;
+  protected SqlExpression expression;
   protected String alias;
 
-  public FieldExpressionWithAlias(FieldExpression expression, String alias) {
+  public FieldExpressionWithAlias(SqlExpression expression, String alias) {
     this.expression = expression;
     this.alias = alias;
   }
 
-  public boolean isColumn() {
-    return expression instanceof Column;
-  }
-
-  public boolean isColumn(Column column) {
-    return expression==column;
-  }
-
-  public FieldExpression getExpression() {
+  public SqlExpression getExpression() {
     return this.expression;
   }
-  public void setExpression(FieldExpression expression) {
+  public void setExpression(SqlExpression expression) {
     this.expression = expression;
   }
-  public FieldExpressionWithAlias expression(FieldExpression expression) {
+  public FieldExpressionWithAlias expression(SqlExpression expression) {
     this.expression = expression;
     return this;
   }

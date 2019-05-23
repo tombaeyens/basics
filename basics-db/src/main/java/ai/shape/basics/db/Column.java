@@ -26,8 +26,9 @@ import ai.shape.basics.db.types.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class Column implements FieldExpression {
+public class Column implements SqlExpression {
 
   protected Table table;
   protected String name;
@@ -177,5 +178,22 @@ public class Column implements FieldExpression {
   @Override
   public String toString() {
     return "Column(" + name + ')';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Column column = (Column) o;
+    return index == column.index &&
+      Objects.equals(table, column.table) &&
+      Objects.equals(name, column.name) &&
+      Objects.equals(type, column.type) &&
+      Objects.equals(constraints, column.constraints);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(table, name, type, constraints, index);
   }
 }

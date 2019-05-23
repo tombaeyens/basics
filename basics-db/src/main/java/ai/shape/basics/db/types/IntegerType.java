@@ -29,6 +29,8 @@ import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
 public class IntegerType implements DataType {
 
+  public static final IntegerType INSTANCE = new IntegerType();
+
   @Override
   public String getSql() {
     return "INTEGER";

@@ -27,12 +27,12 @@ public class OrderBy {
   List<FieldDirection> fieldDirections = new ArrayList<>();
 
   public static abstract class FieldDirection {
-    FieldExpression expression;
-    public FieldDirection(FieldExpression expression) {
+    SqlExpression expression;
+    public FieldDirection(SqlExpression expression) {
       this.expression = expression;
     }
 
-    public FieldExpression getExpression() {
+    public SqlExpression getExpression() {
       return expression;
     }
 
@@ -40,7 +40,7 @@ public class OrderBy {
   }
 
   public static class Ascending extends FieldDirection {
-    public Ascending(FieldExpression expression) {
+    public Ascending(SqlExpression expression) {
       super(expression);
     }
     public boolean isAscending() {
@@ -49,7 +49,7 @@ public class OrderBy {
   }
 
   public static class Descending extends FieldDirection {
-    public Descending(FieldExpression expression) {
+    public Descending(SqlExpression expression) {
       super(expression);
     }
     public boolean isAscending() {

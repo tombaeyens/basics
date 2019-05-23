@@ -30,6 +30,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class TimestampType implements DataType {
 
+  public static final TimestampType INSTANCE = new TimestampType();
+
   private static final Logger log = getLogger(TimestampType.class.getName());
 
   @Override

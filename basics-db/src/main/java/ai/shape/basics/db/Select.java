@@ -35,6 +35,7 @@ public class Select extends Statement {
 
   protected Integer limit;
   protected OrderBy orderBy;
+  private FieldExpressionWithAlias expression;
 
   public Select(Tx tx) {
     super(tx);
@@ -67,15 +68,17 @@ public class Select extends Statement {
     List<Table> fromTables = new ArrayList<>();
     froms.stream().forEach(from->from.collectTables(fromTables));
 
-    List<Table> fromTablesNotUsedInFields = new ArrayList<>();
-    fromTables.forEach(fromTable->{
-      if (!fieldTables.contains(fromTable)) {
-        fromTablesNotUsedInFields.add(fromTable);
-      }
-    });
-    fromTablesNotUsedInFields.forEach(fromTableNotUsedInFields->
-      fields(fromTableNotUsedInFields.getColumns().values())
-    );
+    if (!hasCount()) {
+      List<Table> fromTablesNotUsedInFields = new ArrayList<>();
+      fromTables.forEach(fromTable->{
+        if (!fieldTables.contains(fromTable)) {
+          fromTablesNotUsedInFields.add(fromTable);
+        }
+      });
+      fromTablesNotUsedInFields.forEach(fromTableNotUsedInFields->
+        fields(fromTableNotUsedInFields.getColumns().values())
+      );
+    }
 
     // If there are multiple tables involved
     if (fromTables.size()>1)  {
@@ -92,24 +95,31 @@ public class Select extends Statement {
     return executeQuery();
   }
 
-  public Select fields(FieldExpression... expressions) {
+  private boolean hasCount() {
+    return fields!=null && fields.stream()
+      .filter(field -> field!=null && field.getExpression()!=null && field.getExpression().getClass()==Count.class)
+      .findFirst()
+      .isPresent();
+  }
+
+  public Select fields(SqlExpression... expressions) {
     return fields(Arrays.asList(expressions));
   }
 
-  public Select fields(Collection<? extends FieldExpression> expressions) {
+  public Select fields(Collection<? extends SqlExpression> expressions) {
     if (expressions!=null) {
-      for (FieldExpression expression: expressions) {
+      for (SqlExpression expression: expressions) {
         field(expression);
       }
     }
     return this;
   }
 
-  public Select field(FieldExpression expression) {
+  public Select field(SqlExpression expression) {
     return field(expression, null);
   }
 
-  public Select field(FieldExpression expression, String alias) {
+  public Select field(SqlExpression expression, String alias) {
     return field(new FieldExpressionWithAlias(expression, alias));
   }
 
@@ -188,22 +198,22 @@ public class Select extends Statement {
   }
 
   /** Returns JDBC (meaning starts at 1) index of the results. */
-  public Integer getSelectorJdbcIndex(Column column) {
+  public Integer getSelectorJdbcIndex(SqlExpression sqlExpression) {
     for (int i = 0; i< fields.size(); i++) {
-      FieldExpressionWithAlias expression = fields.get(i);
-      if (expression.isColumn(column)) {
+      FieldExpressionWithAlias fieldExpressionWithAlias = fields.get(i);
+      if (fieldExpressionWithAlias.getExpression().equals(sqlExpression)) {
         return i+1;
       }
     }
     return null;
   }
 
-  public Select orderAsc(FieldExpression expression) {
+  public Select orderAsc(SqlExpression expression) {
     addOrderBy(new OrderBy.Ascending(expression));
     return this;
   }
 
-  public Select orderDesc(FieldExpression expression) {
+  public Select orderDesc(SqlExpression expression) {
     addOrderBy(new OrderBy.Descending(expression));
     return this;
   }

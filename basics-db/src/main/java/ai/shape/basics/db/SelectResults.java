@@ -77,19 +77,13 @@ public class SelectResults {
   }
 
   @SuppressWarnings("unchecked")
-  public <T> T get(FieldExpression expression) {
-    if (expression instanceof Column) {
-      Column column = (Column) expression;
-      Integer index = select.getSelectorJdbcIndex(column);
-      assertNotNull(index, "Field '"+column.getTable().getName()+"."+column.getName()+"' was used in the result, but not included in the select fields \n"+sql.getDebugInfo());
-      DataType type = column.getType();
-      T value = (T)type.getResultSetValue(index, resultSet);
-      selectLogger.setValue(index-1, type.getLogText(value));
-      return value;
-    } else {
-      Exceptions.assertNotNullParameter(expression, "selectField");
-      throw new RuntimeException("Select field of type "+ expression.getClass().getSimpleName()+" not supported yet.");
-    }
+  public <T> T get(SqlExpression expression) {
+    Integer index = select.getSelectorJdbcIndex(expression);
+    assertNotNull(index, "Field '"+expression+"' was used in the result, but not included in the select fields \n"+sql.getDebugInfo());
+    DataType type = expression.getType();
+    T value = (T)type.getResultSetValue(index, resultSet);
+    selectLogger.setValue(index-1, type.getLogText(value));
+    return value;
   }
 
   /** loops over all the results and logs the results in a table structure.

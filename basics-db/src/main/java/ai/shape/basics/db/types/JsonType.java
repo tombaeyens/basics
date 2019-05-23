@@ -20,6 +20,8 @@ package ai.shape.basics.db.types;
 
 public class JsonType extends ClobType {
 
+  public static final JsonType INSTANCE = new JsonType();
+
   @Override
   public String getSql() {
     return "JSON";

@@ -20,12 +20,12 @@ package ai.shape.basics.db;
 
 import java.util.List;
 
-public abstract class Function implements FieldExpression {
+public abstract class Function implements SqlExpression {
 
   public static class Lower extends Function {
-    FieldExpression expression;
+    SqlExpression expression;
 
-    public Lower(FieldExpression expression) {
+    public Lower(SqlExpression expression) {
       this.expression = expression;
     }
 
@@ -50,9 +50,5 @@ public abstract class Function implements FieldExpression {
     public void collectTables(List<Table> fieldTables) {
       expression.collectTables(fieldTables);
     }
-  }
-
-  public static Lower lowerCase(Column column) {
-    return new Lower(column);
   }
 }

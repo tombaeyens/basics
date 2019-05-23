@@ -18,11 +18,45 @@
  */
 package ai.shape.basics.db;
 
+import ai.shape.basics.db.types.*;
+
+import java.sql.Clob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
 
 public interface DataType {
+
+  static IntegerType integerType() {
+    return IntegerType.INSTANCE;
+  }
+  static LongType longType() {
+    return LongType.INSTANCE;
+  }
+  static FloatType floatType() {
+    return FloatType.INSTANCE;
+  }
+  static DoubleType doubleType() {
+    return DoubleType.INSTANCE;
+  }
+  static VarcharType varcharType(int n) {
+    return new VarcharType(n);
+  }
+  static TimestampType timestampType() {
+    return TimestampType.INSTANCE;
+  }
+  static BooleanType booleanType() {
+    return BooleanType.INSTANCE;
+  }
+  static ClobType clobType() {
+    return ClobType.INSTANCE;
+  }
+  static JsonType jsonType() {
+    return JsonType.INSTANCE;
+  }
+  static VarcharType idType() {
+    return VarcharType.ID_TYPE;
+  }
 
   String getSql();
 

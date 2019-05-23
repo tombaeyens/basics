@@ -29,6 +29,8 @@ import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
 public class DoubleType implements DataType {
 
+  public static final DoubleType INSTANCE = new DoubleType();
+
   @Override
   public String getSql() {
     return "DOUBLE"; // postgresql should overwrite to "DOUBLE PRECISION"
