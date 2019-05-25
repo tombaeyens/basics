@@ -31,6 +31,8 @@ public class HttpLogger {
   }
 
   public static void stopIntercepting() {
-    log = ((HttpInterceptingLogger)log).delegate;
+    if (log instanceof HttpInterceptingLogger) {
+      log = ((HttpInterceptingLogger)log).delegate;
+    }
   }
 }

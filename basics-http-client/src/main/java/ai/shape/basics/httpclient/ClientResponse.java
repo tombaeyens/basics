@@ -170,25 +170,43 @@ public class ClientResponse {
   public ClientResponse assertStatusOk() {
     return assertStatus(Http.ResponseCodes.OK_200);
   }
+  public boolean isStatusOk() {
+    return status==Http.ResponseCodes.OK_200;
+  }
 
   public ClientResponse assertStatusBadRequest() {
     return assertStatus(Http.ResponseCodes.BAD_REQUEST_400);
+  }
+  public boolean isStatusBadRequest() {
+    return status==Http.ResponseCodes.BAD_REQUEST_400;
   }
 
   public ClientResponse assertStatusNotFound() {
     return assertStatus(Http.ResponseCodes.NOT_FOUND_404);
   }
+  public boolean isStatusNotFound() {
+    return status==Http.ResponseCodes.NOT_FOUND_404;
+  }
 
-  public ClientResponse assertStatusInternalServerException() {
+  public ClientResponse assertStatusInternalServerError() {
     return assertStatus(Http.ResponseCodes.INTERNAL_SERVER_ERROR_500);
+  }
+  public boolean isStatusInternalServerError() {
+    return status==Http.ResponseCodes.INTERNAL_SERVER_ERROR_500;
   }
 
   public ClientResponse assertStatusCreated() {
     return assertStatus(Http.ResponseCodes.CREATED_201);
   }
+  public boolean isStatusCreated() {
+    return status==Http.ResponseCodes.CREATED_201;
+  }
 
   public ClientResponse assertStatusNoContent() {
     return assertStatus(Http.ResponseCodes.NO_CONTENT_204);
+  }
+  public boolean isStatusNoContent() {
+    return status==Http.ResponseCodes.NO_CONTENT_204;
   }
 
   public ClientResponse assertStatus(int expectedStatus) {
