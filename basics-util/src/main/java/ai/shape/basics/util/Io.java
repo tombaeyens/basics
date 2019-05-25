@@ -632,7 +632,7 @@ public class Io {
         }
       }
     } catch (Exception e) {
-      Exceptions.exceptionWithCause("create zip file "+destinationZipFilePath, e);
+      throw exceptionWithCause("create zip file "+destinationZipFilePath, e);
     }
   }
 
