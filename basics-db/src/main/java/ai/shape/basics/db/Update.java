@@ -41,8 +41,8 @@ public class Update extends Statement {
   }
 
   @Override
-  protected void buildSqlOld(SqlBuilder sqlBuilder) {
-    getDialect().buildUpdateSql(sqlBuilder, this);
+  protected SqlBuilder createSqlBuilder() {
+    return getDialect().newUpdateSql(this);
   }
 
   @Override

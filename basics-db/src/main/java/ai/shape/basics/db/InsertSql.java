@@ -16,39 +16,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package ai.shape.basics.db;
 
-import ai.shape.basics.db.constraints.ForeignKey;
+import java.util.List;
 
-/** DDL for ALTER TABLE ADD FOREIGN KEY. */
-public class AlterTableAddForeignKey extends Statement {
+import static java.util.stream.Collectors.joining;
 
-  // foreignKey is singular because H2 does not support
-  // ALTER TABLE ADD with multiple things to add
-  protected ForeignKey foreignKey;
+public class InsertSql extends StatementSqlBuilder<Insert> {
 
-  public AlterTableAddForeignKey(Tx tx, ForeignKey foreignKey) {
-    super(tx);
-    this.foreignKey = foreignKey;
-  }
-
-  public int execute() {
-    return executeUpdate();
+  public InsertSql(Insert insert) {
+    super(insert);
   }
 
   @Override
-  protected SqlBuilder createSqlBuilder() {
-    return getDialect().newAlterTableAddForeignKeySql(this);
-  }
+  public void buildSqlNew() {
+    Table table = statement.getTable();
+    List<Insert.ColumnValue> columnValues = statement.getColumnValues();
+    appendText(
+      "INSERT INTO "+table.getName()+" ("+
+        columnValues.stream()
+          .map(columnValue->columnValue.getColumn().getName())
+          .collect(joining(", "))+
+        ") \nVALUES (");
 
-  protected void logUpdateCount(int updateCount) {
-  }
-
-  public ForeignKey getForeignKey() {
-    return foreignKey;
-  }
-
-  public Table getTable() {
-    return foreignKey.getFrom().getTable();
+    Object first = columnValues.get(0);
+    for (Insert.ColumnValue columnValue: columnValues) {
+      if (columnValue!=first) {
+        appendText(", ");
+      }
+      appendParameter();
+    }
+    appendText(");");
   }
 }

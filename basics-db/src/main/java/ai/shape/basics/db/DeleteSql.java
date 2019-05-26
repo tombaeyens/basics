@@ -19,13 +19,18 @@
 
 package ai.shape.basics.db;
 
-public class CreateTableSqlColumnConstraint extends SqlDelegator {
+public class DeleteSql extends DmlStatementSqlBuilder<Delete> {
 
-  public CreateTableSqlColumnConstraint(SqlBuilder sql2) {
-    super(sql2);
+  public DeleteSql(Delete delete) {
+    super(delete);
   }
 
-  public void append(Constraint constraint) {
-    sql2(" "+constraint.getCreateTableSql());
+  @Override
+  public void buildSqlNew() {
+    Table table = statement.getTable();
+    appendText("DELETE FROM ");
+    appendTableWithAliasSql(table);
+    appendWhereCondition(statement.getWhereCondition());
+    appendText(";");
   }
 }

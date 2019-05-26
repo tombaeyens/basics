@@ -16,39 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package ai.shape.basics.db;
 
 import ai.shape.basics.db.constraints.ForeignKey;
 
-/** DDL for ALTER TABLE ADD FOREIGN KEY. */
-public class AlterTableAddForeignKey extends Statement {
+import java.util.Objects;
 
-  // foreignKey is singular because H2 does not support
-  // ALTER TABLE ADD with multiple things to add
-  protected ForeignKey foreignKey;
+public class AlterTableAddForeignKeySql extends StatementSqlBuilder<AlterTableAddForeignKey> {
 
-  public AlterTableAddForeignKey(Tx tx, ForeignKey foreignKey) {
-    super(tx);
-    this.foreignKey = foreignKey;
-  }
-
-  public int execute() {
-    return executeUpdate();
+  public AlterTableAddForeignKeySql(AlterTableAddForeignKey alterTableAddForeignKey) {
+    super(alterTableAddForeignKey);
   }
 
   @Override
-  protected SqlBuilder createSqlBuilder() {
-    return getDialect().newAlterTableAddForeignKeySql(this);
-  }
+  public void buildSqlNew() {
+    Table table = statement.getTable();
+    ForeignKey foreignKey = statement.getForeignKey();
 
-  protected void logUpdateCount(int updateCount) {
-  }
-
-  public ForeignKey getForeignKey() {
-    return foreignKey;
-  }
-
-  public Table getTable() {
-    return foreignKey.getFrom().getTable();
+    appendText("ALTER TABLE "+ table.getName()+" ");
+    appendText("ADD CONSTRAINT ");
+    appendText(foreignKey.getName());
+    appendText(" FOREIGN KEY (");
+    appendText(foreignKey.getFrom().getName());
+    appendText(") ");
+    getDialect().newCreateTableColumnConstraintSql(this).append(foreignKey);
   }
 }

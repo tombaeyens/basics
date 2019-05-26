@@ -18,11 +18,6 @@
  */
 package ai.shape.basics.db;
 
-import ai.shape.basics.db.constraints.ForeignKey;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class AlterTableAddColumn extends Statement {
 
   // column is singular because H2 does not support
@@ -39,8 +34,8 @@ public class AlterTableAddColumn extends Statement {
   }
 
   @Override
-  protected void buildSqlOld(SqlBuilder sqlBuilder) {
-    getDialect().buildAlterTableAddColumnSql(sqlBuilder, this);
+  protected SqlBuilder createSqlBuilder() {
+    return getDialect().newAlterTableAddColumnSql(this);
   }
 
   protected void logUpdateCount(int updateCount) {

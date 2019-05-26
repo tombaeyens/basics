@@ -19,9 +19,6 @@
 
 package ai.shape.basics.db;
 
-import ai.shape.basics.util.Exceptions;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class SqlBuilder {

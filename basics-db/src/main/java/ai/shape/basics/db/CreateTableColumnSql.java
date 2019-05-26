@@ -16,39 +16,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package ai.shape.basics.db;
 
-import ai.shape.basics.db.constraints.ForeignKey;
+import java.util.List;
 
-/** DDL for ALTER TABLE ADD FOREIGN KEY. */
-public class AlterTableAddForeignKey extends Statement {
+import static ai.shape.basics.util.Exceptions.assertNotNull;
 
-  // foreignKey is singular because H2 does not support
-  // ALTER TABLE ADD with multiple things to add
-  protected ForeignKey foreignKey;
+public class CreateTableColumnSql extends SqlDelegator {
 
-  public AlterTableAddForeignKey(Tx tx, ForeignKey foreignKey) {
-    super(tx);
-    this.foreignKey = foreignKey;
+  public CreateTableColumnSql(SqlBuilder target) {
+    super(target);
   }
 
-  public int execute() {
-    return executeUpdate();
-  }
+  public void append(Column column) {
+    sqlSeparator(",");
+    sql2("\n  ");
 
-  @Override
-  protected SqlBuilder createSqlBuilder() {
-    return getDialect().newAlterTableAddForeignKeySql(this);
-  }
+    assertNotNull(column, "column %d is null", column.getIndex());
 
-  protected void logUpdateCount(int updateCount) {
-  }
+    DataType type = column.getType();
+    assertNotNull(type, "column.type is null for column with index %d", column.getIndex());
 
-  public ForeignKey getForeignKey() {
-    return foreignKey;
-  }
+    sql2(column.getName() + " " + getDialect().getTypeSql(type));
 
-  public Table getTable() {
-    return foreignKey.getFrom().getTable();
+    List<Constraint> constraints = column.getConstraints();
+    if (constraints != null) {
+      CreateTableColumnConstraintSql constraintSqlAppender = getDialect().newCreateTableColumnConstraintSql(target);
+      constraints.forEach(constraint -> constraintSqlAppender.append(constraint));
+    }
   }
 }

@@ -45,6 +45,8 @@ public abstract class Statement {
     this.tx = tx;
   }
 
+  protected abstract SqlBuilder createSqlBuilder();
+
   protected int executeUpdate() {
     collectParameters();
     SqlBuilder sql = new SqlBuilder(parameters);
@@ -93,33 +95,14 @@ public abstract class Statement {
   }
 
   protected String generateSql(SqlBuilder sql) {
-    SqlBuilder sqlBuilderNew = createSqlBuilderNew();
-    if (sqlBuilderNew!=null) {
-      try {
-        sqlBuilderNew.buildSqlNew();
-        tx.logSQL(sqlBuilderNew.getSqlLog());
-      } catch (Exception e) {
-        log.error("Problem building SQL: \n"+sqlBuilderNew.getDebugInfo()+"\n", e);
-      }
-      return sqlBuilderNew.getSql();
+    SqlBuilder sqlBuilderNew = createSqlBuilder();
+    try {
+      sqlBuilderNew.buildSqlNew();
+      tx.logSQL(sqlBuilderNew.getSqlLog());
+    } catch (Exception e) {
+      log.error("Problem building SQL: \n"+sqlBuilderNew.getDebugInfo()+"\n", e);
     }
-    return generateSqlOld(sql);
-  }
-
-  /** Override to migrate to the new sql builder style */
-  protected SqlBuilder createSqlBuilderNew() {
-    return null;
-  }
-
-  protected String generateSqlOld(SqlBuilder sql) {
-    buildSqlOld(sql);
-    String sqlText = sql.getSql();
-    tx.logSQL(sql.getSqlLog());
-    return sqlText;
-  }
-
-  /** Delegates to the appropriate dialect method */
-  protected void buildSqlOld(SqlBuilder sqlBuilder) {
+    return sqlBuilderNew.getSql();
   }
 
   public void addParameter(Object value, DataType type) {

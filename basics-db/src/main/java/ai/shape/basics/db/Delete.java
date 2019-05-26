@@ -38,8 +38,8 @@ public class Delete extends Statement {
   }
 
   @Override
-  protected void buildSqlOld(SqlBuilder sql) {
-    getDialect().buildDeleteSql(sql, this);
+  protected SqlBuilder createSqlBuilder() {
+    return getDialect().newDeleteSql(this);
   }
 
   @Override

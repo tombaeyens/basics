@@ -16,39 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package ai.shape.basics.db;
 
-import ai.shape.basics.db.constraints.ForeignKey;
+public class DropTableSql extends StatementSqlBuilder<DropTable> {
 
-/** DDL for ALTER TABLE ADD FOREIGN KEY. */
-public class AlterTableAddForeignKey extends Statement {
-
-  // foreignKey is singular because H2 does not support
-  // ALTER TABLE ADD with multiple things to add
-  protected ForeignKey foreignKey;
-
-  public AlterTableAddForeignKey(Tx tx, ForeignKey foreignKey) {
-    super(tx);
-    this.foreignKey = foreignKey;
-  }
-
-  public int execute() {
-    return executeUpdate();
+  public DropTableSql(DropTable dropTable) {
+    super(dropTable);
   }
 
   @Override
-  protected SqlBuilder createSqlBuilder() {
-    return getDialect().newAlterTableAddForeignKeySql(this);
-  }
-
-  protected void logUpdateCount(int updateCount) {
-  }
-
-  public ForeignKey getForeignKey() {
-    return foreignKey;
-  }
-
-  public Table getTable() {
-    return foreignKey.getFrom().getTable();
+  public void buildSqlNew() {
+    appendText("DROP TABLE ");
+    if (statement.ifExists) {
+      appendText("IF EXISTS ");
+    }
+    appendText(statement.table.getName());
+    if (statement.cascade) {
+      appendText(" CASCADE;");
+    }
   }
 }

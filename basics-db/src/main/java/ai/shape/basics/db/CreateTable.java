@@ -32,8 +32,8 @@ public class CreateTable extends Statement {
   }
 
   @Override
-  protected SqlBuilder createSqlBuilderNew() {
-    return new CreateTableSql(this);
+  protected SqlBuilder createSqlBuilder() {
+    return getDialect().newCreateTableSql(this);
   }
 
   protected void logUpdateCount(int updateCount) {

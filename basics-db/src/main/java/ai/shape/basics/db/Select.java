@@ -41,10 +41,9 @@ public class Select extends Statement {
     super(tx);
   }
 
-
   @Override
-  protected void buildSqlOld(SqlBuilder sqlBuilder) {
-    getDialect().buildSelectSql(sqlBuilder, this);
+  protected SqlBuilder createSqlBuilder() {
+    return getDialect().newSelectSql(this);
   }
 
   /* overriden to set the limit */

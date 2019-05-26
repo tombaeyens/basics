@@ -47,4 +47,9 @@ public class Count implements SqlExpression {
     if (other==null) return false;
     return other instanceof Count;
   }
+
+  @Override
+  public int hashCode() {
+    return Count.class.hashCode();
+  }
 }

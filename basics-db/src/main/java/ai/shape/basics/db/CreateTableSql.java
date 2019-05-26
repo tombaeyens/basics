@@ -32,7 +32,7 @@ public class CreateTableSql extends SqlBuilder {
   public void buildSqlNew() {
     Table table = createTable.getTable();
     appendText("CREATE TABLE "+table.getName()+" (");
-    CreateTableSqlColumn columnSqlAppender = dialect.getCreateTableColumnSqlAppender(this);
+    CreateTableColumnSql columnSqlAppender = dialect.newCreateTableColumnSql(this);
     table.getColumns().values().stream().forEach(column->columnSqlAppender.append(column));
     appendText("\n);");
   }

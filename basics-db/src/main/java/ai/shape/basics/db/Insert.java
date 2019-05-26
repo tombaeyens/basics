@@ -67,8 +67,8 @@ public class Insert extends Statement {
   }
 
   @Override
-  protected void buildSqlOld(SqlBuilder sqlBuilder) {
-    getDialect().buildInsertSql(sqlBuilder, this);
+  protected SqlBuilder createSqlBuilder() {
+    return getDialect().newInsertSql(this);
   }
 
   @Override

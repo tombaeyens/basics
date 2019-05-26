@@ -16,39 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package ai.shape.basics.db;
 
-import ai.shape.basics.db.constraints.ForeignKey;
+public class StatementSqlBuilder<T extends Statement> extends SqlBuilder {
 
-/** DDL for ALTER TABLE ADD FOREIGN KEY. */
-public class AlterTableAddForeignKey extends Statement {
+  T statement;
 
-  // foreignKey is singular because H2 does not support
-  // ALTER TABLE ADD with multiple things to add
-  protected ForeignKey foreignKey;
-
-  public AlterTableAddForeignKey(Tx tx, ForeignKey foreignKey) {
-    super(tx);
-    this.foreignKey = foreignKey;
-  }
-
-  public int execute() {
-    return executeUpdate();
-  }
-
-  @Override
-  protected SqlBuilder createSqlBuilder() {
-    return getDialect().newAlterTableAddForeignKeySql(this);
-  }
-
-  protected void logUpdateCount(int updateCount) {
-  }
-
-  public ForeignKey getForeignKey() {
-    return foreignKey;
-  }
-
-  public Table getTable() {
-    return foreignKey.getFrom().getTable();
+  public StatementSqlBuilder(T statement) {
+    super(statement);
+    this.statement = statement;
   }
 }

@@ -21,29 +21,35 @@ package ai.shape.basics.db;
 
 import java.util.List;
 
-import static ai.shape.basics.util.Exceptions.assertNotNull;
+import static ai.shape.basics.util.Exceptions.assertNotEmptyCollection;
 
-public class CreateTableSqlColumn extends SqlDelegator {
+public class UpdateSql extends DmlStatementSqlBuilder<Update> {
 
-  public CreateTableSqlColumn(SqlBuilder target) {
-    super(target);
+  public UpdateSql(Update update) {
+    super(update);
   }
 
-  public void append(Column column) {
-    sqlSeparator(",");
-    sql2("\n  ");
+  @Override
+  public void buildSqlNew() {
+    Table table = statement.getTable();
+    appendText("UPDATE ");
+    appendTableWithAliasSql(table);
+    appendText(" \nSET ");
+    appendUpdateAssignmentsSql();
+    appendWhereCondition(statement.getWhereCondition());
+    appendText(";");
+  }
 
-    assertNotNull(column, "column %d is null", column.getIndex());
+  protected void appendUpdateAssignmentsSql() {
+    List<UpdateSet> sets = statement.getSets();
+    assertNotEmptyCollection(sets, "sets is empty. Specify at least one non-null update.set(...)");
 
-    DataType type = column.getType();
-    assertNotNull(type, "column.type is null for column with index %d", column.getIndex());
-
-    sql2(column.getName() + " " + getDialect().getTypeSql(type));
-
-    List<Constraint> constraints = column.getConstraints();
-    if (constraints != null) {
-      CreateTableSqlColumnConstraint constraintSqlAppender = getDialect().getCreateTableColumnConstraintSqlAppender(target);
-      constraints.forEach(constraint -> constraintSqlAppender.append(constraint));
+    Object first = sets.get(0);
+    for (UpdateSet set: sets) {
+      if (set!=first) {
+        appendText(", \n    ");
+      }
+      set.appendSql(this, statement);
     }
   }
 }

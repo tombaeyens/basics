@@ -41,8 +41,8 @@ public class DropTable extends Statement {
   }
 
   @Override
-  protected void buildSqlOld(SqlBuilder sql) {
-    getDialect().buildDropTableSql(sql, this);
+  protected SqlBuilder createSqlBuilder() {
+    return getDialect().newDropTableSql(this);
   }
 
   public void execute() {
@@ -51,5 +51,4 @@ public class DropTable extends Statement {
 
   protected void logUpdateCount(int updateCount) {
   }
-
 }
