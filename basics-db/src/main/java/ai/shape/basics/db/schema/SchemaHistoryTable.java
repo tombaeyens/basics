@@ -37,7 +37,7 @@ public class SchemaHistoryTable extends Table {
   interface Columns {
     Column ID = new Column()
       .name("id")
-      .typeVarchar(1024)
+      .typeVarcharId()
       .primaryKey();
 
     Column DESCRIPTION = new Column()

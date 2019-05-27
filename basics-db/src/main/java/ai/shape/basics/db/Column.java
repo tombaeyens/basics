@@ -64,6 +64,10 @@ public class Column implements SqlExpression {
     this.type = type;
     return this;
   }
+  public Column typeVarcharId() {
+    type(new VarcharType(255));
+    return this;
+  }
   public Column typeVarchar(int n) {
     type(new VarcharType(n));
     return this;
