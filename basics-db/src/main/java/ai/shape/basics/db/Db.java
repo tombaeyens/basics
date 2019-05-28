@@ -33,6 +33,7 @@ import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.UUID;
 
 import static ai.shape.basics.util.Exceptions.exceptionWithCause;
 
@@ -40,14 +41,17 @@ public class Db {
 
   public static final Logger DB_LOGGER = LoggerFactory.getLogger(Db.class);
 
-  public static final String PROPERTY_NAME_JDBC_URL = "jdbcUrl";
-  public static final String PROPERTY_NAME_USER = "user";
-  public static final String PROPERTY_NAME_PASSWORD = "password";
-  public static final String PROPERTY_NAME_PROCESS_REF = "process.ref";
+  public static final String CONFIGURATION_NAME_JDBC_URL = "jdbcUrl";
+  public static final String CONFIGURATION_NAME_USER = "user";
+  public static final String CONFIGURATION_NAME_PASSWORD = "password";
+  public static final String CONFIGURATION_NAME_NODE_NAME = "nodename";
 
   protected DataSource dataSource;
   protected Dialect dialect;
-  protected String processRef;
+
+  /** unique id for this process, usually there is only one process.
+   * It's used to identify this process in the db typically for locks. */
+  protected String nodeName;
 
   /**
    * For docs see https://github.com/brettwooldridge/HikariCP
@@ -72,11 +76,11 @@ public class Db {
    */
   public Db(Properties properties) {
     try {
-      DB_LOGGER.debug("Creating Db "+properties.getProperty(PROPERTY_NAME_JDBC_URL));
+      DB_LOGGER.debug("Creating Db "+properties.getProperty(CONFIGURATION_NAME_JDBC_URL));
       DB_LOGGER.debug("Creating Db "+properties);
       this.dataSource = createDataSource(properties);
       this.dialect = getDialect(properties);
-      this.processRef = initializeProcessRef(properties);
+      this.nodeName = initializeNodeName(properties);
 
     } catch (Exception e) {
       throw exceptionWithCause("create Db with properties "+properties, e);
@@ -101,7 +105,7 @@ public class Db {
   }
 
   protected Dialect getDialect(Properties properties) {
-    String jdbcUrl = properties.getProperty(PROPERTY_NAME_JDBC_URL);
+    String jdbcUrl = properties.getProperty(CONFIGURATION_NAME_JDBC_URL);
     String dbType = getDbTypeTextFromUrl(jdbcUrl);
     if (dbType.contains("h2")) {
       return H2Dialect.INSTANCE;
@@ -110,7 +114,7 @@ public class Db {
     } else if (dbType.contains("mysql")) {
       return MySQLDialect.INSTANCE;
     }
-    throw new RuntimeException("Database type "+dbType+" not supported "+ PROPERTY_NAME_JDBC_URL +"="+jdbcUrl+" ");
+    throw new RuntimeException("Database type "+dbType+" not supported "+ CONFIGURATION_NAME_JDBC_URL +"="+jdbcUrl+" ");
   }
 
   protected String getDbTypeTextFromUrl(String url) {
@@ -130,19 +134,19 @@ public class Db {
     return new HikariDataSource(hikariConfig);
   }
 
-  protected String initializeProcessRef(Properties properties) {
-    String processRef = properties.getProperty(PROPERTY_NAME_PROCESS_REF);
-    if (processRef==null) {
-      processRef = ManagementFactory.getRuntimeMXBean().getName();
-      if (processRef==null) {
+  protected String initializeNodeName(Properties properties) {
+    String nodeName = properties.getProperty(CONFIGURATION_NAME_NODE_NAME);
+    if (nodeName==null) {
+      nodeName = ManagementFactory.getRuntimeMXBean().getName();
+      if (nodeName==null) {
         try {
-          processRef = InetAddress.getLocalHost().getHostAddress();
+          nodeName = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
-          processRef = "unnamed node";
+          nodeName = UUID.randomUUID().toString();;
         }
       }
     }
-    return processRef;
+    return nodeName;
   }
 
   @SuppressWarnings("unchecked")
@@ -189,7 +193,7 @@ public class Db {
     return dialect;
   }
 
-  public String getProcess() {
-    return processRef;
+  public String getNodeName() {
+    return nodeName;
   }
 }

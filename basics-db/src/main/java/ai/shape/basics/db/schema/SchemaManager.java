@@ -216,8 +216,8 @@ public class SchemaManager {
       log.debug("Attempt "+(attempts+1)+" to lock the schema");
       lockAcquired = db.tx(tx->{
         int updateCount = tx.newUpdate(SchemaHistoryTable.TABLE)
-          .set(Columns.DESCRIPTION, db.getProcess() + " is upgrading schema")
-          .set(Columns.PROCESS, db.getProcess())
+          .set(Columns.DESCRIPTION, db.getNodeName() + " is upgrading schema")
+          .set(Columns.PROCESS, db.getNodeName())
           .where(and(
             isNull(Columns.DESCRIPTION),
             isNull(Columns.PROCESS),
@@ -254,7 +254,7 @@ public class SchemaManager {
         .set(Columns.DESCRIPTION, null)
         .set(Columns.PROCESS, null)
         .where(and(
-          equal(Columns.PROCESS, db.getProcess()),
+          equal(Columns.PROCESS, db.getNodeName()),
           equal(Columns.TYPE, TYPE_LOCK)))
         .execute();
       if (updateCount > 1) {
@@ -330,7 +330,7 @@ public class SchemaManager {
           int updateCount = tx.newInsert(SchemaHistoryTable.TABLE)
             .set(Columns.ID, update.getId())
             .set(Columns.TIME, Time.now())
-            .set(Columns.PROCESS, db.getProcess())
+            .set(Columns.PROCESS, db.getNodeName())
             .set(Columns.TYPE, TYPE_UPDATE)
             .set(Columns.DESCRIPTION, "Executed update " + update.getId())
             .execute();

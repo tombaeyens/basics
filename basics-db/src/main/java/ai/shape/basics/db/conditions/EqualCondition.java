@@ -34,17 +34,21 @@ public class EqualCondition implements Condition {
   @Override
   public void buildSql(SqlBuilder sql, Statement statement) {
     expression.appendFieldSql(sql, statement);
-    sql.appendText(" = ");
-    if (value instanceof Column) {
-      ((Column) value).appendFieldSql(sql, statement);
+    if (value!=null) {
+      sql.appendText(" = ");
+      if (value instanceof Column) {
+        ((Column) value).appendFieldSql(sql, statement);
+      } else {
+        sql.appendParameter();
+      }
     } else {
-      sql.appendParameter();
+      sql.appendText(" IS NULL");
     }
   }
 
   @Override
   public void collectParameters(Statement statement) {
-    if (!(value instanceof Column)) {
+    if (value!=null && !(value instanceof Column)) {
       statement.addParameter(value, expression.getType());
     }
   }

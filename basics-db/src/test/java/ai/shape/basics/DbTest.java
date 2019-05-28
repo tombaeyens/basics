@@ -32,7 +32,7 @@ public class DbTest {
   @Test
   public void testDb() throws Exception {
     Db db = Db.builder()
-      .property(Db.PROPERTY_NAME_JDBC_URL, "jdbc:h2:mem:test")
+      .property(Db.CONFIGURATION_NAME_JDBC_URL, "jdbc:h2:mem:test")
       .build();
 
     // creates the schema history
